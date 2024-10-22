@@ -30,8 +30,10 @@
 		"vite": "^5.0.3"
 	},
 	"dependencies": {
+		"@runwayml/sdk": "^1.2.0",
 		"dotenv": "^16.4.5",
 		"pocketbase": "^0.21.5",
+		"replicate": "^1.0.1",
 		"together-ai": "^0.6.0"
 	}
 }
