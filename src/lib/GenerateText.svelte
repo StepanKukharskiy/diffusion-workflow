@@ -2,13 +2,13 @@
 	import { textColor, bgColor, elements } from '$lib/store';
 	import { updateConnections, getOutputsPosition, getInputsPosition } from './utils';
 
-	let isGeneratingText = false,
-		systemPromptTextarea: any,
-		systemPrompt = 'You are a helpful assistant',
+	let isGeneratingText = $state(false),
+		systemPromptTextarea = $state(),
+		systemPrompt = $state('You are a helpful assistant'),
 		queryTextarea: any,
 		query = '',
-		responseText: any,
-		modelOption: any;
+		responseText = $state(),
+		modelOption = $state('');
 	let isSettingsVisible = $state(false);
 
 	function updateTextareaHeight(textarea: any) {
@@ -54,7 +54,7 @@
 				<label for="query">Query</label>
 				<textarea
 					bind:this={queryTextarea}
-					on:input={(e) => {
+					oninput={(e) => {
 						query = e.target.value;
 						updateTextareaHeight(queryTextarea);
 					}}
@@ -70,7 +70,7 @@
 						name="model"
 						style="color: hsl({$textColor}); background: hsla({$textColor}, 10%);"
 						bind:value={modelOption}
-						on:change={() => {
+						onchange={() => {
 							console.log(modelOption);
 						}}
 					>
@@ -86,7 +86,7 @@
 					<label for="systemPrompt">System prompt</label>
 					<textarea
 						bind:this={systemPromptTextarea}
-						on:input={(e) => {
+						oninput={(e) => {
 							systemPrompt = e.target.value;
 							updateTextareaHeight(systemPromptTextarea);
 						}}
@@ -99,7 +99,7 @@
 			<div class="controlsMenu">
 				<button
 					class="generationControlsButton"
-					on:click={async () => {
+					onclick={async () => {
 						isGeneratingText = true;
 						const response = await generateText({
 							model: modelOption,
@@ -119,13 +119,13 @@
 				</button>
 				<button
 					class="optionsButton"
-					on:click={
+					onclick={
 						toggleSettings
 					}>Options</button
 				>
 				<button
 					class="removeButton"
-					on:click={() => {}}
+					onclick={() => {}}
 				>
 					Remove
 				</button>
