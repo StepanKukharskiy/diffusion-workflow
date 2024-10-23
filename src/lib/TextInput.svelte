@@ -2,7 +2,7 @@
 	import { textColor, bgColor, elements } from '$lib/store';
 	import StyledModelAnswer from './StyledModelAnswer.svelte';
 
-	let {imageUrl = ''} = $props();
+	let { imageUrl = '' } = $props();
 
 	let isGeneratingText = $state(false),
 		isFirstGeneration = $state(true),
@@ -28,9 +28,8 @@
 		queries.push(query);
 		console.log(data);
 		let message;
-		console.log(imageUrl)
+		console.log(imageUrl);
 		if (imageUrl === '') {
-			
 			message = await fetch(`/api/text-generation`, {
 				method: 'POST',
 				headers: {
@@ -44,8 +43,8 @@
 					imageUrl: imageUrl
 				})
 			});
-			
-			console.log(message)
+
+			console.log(message);
 		} else {
 			message = await fetch(`/api/image-vision`, {
 				method: 'POST',
@@ -82,9 +81,12 @@
 
 <div class="elementContainer">
 	<!-- <h3>Text</h3> -->
-	 <!-- {#if imageUrl != ''}
-	 <img src={imageUrl} alt='data for vision model'/>
-	 {/if} -->
+	{#if imageUrl != ''}
+	<div>
+	<p>Discussing this image</p>
+	 <img src={imageUrl} alt='data for vision model' width='50'/>
+	</div>
+	 {/if}
 	<div class="textAndControlsContainer">
 		<div class="generationControls">
 			<div class="item">
@@ -180,7 +182,9 @@
 					{#if isGeneratingText}
 						<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 					{:else}
-						Chat
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+							<path d="M2 2l20 10-20 10v-6l14-4-14-4z" fill="hsl({$textColor})" />
+						</svg>
 					{/if}
 				</button>
 				<button class="optionsButton" onclick={toggleSettings}>Settings</button>
@@ -237,7 +241,7 @@
 		font-size: 1rem;
 		margin-top: 5px;
 	}
-	img{
+	img {
 		border-radius: 10px;
 	}
 	.controlsMenu {

@@ -108,7 +108,7 @@
 			onclick={() => {
 				addElement($elements, 'text', imageUrl);
                 $elements = $elements
-			}}>Chat</button
+			}}>New Chat</button
 		>
 	</div>
 </div>
