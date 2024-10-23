@@ -101,7 +101,6 @@
 							query: query
 						});
 						console.log(response);
-						// $nodes.get(uuid).outputs[0].data = response.generatedText;
 						responseText = response.generatedText;
 						updateTextareaHeight(responseText);
 					}}
@@ -123,10 +122,6 @@
 					class="removeButton"
 					on:click={() => {}}
 				>
-					<!-- <svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
-			<line x1="1" y1="1" x2="9" y2="9" stroke="hsl({$textColor})" stroke-width="1" />
-			<line x1="1" y1="9" x2="9" y2="1" stroke="hsl({$textColor})" stroke-width="1" />
-		</svg> -->
 					Remove
 				</button>
 			</div>
