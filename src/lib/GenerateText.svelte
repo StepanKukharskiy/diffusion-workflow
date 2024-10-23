@@ -116,6 +116,7 @@
 					class="optionsButton"
 					on:click={() => {
 						isSettingsVisible = !isSettingsVisible;
+						console.log(isSettingsVisible)
 					}}>Options</button
 				>
 				<button
