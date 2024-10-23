@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { textColor, bgColor, elements } from '$lib/store';
-	import { updateConnections, getOutputsPosition, getInputsPosition } from './utils';
 	import StyledModelAnswer from './StyledModelAnswer.svelte';
+
+	let {imageUrl = ''} = $props();
 
 	let isGeneratingText = $state(false),
 		isFirstGeneration = $state(true),
@@ -26,18 +27,40 @@
 	async function generateText(data = { model: '', systemPrompt: '', query: '' }) {
 		queries.push(query);
 		console.log(data);
-		const message = await fetch(`/api/text-generation`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				model: data.model,
-				systemPrompt: data.systemPrompt,
-				query: data.query,
-				previousAnswers: answers.join(' ')
-			})
-		});
+		let message;
+		console.log(imageUrl)
+		if (imageUrl === '') {
+			
+			message = await fetch(`/api/text-generation`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					model: data.model,
+					systemPrompt: data.systemPrompt,
+					query: data.query,
+					previousAnswers: answers.join(' '),
+					imageUrl: imageUrl
+				})
+			});
+			
+			console.log(message)
+		} else {
+			message = await fetch(`/api/image-vision`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					model: data.model,
+					systemPrompt: data.systemPrompt,
+					query: data.query,
+					previousAnswers: answers.join(' '),
+					imageUrl: imageUrl
+				})
+			});
+		}
 		const messageObject = await message.json();
 		const generatedText = messageObject;
 		console.log(messageObject);
@@ -59,6 +82,9 @@
 
 <div class="elementContainer">
 	<!-- <h3>Text</h3> -->
+	 <!-- {#if imageUrl != ''}
+	 <img src={imageUrl} alt='data for vision model'/>
+	 {/if} -->
 	<div class="textAndControlsContainer">
 		<div class="generationControls">
 			<div class="item">
@@ -71,7 +97,11 @@
 				></textarea> -->
 				{#each answers as answer, i}
 					<!-- <p>Q:</p> -->
-					<p style='background: hsla({$textColor}, 10%); padding: 10px; border-radius: 10px; box-sizing: border-box;'>{queries[i]}</p>
+					<p
+						style="background: hsla({$textColor}, 10%); padding: 10px; border-radius: 10px; box-sizing: border-box;"
+					>
+						{queries[i]}
+					</p>
 					<!-- <p>A:</p> -->
 					<StyledModelAnswer htmlContent={answer} />
 				{/each}
@@ -170,23 +200,6 @@
 		margin: 0;
 		font-weight: 300;
 	} */
-	.elementContainer {
-		max-width: 800px;
-		/* min-width: 150px;
-		min-height: 150px; */
-		/* border-radius: 10px; */
-		/* position: absolute; */
-		box-sizing: border-box;
-		/* background: linear-gradient(45deg, #f9f9f910, #f9f9f930); */
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-		padding: 0px;
-		display: flex;
-		flex-direction: column;
-		margin-bottom: 10px;
-		/* border-bottom: 1px solid #1a1a1a; */
-		/* align-items: center; */
-	}
 
 	.textAndControlsContainer {
 		display: flex;
@@ -223,6 +236,9 @@
 		box-sizing: border-box;
 		font-size: 1rem;
 		margin-top: 5px;
+	}
+	img{
+		border-radius: 10px;
 	}
 	.controlsMenu {
 		display: flex;
@@ -266,11 +282,11 @@
 		background: #1a1a1a10;
 	} */
 	.loader {
-		width: 10px;
-		height: 10px;
+		width: 15px;
+		height: 15px;
 		margin: 0;
 		border: 2px solid black;
-		border-radius: 5px;
+		border-radius: 8px;
 		box-sizing: border-box;
 	}
 </style>

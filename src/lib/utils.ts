@@ -218,4 +218,13 @@ export function generateUUID() {
   }
   return delta
   }
+
+  export function addElement(elements: any = [], type = 'text', imageUrl = '') {
+		elements.push({
+			type: type,
+			systemPrompt: '',
+			query: '',
+      imageUrl: ''
+		});
+	}
   

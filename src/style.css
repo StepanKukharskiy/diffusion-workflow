@@ -10,3 +10,14 @@ button{
     font-size: 1rem;
     cursor: pointer;
 }
+
+.elementContainer {
+    max-width: 800px;
+    box-sizing: border-box;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
