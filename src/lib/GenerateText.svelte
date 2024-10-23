@@ -119,9 +119,9 @@
 				</button>
 				<button
 					class="optionsButton"
-					on:click={() => {
-						toggleSettings()
-					}}>Options</button
+					on:click={
+						toggleSettings
+					}>Options</button
 				>
 				<button
 					class="removeButton"
