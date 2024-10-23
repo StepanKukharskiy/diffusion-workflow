@@ -38,6 +38,12 @@
 		isGeneratingText = false;
 		return generatedText;
 	}
+
+	// Function to toggle settings visibility
+	function toggleSettings() {
+		isSettingsVisible = !isSettingsVisible; // Update state here
+		console.log(isSettingsVisible);
+	}
 </script>
 
 <div class="elementContainer">
@@ -114,8 +120,7 @@
 				<button
 					class="optionsButton"
 					on:click={() => {
-						isSettingsVisible = !isSettingsVisible;
-						console.log(isSettingsVisible)
+						toggleSettings()
 					}}>Options</button
 				>
 				<button
