@@ -34,7 +34,7 @@ export async function POST({ request, locals }) {
         const output = await together.chat.completions.create({
             messages: [{
                 role: "system",
-                content: query.systemPrompt
+                content: `${query.systemPrompt} Here is the chat context: ${query.previousAnswers}`
             }, {
                 role: "user",
                 content: query.query

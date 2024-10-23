@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { textColor, bgColor, elements } from '$lib/store';
 	import { updateConnections, getOutputsPosition, getInputsPosition } from './utils';
+	import StyledModelAnswer from './StyledModelAnswer.svelte';
 
 	let isGeneratingText = $state(false),
+		isFirstGeneration = $state(true),
 		systemPromptTextarea = $state(),
 		systemPrompt = $state('You are a helpful assistant'),
 		queryTextarea: any,
 		query = '',
 		responseText = $state(),
-		modelOption = $state('');
+		modelOption = $state('llama3.1-70b'),
+		answers: any = $state([]),
+		queries: any = $state([]);
 	let isSettingsVisible = $state(false);
 
 	function updateTextareaHeight(textarea: any) {
@@ -20,6 +24,7 @@
 	}
 
 	async function generateText(data = { model: '', systemPrompt: '', query: '' }) {
+		queries.push(query);
 		console.log(data);
 		const message = await fetch(`/api/text-generation`, {
 			method: 'POST',
@@ -29,13 +34,19 @@
 			body: JSON.stringify({
 				model: data.model,
 				systemPrompt: data.systemPrompt,
-				query: data.query
+				query: data.query,
+				previousAnswers: answers.join(' ')
 			})
 		});
 		const messageObject = await message.json();
 		const generatedText = messageObject;
 		console.log(messageObject);
 		isGeneratingText = false;
+		answers.push(generatedText.generatedText);
+		console.log(answers);
+		isFirstGeneration = false;
+		queryTextarea.value = '';
+
 		return generatedText;
 	}
 
@@ -47,11 +58,32 @@
 </script>
 
 <div class="elementContainer">
-	<h3>Text</h3>
+	<!-- <h3>Text</h3> -->
 	<div class="textAndControlsContainer">
 		<div class="generationControls">
 			<div class="item">
-				<label for="query">Query</label>
+				<!-- <label for="response">Response</label> -->
+				<!-- <textarea
+					readonly
+					bind:this={responseTextarea}
+					id="response"
+					style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 20%); color: hsl({$textColor})"
+				></textarea> -->
+				{#each answers as answer, i}
+					<!-- <p>Q:</p> -->
+					<p style='background: hsla({$textColor}, 10%); padding: 10px; border-radius: 10px; box-sizing: border-box;'>{queries[i]}</p>
+					<!-- <p>A:</p> -->
+					<StyledModelAnswer htmlContent={answer} />
+				{/each}
+				{#if !isGeneratingText}
+					<!-- <p>{responseText}</p> -->
+
+					<!-- <p>{responseText}</p> -->
+				{/if}
+			</div>
+
+			<div class="item">
+				<!-- <label for="query">Task, question, or prompt</label> -->
 				<textarea
 					bind:this={queryTextarea}
 					oninput={(e) => {
@@ -60,6 +92,9 @@
 					}}
 					id="query"
 					style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor})"
+					placeholder={isFirstGeneration
+						? 'Add your task, question, or prompt here'
+						: 'Ask a follow-up question, add task or prompt'}
 				></textarea>
 			</div>
 			{#if isSettingsVisible === true}
@@ -96,6 +131,7 @@
 					>
 				</div>
 			{/if}
+
 			<div class="controlsMenu">
 				<button
 					class="generationControlsButton"
@@ -114,44 +150,26 @@
 					{#if isGeneratingText}
 						<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 					{:else}
-						Generate text
+						Chat
 					{/if}
 				</button>
-				<button
-					class="optionsButton"
-					onclick={
-						toggleSettings
-					}>Options</button
-				>
-				<button
+				<button class="optionsButton" onclick={toggleSettings}>Settings</button>
+				<!-- <button
 					class="removeButton"
 					onclick={() => {}}
 				>
 					Remove
-				</button>
-			</div>
-
-			<div class="item">
-				<!-- <label for="response">Response</label> -->
-				<!-- <textarea
-					readonly
-					bind:this={responseTextarea}
-					id="response"
-					style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 20%); color: hsl({$textColor})"
-				></textarea> -->
-				{#if !isGeneratingText}
-					<p>{responseText}</p>
-				{/if}
+				</button> -->
 			</div>
 		</div>
 	</div>
 </div>
 
 <style>
-	h3 {
+	/* h3 {
 		margin: 0;
 		font-weight: 300;
-	}
+	} */
 	.elementContainer {
 		max-width: 800px;
 		/* min-width: 150px;
@@ -166,10 +184,10 @@
 		display: flex;
 		flex-direction: column;
 		margin-bottom: 10px;
-		border-bottom: 1px solid #1a1a1a;
+		/* border-bottom: 1px solid #1a1a1a; */
 		/* align-items: center; */
 	}
-	
+
 	.textAndControlsContainer {
 		display: flex;
 		margin-top: 5px;
@@ -189,6 +207,7 @@
 	}
 	select {
 		width: 100%;
+		max-width: 300px;
 		border: none;
 		border-radius: 10px;
 		font-size: 1.2rem;
@@ -202,6 +221,8 @@
 		border-radius: 10px;
 		padding: 5px;
 		box-sizing: border-box;
+		font-size: 1rem;
+		margin-top: 5px;
 	}
 	.controlsMenu {
 		display: flex;
@@ -210,9 +231,9 @@
 	.generationControlsButton {
 		align-self: center;
 		max-width: 300px;
-		width: 120px;
+		/* width: 120px; */
 		height: 40px;
-		background: #1a1a1a10;
+		background: #1a1a1a20;
 		color: #1a1a1a;
 		border: none;
 		border-radius: 10px;
@@ -224,7 +245,7 @@
 		align-items: center;
 	}
 	.generationControlsButton:hover {
-		background: #1a1a1a20;
+		background: #1a1a1a30;
 	}
 	.optionsButton {
 		height: 40px;
@@ -234,13 +255,13 @@
 		background: none;
 		box-sizing: border-box;
 	}
-	.removeButton {
+	/* .removeButton {
 		background: none;
 		border: none;
 		box-sizing: border-box;
 		border-radius: 10px;
 		cursor: pointer;
-	}
+	} */
 	/* .optionsButton:hover{
 		background: #1a1a1a10;
 	} */
@@ -248,5 +269,8 @@
 		width: 10px;
 		height: 10px;
 		margin: 0;
+		border: 2px solid black;
+		border-radius: 5px;
+		box-sizing: border-box;
 	}
 </style>

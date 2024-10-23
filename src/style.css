@@ -2,7 +2,9 @@ body{
     margin: 0;
     padding: 10px;
     font-family: sans-serif;
-    background: #f9f9f9;
+    font-size: 1rem;
+    background: #fff;
+    
 }
 button{
     font-size: 1rem;

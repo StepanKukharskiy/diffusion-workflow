@@ -19,6 +19,7 @@
     }
 </script>
 
+<div class='container'>
 <h1>Diffusion Workflow</h1>
 
 {#each $elements as element}
@@ -33,7 +34,7 @@ style="background: hsl({$textColor}); color: hsl({$bgColor});"
 class='createButton'
 	on:click={() => {
 		isCreateOptionsVisible = !isCreateOptionsVisible;
-	}}>Create</button
+	}}>Add</button
 >
 
 {#if isCreateOptionsVisible}
@@ -69,9 +70,14 @@ class='createButton'
 	>
 {/if}
 
-
+</div>
 
 <style>
+	.container{
+		max-width: 800px;
+		margin-left: auto;
+		margin-right: auto;
+	}
     .createButton{
         padding: 10px;
         box-sizing: border-box;
