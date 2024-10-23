@@ -56,7 +56,7 @@
 					style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor})"
 				></textarea>
 			</div>
-			{#if isSettingsVisible}
+			{#if isSettingsVisible === true}
 				<div class="item">
 					<label for="model">Model</label>
 					<select
