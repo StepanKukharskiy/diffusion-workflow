@@ -8,8 +8,8 @@
 		queryTextarea: any,
 		query = '',
 		responseText: any,
-		modelOption: any,
-		isSettingsVisible = false;
+		modelOption: any;
+	let isSettingsVisible = $state(false);
 
 	function updateTextareaHeight(textarea: any) {
 		textarea.style.height = `auto`;
