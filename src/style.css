@@ -10,6 +10,19 @@ button{
     font-size: 1rem;
     cursor: pointer;
 }
+textarea {
+    width: 100%;
+    height: fit-content;
+    resize: none;
+    border-radius: 10px;
+    padding: 5px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    margin-top: 5px;
+}
+img, video {
+    border-radius: 10px;
+}
 
 .elementContainer {
     position: relative;
@@ -51,6 +64,14 @@ button{
 }
 .generationControlsButton:hover {
     background: #1a1a1a30;
+}
+.generationControlsButton:disabled {
+    opacity: 0.5;
+}
+.optionsButton:disabled {
+    background: #1a1a1a20;
+    opacity: 0.5;
+    cursor: default;
 }
 
 .warning{

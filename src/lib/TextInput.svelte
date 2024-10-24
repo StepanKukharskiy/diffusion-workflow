@@ -77,17 +77,32 @@
 		isSettingsVisible = !isSettingsVisible; // Update state here
 		console.log(isSettingsVisible);
 	}
+
+	function addElement(elements: any = [], type = 'text', imageUrl = '', maskImageUrl = '', prompt = '') {
+		console.log(elements);
+		console.log(prompt)
+		elements.push({
+			type: type,
+			systemPrompt: '',
+			query: '',
+			imageUrl: imageUrl, 
+			maskImageUrl: maskImageUrl, 
+			prompt: prompt
+		});
+
+		console.log(elements);
+	}
 </script>
 
 <div class="elementContainer">
-	<div class='colorLine' style='background: #A1C9F2;'></div>
+	<div class="colorLine" style="background: #A1C9F2;"></div>
 	<!-- <h3>Text</h3> -->
 	{#if imageUrl != ''}
-	<div>
-	<p>Discussing this image</p>
-	 <img src={imageUrl} alt='data for vision model' width='50'/>
-	</div>
-	 {/if}
+		<div>
+			<p>Discussing this image</p>
+			<img src={imageUrl} alt="data for vision model" width="50" />
+		</div>
+	{/if}
 	<div class="textAndControlsContainer">
 		<div class="generationControls">
 			<div class="item">
@@ -187,10 +202,24 @@
 							<path d="M2 2l20 10-20 10v-6l14-4-14-4z" fill="hsl({$textColor})" />
 						</svg> -->
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-							<path d="M2 2 l0 10 10 0 M2 2 l20 10 -20 10 0 -7" stroke="hsl({$textColor})" stroke-width="2" fill="none" stroke-linecap='round'/>
+							<path
+								d="M2 2 l0 10 10 0 M2 2 l20 10 -20 10 0 -7"
+								stroke="hsl({$textColor})"
+								stroke-width="2"
+								fill="none"
+								stroke-linecap="round"
+							/>
 						</svg>
 					{/if}
 				</button>
+				<button
+					class="optionsButton"
+					onclick={() => {
+						queries.push(query);
+						addElement($elements, 'imageGeneration', imageUrl, '', answers.length > 0 ? answers[answers.length -1] : queries[queries.length-1]);
+						$elements = $elements;
+					}}>New Image</button
+				>
 				<button class="optionsButton" onclick={toggleSettings}>Settings</button>
 				<!-- <button
 					class="removeButton"
@@ -235,24 +264,12 @@
 		padding: 5px;
 		box-sizing: border-box;
 	}
-	textarea {
-		width: 100%;
-		height: fit-content;
-		resize: none;
-		border-radius: 10px;
-		padding: 5px;
-		box-sizing: border-box;
-		font-size: 1rem;
-		margin-top: 5px;
-	}
-	img {
-		border-radius: 10px;
-	}
+	
 	.controlsMenu {
 		display: flex;
 		align-items: center;
 	}
-	
+
 	.optionsButton {
 		height: 40px;
 		/* padding: 10px; */

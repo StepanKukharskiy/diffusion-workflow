@@ -4,6 +4,7 @@
 	import TextInput from '$lib/TextInput.svelte';
 	import ImageInput from '$lib/ImageInput.svelte';
 	import VideoGeneration from '$lib/VideoGeneration.svelte';
+	import ImageGeneration from '$lib/ImageGeneration.svelte';
 
 	let isCreateOptionsVisible = false;
 	let createButton: any;
@@ -32,6 +33,8 @@
 			<ImageInput />
 		{:else if element.type === 'video'}
 			<VideoGeneration refImageUrl={element.imageUrl}/>
+		{:else if element.type === 'imageGeneration'}
+			<ImageGeneration refImageUrl={element.imageUrl} maskImageUrl={element.maskImageUrl} prompt = {element.prompt}/>
 		{/if}
 	{/each}
 

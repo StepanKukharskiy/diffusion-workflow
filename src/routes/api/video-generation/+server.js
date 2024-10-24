@@ -29,11 +29,11 @@ export async function POST({ request, locals }) {
             };
 
             console.log(input); 
-            const output = await replicate.run("sunfjun/stable-video-diffusion:d68b6e09eedbac7a49e3d8644999d93579c386a083768235cabca88796d70d82", { input: input });
-            console.log(output)
+            const [output] = await replicate.run("sunfjun/stable-video-diffusion:d68b6e09eedbac7a49e3d8644999d93579c386a083768235cabca88796d70d82", { input: input });
+            
 
             response = {
-                videoUrl: output
+                videoUrl: output.url()
             }
 
 
