@@ -75,6 +75,7 @@
 </script>
 
 <div class="elementContainer">
+	<div class="colorLine" style="background: #D6C4FF;"></div>
 	<button
 		class="dropArea"
 		style="border: 1px solid hsla({$textColor}, 20%); color: hsl({$textColor});"
@@ -102,13 +103,31 @@
 		style="display: none;"
 	/>
 
+	{#if imageUrl === ''}
+	<div style='display: flex; align-items: center;'>
+		<span class="warning"></span>
+		<p>Please, provide an image to continue</p>
+	</div>
+	{/if}
+
 	<div class="controlsMenu">
 		<button
 			class="optionsButton"
+			disabled={imageUrl === '' ? true : false}
 			onclick={() => {
 				addElement($elements, 'text', imageUrl);
-                $elements = $elements
-			}}>New Chat</button
+				$elements = $elements;
+			}}
+		>
+			New Chat
+		</button>
+		<button
+			class="optionsButton"
+			disabled={imageUrl === '' ? true : false}
+			onclick={() => {
+				addElement($elements, 'video', imageUrl);
+				$elements = $elements;
+			}}>New Video</button
 		>
 	</div>
 </div>
@@ -132,7 +151,12 @@
 		align-items: center;
 		overflow-y: auto;
 	}
+	.controlsMenu {
+		display: flex;
+		align-items: center;
+	}
 	.optionsButton {
+		position: relative;
 		align-self: center;
 		max-width: 300px;
 		/* width: 120px; */
@@ -142,7 +166,7 @@
 		border: none;
 		border-radius: 10px;
 		padding: 10px;
-		margin: 5px 0;
+		margin: 5px 10px 0 0;
 		cursor: pointer;
 		display: flex;
 		justify-content: center;

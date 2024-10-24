@@ -3,6 +3,7 @@
 
 	import TextInput from '$lib/TextInput.svelte';
 	import ImageInput from '$lib/ImageInput.svelte';
+	import VideoGeneration from '$lib/VideoGeneration.svelte';
 
 	let isCreateOptionsVisible = false;
 	let createButton: any;
@@ -29,6 +30,8 @@
 			<TextInput imageUrl={element.imageUrl} />
 		{:else if element.type === 'image'}
 			<ImageInput />
+		{:else if element.type === 'video'}
+			<VideoGeneration refImageUrl={element.imageUrl}/>
 		{/if}
 	{/each}
 
@@ -62,7 +65,7 @@
 				scrollToCreateButton();
 			}}>image</button
 		>
-		<button
+		<!-- <button
 			class="createOptionsMenu"
 			style="color: hsl({$textColor});"
 			on:click={() => {
@@ -71,7 +74,7 @@
 				$elements = $elements;
 				scrollToCreateButton();
 			}}>video</button
-		>
+		> -->
 	{/if}
 </div>
 

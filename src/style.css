@@ -12,12 +12,51 @@ button{
 }
 
 .elementContainer {
+    position: relative;
     max-width: 800px;
     box-sizing: border-box;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 0px;
+    padding-left: 10px;
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
+}
+
+.colorLine{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    border-radius: 2px;
+}
+
+.generationControlsButton {
+    align-self: center;
+    max-width: 300px;
+    /* width: 120px; */
+    height: 40px;
+    background: #1a1a1a20;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.generationControlsButton:hover {
+    background: #1a1a1a30;
+}
+
+.warning{
+    width: 10px; 
+    height: 10px;
+    border-radius: 5px;
+    background: orange;
+    margin-right: 10px;
 }

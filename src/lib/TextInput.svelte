@@ -80,6 +80,7 @@
 </script>
 
 <div class="elementContainer">
+	<div class='colorLine' style='background: #A1C9F2;'></div>
 	<!-- <h3>Text</h3> -->
 	{#if imageUrl != ''}
 	<div>
@@ -182,8 +183,11 @@
 					{#if isGeneratingText}
 						<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 					{:else}
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+						<!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
 							<path d="M2 2l20 10-20 10v-6l14-4-14-4z" fill="hsl({$textColor})" />
+						</svg> -->
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+							<path d="M2 2 l0 10 10 0 M2 2 l20 10 -20 10 0 -7" stroke="hsl({$textColor})" stroke-width="2" fill="none" stroke-linecap='round'/>
 						</svg>
 					{/if}
 				</button>
@@ -248,25 +252,7 @@
 		display: flex;
 		align-items: center;
 	}
-	.generationControlsButton {
-		align-self: center;
-		max-width: 300px;
-		/* width: 120px; */
-		height: 40px;
-		background: #1a1a1a20;
-		color: #1a1a1a;
-		border: none;
-		border-radius: 10px;
-		padding: 10px;
-		margin: 5px 0;
-		cursor: pointer;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	.generationControlsButton:hover {
-		background: #1a1a1a30;
-	}
+	
 	.optionsButton {
 		height: 40px;
 		/* padding: 10px; */
