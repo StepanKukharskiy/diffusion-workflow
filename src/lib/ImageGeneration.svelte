@@ -49,7 +49,9 @@
 </script>
 
 <div class="elementContainer">
-	<div class="colorLine" style="background: #FFD7BE;"></div>
+	<div class="colorLine" style="background: #FFD7BE;">
+		<h3 style='color: hsl({$textColor})'>Image Generation</h3>
+	</div>
 	<div class="imageAndControlsContainer">
 		{#if generatedImageUrl}
 			<img
@@ -91,13 +93,13 @@
 			{/if}
 			<textarea
 				bind:value={prompt}
-				style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor})"
+				style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor}); margin: 0 0 5px 0;"
 				>{prompt}</textarea
 			>
 			{#if generatedImageUrl === ''}
 				<div style="display: flex; align-items: center;">
 					<span class="warning"></span>
-					<p>Please, generate an image to create a video</p>
+					<p>Please, generate an image to continue</p>
 				</div>
 			{/if}
 			<div class="controlsMenu">
@@ -123,7 +125,7 @@
 						$elements = $elements;
 					}}
 				>
-					New Chat
+					Discuss
 				</button>
 				<button
 					class="optionsButton"
@@ -157,6 +159,7 @@
 		display: flex;
 		flex-direction: column;
 		margin-top: 5px;
+		margin-bottom: 5px;
 		width: 100%;
 		height: 100%;
 	}
@@ -175,41 +178,17 @@
 	}
 	.generatedImageMockup {
 		aspect-ratio: 16 / 9;
-		margin-bottom: 5px;
+		margin-bottom: 10px;
 	}
 	.generatedImage {
 		height: fit-content;
+		margin-bottom: 10px;
 	}
 	.controlsMenu {
 		display: flex;
 		align-items: center;
 	}
-	.optionsButton {
-		position: relative;
-		align-self: center;
-		max-width: 300px;
-		/* width: 120px; */
-		height: 40px;
-		background: #1a1a1a20;
-		color: #1a1a1a;
-		border: none;
-		border-radius: 10px;
-		padding: 10px;
-		margin-left: 5px;
-		cursor: pointer;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	.optionsButton:hover {
-		background: #1a1a1a30;
-	}
+	
 
-	.settingsButton {
-		height: 40px;
-		border: none;
-		border-radius: 10px;
-		background: none;
-		box-sizing: border-box;
-	}
+	
 </style>

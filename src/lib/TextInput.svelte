@@ -95,7 +95,9 @@
 </script>
 
 <div class="elementContainer">
-	<div class="colorLine" style="background: #A1C9F2;"></div>
+	<div class="colorLine" style="background: #A1C9F290;">
+		<h3 style='color: hsl({$textColor})'>Chat</h3>
+	</div>
 	<!-- <h3>Text</h3> -->
 	{#if imageUrl != ''}
 		<div>
@@ -179,7 +181,13 @@
 					>
 				</div>
 			{/if}
-
+			{#if isGeneratingText}
+			<div style="display: flex; align-items: center;">
+				<span class="warning"></span>
+				<p style="margin-right: 10px;">Generating response</p>
+				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+			</div>
+			{:else}
 			<div class="controlsMenu">
 				<button
 					class="generationControlsButton"
@@ -190,17 +198,14 @@
 							systemPrompt: systemPrompt,
 							query: query
 						});
-						console.log(response);
-						responseText = response.generatedText;
-						updateTextareaHeight(responseText);
+						// console.log(response);
+						// responseText = response.generatedText;
+						// updateTextareaHeight(responseText);
 					}}
 				>
 					{#if isGeneratingText}
 						<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 					{:else}
-						<!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-							<path d="M2 2l20 10-20 10v-6l14-4-14-4z" fill="hsl({$textColor})" />
-						</svg> -->
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
 							<path
 								d="M2 2 l0 10 10 0 M2 2 l20 10 -20 10 0 -7"
@@ -215,12 +220,12 @@
 				<button
 					class="optionsButton"
 					onclick={() => {
-						queries.push(query);
-						addElement($elements, 'imageGeneration', imageUrl, '', answers.length > 0 ? answers[answers.length -1] : queries[queries.length-1]);
+						
+						addElement($elements, 'imageGeneration', imageUrl, '', answers.length > 0 ? answers[answers.length -1] : query);
 						$elements = $elements;
 					}}>New Image</button
 				>
-				<button class="optionsButton" onclick={toggleSettings}>Settings</button>
+				<button class="settingsButton" onclick={toggleSettings}>Settings</button>
 				<!-- <button
 					class="removeButton"
 					onclick={() => {}}
@@ -228,6 +233,7 @@
 					Remove
 				</button> -->
 			</div>
+			{/if}
 		</div>
 	</div>
 </div>
@@ -270,14 +276,13 @@
 		align-items: center;
 	}
 
-	.optionsButton {
+	/* .optionsButton {
 		height: 40px;
-		/* padding: 10px; */
 		border: none;
 		border-radius: 10px;
 		background: none;
 		box-sizing: border-box;
-	}
+	} */
 	/* .removeButton {
 		background: none;
 		border: none;

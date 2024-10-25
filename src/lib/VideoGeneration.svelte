@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { textColor, bgColor } from './store';
+	import { page } from '$app/stores';
 
 	let { refImageUrl = '' } = $props();
 
@@ -18,7 +19,8 @@
 			},
 			body: JSON.stringify({
 				refImageUrl: data.refImageUrl,
-				model: data.model
+				model: data.model,
+				projectId: $page.params.projectId
 			})
 		});
 		const messageObject = await message.json();
@@ -36,7 +38,9 @@
 </script>
 
 <div class="elementContainer">
-	<div class="colorLine" style="background: #7CFFFB;"></div>
+	<div class="colorLine" style="background: #7CFFFB;">
+		<h3 style='color: hsl({$textColor})'>Video Generation</h3>
+	</div>
 	<div class="imageAndControlsContainer">
 		{#if generatedVideoUrl}
 			<video controls class="generatedVideo">
@@ -64,11 +68,11 @@
 			<div class="item">
 				<label for="systemPrompt">Model</label>
 				<select
-					style="color: hsl({$textColor}); background: hsla({$textColor}, 20%);"
+					style="color: hsl({$textColor}); background: hsla({$textColor}, 10%);"
 					bind:value={modelOption}
 				>
-					<!-- <option value="14_frames_with_svd">14_frames_with_svd</option>
-					<option value="25_frames_with_svd_xt">25_frames_with_svd_xt</option> -->
+					<option value="14_frames_with_svd">14_frames_with_svd</option>
+					<option value="25_frames_with_svd_xt">25_frames_with_svd_xt</option>
 					<option value="runway-gen-3">runway-gen-3</option>
 				</select>
 			</div>
@@ -118,15 +122,6 @@
 		display: flex;
 		align-items: center;
 	}
-
-	.optionsButton {
-		height: 40px;
-		/* padding: 10px; */
-		border: none;
-		border-radius: 10px;
-		background: none;
-		box-sizing: border-box;
-	}
 	.loader {
 		width: 10px;
 		height: 10px;
@@ -139,10 +134,12 @@
 		aspect-ratio: 16 / 9;
 		/* margin-left: 5px; */
 		box-sizing: border-box;
-		border-radius: 5px;
+		border-radius: 10px;
 		margin-bottom: 5px;
 	}
 	.generatedVideoMockup img {
 		width: 100%;
+		height: 100%;
+		border-radius: 10px;
 	}
 </style>

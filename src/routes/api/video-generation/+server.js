@@ -28,12 +28,25 @@ export async function POST({ request, locals }) {
                 frames_per_second: 6,
             };
 
-            console.log(input); 
-            const [output] = await replicate.run("sunfjun/stable-video-diffusion:d68b6e09eedbac7a49e3d8644999d93579c386a083768235cabca88796d70d82", { input: input });
-            
+            console.log(input);
+            const output = await replicate.run("sunfjun/stable-video-diffusion:d68b6e09eedbac7a49e3d8644999d93579c386a083768235cabca88796d70d82", { input: input });
+
+            const videoUrl = output.url().href;
+            const videoResponse = await fetch(videoUrl);
+            const arrayBuffer = await videoResponse.arrayBuffer();
+            const videoBlob = new Blob([arrayBuffer], { type: 'video/mp4' });
+            const formData = new FormData();
+            formData.append("generatedVideos", videoBlob, `${query.model}.mp4`);
+            const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+            const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+            const generatedVideoFileName = record.generatedVideos[record.generatedVideos.length - 1];
+            const generatedVideoFileUrl = await locals.pb.files.getUrl(record, generatedVideoFileName, {
+                //'thumb': '100x250'
+            });
 
             response = {
-                videoUrl: output.url()
+                videoUrl: generatedVideoFileUrl
             }
 
 
@@ -62,9 +75,23 @@ export async function POST({ request, locals }) {
 
             console.log('Task complete:', task);
 
+            const videoUrl = task.output[0]
+            const videoResponse = await fetch(videoUrl);
+            const arrayBuffer = await videoResponse.arrayBuffer();
+            const videoBlob = new Blob([arrayBuffer], { type: 'video/mp4' });
+            const formData = new FormData();
+            formData.append("generatedVideos", videoBlob, `${query.model}.mp4`);
+            const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+            const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+            const generatedVideoFileName = record.generatedVideos[record.generatedVideos.length - 1];
+            const generatedVideoFileUrl = await locals.pb.files.getUrl(record, generatedVideoFileName, {
+                //'thumb': '100x250'
+            });
+
 
             response = {
-                videoUrl: task.output[0]
+                videoUrl: generatedVideoFileUrl
             }
 
         }

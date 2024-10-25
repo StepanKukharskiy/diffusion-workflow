@@ -75,7 +75,9 @@
 </script>
 
 <div class="elementContainer">
-	<div class="colorLine" style="background: #D6C4FF;"></div>
+	<div class="colorLine" style="background: #D6C4FF;">
+		<h3 style='color: hsl({$textColor})'>Image Input</h3>
+	</div>
 	<button
 		class="dropArea"
 		style="border: 1px solid hsla({$textColor}, 20%); color: hsl({$textColor});"
@@ -140,7 +142,7 @@
 		/* aspect-ratio: 16 / 9; */
 		resize: none;
 		border-radius: 10px;
-		margin-top: 10px;
+		margin-top: 5px;
 		padding: 0;
 		box-sizing: border-box;
 		background: none;
@@ -150,33 +152,11 @@
 		justify-content: center;
 		align-items: center;
 		overflow-y: auto;
+		margin-bottom: 10px;
 	}
 	.controlsMenu {
 		display: flex;
 		align-items: center;
-	}
-	.optionsButton {
-		position: relative;
-		align-self: center;
-		max-width: 300px;
-		/* width: 120px; */
-		height: 40px;
-		background: #1a1a1a20;
-		color: #1a1a1a;
-		border: none;
-		border-radius: 10px;
-		padding: 10px;
-		margin: 5px 10px 0 0;
-		cursor: pointer;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	.optionsButton:hover {
-		background: #1a1a1a30;
-	}
-	button {
-		padding: 0;
 	}
 	.dropArea img {
 		width: 100%;
