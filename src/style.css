@@ -52,7 +52,10 @@ img, video {
     border-radius: 10px;
     margin-bottom: 5px;
 }
-
+.controlsMenu {
+    display: flex;
+    align-items: center;
+}
 .generationControlsButton {
     align-self: center;
     max-width: 300px;

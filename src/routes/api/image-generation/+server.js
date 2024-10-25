@@ -57,9 +57,27 @@ export async function POST({ request, locals, params }) {
                 console.log(input)
                 output = await replicate.run("lucataco/sdxl-controlnet:06d6fae3b75ab68a28cd2900afa6033166910dd09fd9751047043a5bbb4c184b", { input });
                 // const output = await replicate.run("xlabs-ai/flux-dev-controlnet:f2c31c31d81278a91b2447a304dae654c64a5d5a70340fba811bb1cbd41019a2", { input });
-                console.log(output)
+                console.log(output.url())
+                const imageUrl = output.url().href;
+                const imageResponse = await fetch(imageUrl);
+                const arrayBuffer = await imageResponse.arrayBuffer();
+                const imageBlob = new Blob([arrayBuffer], { type: 'image/webp' });
+
+                const formData = new FormData();
+                formData.append("generatedImages", imageBlob, `${query.model}.webp`);
+                console.log(formData)
+                const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+                const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+                const generatedImageFileName = record.generatedImages[record.generatedImages.length - 1];
+                const generatedImageFileUrl = await locals.pb.files.getUrl(record, generatedImageFileName, {
+                    //'thumb': '100x250'
+                });
+                //console.log(imageBuffer)
+
+                console.log(response); // Log the response for debugging
                 response = {
-                    imageUrl: output
+                    imageUrl: generatedImageFileUrl
                 }
             } else if (query.model === 'sdxl-controlnet-depth') {
                 const input = {
@@ -142,9 +160,27 @@ export async function POST({ request, locals, params }) {
 
                 console.log(input)
                 const output = await replicate.run("zsxkib/flux-dev-inpainting:ca8350ff748d56b3ebbd5a12bd3436c2214262a4ff8619de9890ecc41751a008", { input });
-                console.log(output)
+                const dataUri = output.url().href; // Assuming output is the data URI
+                const base64Data = dataUri.split(',')[1];
+                const imageBuffer = Buffer.from(base64Data, 'base64');
+                console.log(imageBuffer)
+                const imageBlob = new Blob([imageBuffer], { type: 'image/webp' });
+
+                const formData = new FormData();
+                formData.append("generatedImages", imageBlob, `${query.model}.webp`);
+                console.log(formData)
+                const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+                const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+                const generatedImageFileName = record.generatedImages[record.generatedImages.length - 1];
+                const generatedImageFileUrl = await locals.pb.files.getUrl(record, generatedImageFileName, {
+                    //'thumb': '100x250'
+                });
+                //console.log(imageBuffer)
+
+                console.log(response); // Log the response for debugging
                 response = {
-                    imageUrl: output[0]
+                    imageUrl: generatedImageFileUrl
                 }
             } else if (query.model === 'stable-diffusion-3') {
                 const input = {
@@ -154,8 +190,27 @@ export async function POST({ request, locals, params }) {
 
                 const [output] = await replicate.run("stability-ai/stable-diffusion-3", { input });
 
+                const dataUri = output.url().href; // Assuming output is the data URI
+                const base64Data = dataUri.split(',')[1];
+                const imageBuffer = Buffer.from(base64Data, 'base64');
+                console.log(imageBuffer)
+                const imageBlob = new Blob([imageBuffer], { type: 'image/webp' });
+
+                const formData = new FormData();
+                formData.append("generatedImages", imageBlob, `${query.model}.webp`);
+                console.log(formData)
+                const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+                const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+                const generatedImageFileName = record.generatedImages[record.generatedImages.length - 1];
+                const generatedImageFileUrl = await locals.pb.files.getUrl(record, generatedImageFileName, {
+                    //'thumb': '100x250'
+                });
+                //console.log(imageBuffer)
+
+                console.log(response); // Log the response for debugging
                 response = {
-                    imageUrl: output.url()
+                    imageUrl: generatedImageFileUrl
                 }
             } else if (query.model === 'flux-schnell') {
                 const input = {

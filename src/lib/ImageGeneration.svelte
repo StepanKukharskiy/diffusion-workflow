@@ -3,9 +3,9 @@
 	import { page } from '$app/stores';
 
 	let generatedImage = $state(),
-		modelOption = $state('flux-schnell'),
 		isGeneratingImage = $state(false),
 		{ refImageUrl = '', maskImageUrl = '', prompt = '' } = $props(),
+		modelOption = $state(refImageUrl ? 'sdxl-controlnet-canny' : 'flux-schnell'),
 		generatedImageUrl = $state(''),
 		isSettingsVisible = $state(false);
 
@@ -63,6 +63,12 @@
 		{:else}
 			<div class="generatedImageMockup" style="border: 1px solid hsla({$textColor}, 20%);"></div>
 		{/if}
+		{#if refImageUrl != ''}
+		<div style='margin-bottom: 10px;'>
+			<p>Using this image</p>
+			<img src={refImageUrl} alt="data for generation" width="50" />
+		</div>
+		{/if}
 		{#if isGeneratingImage}
 			<div style="display: flex; align-items: center;">
 				<span class="warning"></span>
@@ -78,14 +84,21 @@
 					style="color: hsl({$textColor}); background: hsla({$textColor}, 20%);"
 					bind:value={modelOption}
 				>
-					<option value="sdxl-controlnet-canny">sdxl-controlnet-canny</option>
-					<option value="sdxl-controlnet-depth">sdxl-controlnet-depth</option>
-					<option value="sdxl-controlnet-seg">sdxl-controlnet-seg</option>
-					<option value="flux-dev-controlnet-canny">flux-dev-controlnet-canny</option>
-					<option value="flux-dev-controlnet-depth">flux-dev-controlnet-depth</option>
-					<option value="flux-dev-inpaint">flux-dev-inpaint</option>
+					{#if refImageUrl === '' && maskImageUrl === ''}
 					<option value="stable-diffusion-3">stable-diffusion-3</option>
 					<option value="flux-schnell">flux-schnell</option>
+					{:else if refImageUrl != '' && maskImageUrl === ''}
+					<option value="sdxl-controlnet-canny">sdxl-controlnet-canny</option>
+					<!-- <option value="sdxl-controlnet-depth">sdxl-controlnet-depth</option>
+					<option value="sdxl-controlnet-seg">sdxl-controlnet-seg</option>
+					<option value="flux-dev-controlnet-canny">flux-dev-controlnet-canny</option>
+					<option value="flux-dev-controlnet-depth">flux-dev-controlnet-depth</option> -->
+					{:else if maskImageUrl != ''}
+					<option value="flux-dev-inpaint">flux-dev-inpaint</option>
+					{/if}
+					
+					
+					
 
 					<!-- <option value='mistral-7B-Instruct-v0.1'>mistral-7B-Instruct-v0.1</option> -->
 					<!-- <option value='Qwen2-72B-Instruct'>Qwen2-72B-Instruct</option> -->
@@ -94,7 +107,7 @@
 			<textarea
 				bind:value={prompt}
 				style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor}); margin: 0 0 5px 0;"
-				>{prompt}</textarea
+				placeholder="Type in a descripiton here">{prompt}</textarea
 			>
 			{#if generatedImageUrl === ''}
 				<div style="display: flex; align-items: center;">
@@ -127,6 +140,14 @@
 				>
 					Discuss
 				</button>
+				<button
+					class="optionsButton"
+					disabled={generatedImageUrl === '' ? true : false}
+					onclick={async () => {
+						addElement($elements, 'imageGeneration', generatedImageUrl);
+						$elements = $elements;
+					}}>New Image</button
+				>
 				<button
 					class="optionsButton"
 					disabled={generatedImageUrl === '' ? true : false}

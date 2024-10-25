@@ -5,6 +5,7 @@
 	import ImageInput from '$lib/ImageInput.svelte';
 	import VideoGeneration from '$lib/VideoGeneration.svelte';
 	import ImageGeneration from '$lib/ImageGeneration.svelte';
+	import Sketch2D from '$lib/Sketch2D.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -45,6 +46,8 @@
 			<VideoGeneration refImageUrl={element.imageUrl}/>
 		{:else if element.type === 'imageGeneration'}
 			<ImageGeneration refImageUrl={element.imageUrl} maskImageUrl={element.maskImageUrl} prompt = {element.prompt}/>
+		{:else if element.type==='sketch'}
+		<Sketch2D />
 		{/if}
 	{/each}
 
@@ -81,16 +84,16 @@
 				scrollToCreateButton();
 			}}>image</button
 		>
-		<!-- <button
+		<button
 			class="createOptionsMenu"
 			style="color: hsl({$textColor});"
-			on:click={() => {
+			onclick={() => {
 				isCreateOptionsVisible = false;
-				addElement($elements, 'video');
+				addElement($elements, 'sketch');
 				$elements = $elements;
 				scrollToCreateButton();
-			}}>video</button
-		> -->
+			}}>sketch</button
+		>
 	{/if}
 </div>
 

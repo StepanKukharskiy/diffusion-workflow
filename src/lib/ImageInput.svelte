@@ -154,10 +154,7 @@
 		overflow-y: auto;
 		margin-bottom: 10px;
 	}
-	.controlsMenu {
-		display: flex;
-		align-items: center;
-	}
+	
 	.dropArea img {
 		width: 100%;
 	}
