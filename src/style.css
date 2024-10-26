@@ -28,9 +28,10 @@ summary::after {
     font-weight: 300;
     margin-right: 0.5em;
     margin-left: auto;
-    /* transition: transform 0.3s;
-    transform-origin: center;  */
 }
+summary:focus {
+    outline: none;
+  }
 
 details[open] > summary::after {
     content: 'close'; /* Change marker when open */
@@ -48,6 +49,7 @@ textarea {
     padding: 5px;
     box-sizing: border-box;
     font-size: 1rem;
+    font-weight: 300;
     margin-top: 5px;
 }
 img, video {
@@ -122,6 +124,7 @@ img, video {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-weight: 300;
 }
 .optionsButton:hover {
     background: #1a1a1a30;
@@ -138,6 +141,7 @@ img, video {
     border-radius: 10px;
     background: none;
     box-sizing: border-box;
+    font-weight: 300;
 }
 
 .warning{
