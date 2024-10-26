@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { textColor, bgColor, elements } from './store';
 	import { page } from '$app/stores';
+	import { slide } from 'svelte/transition';
 
 	let generatedImage = $state(),
 		isGeneratingImage = $state(false),
@@ -51,117 +52,120 @@
 <div class="elementContainer">
 	<details open>
 		<summary>
-	<div class="colorLine" style="background: #FFD7BE;"></div>
-		<h3 style='color: hsl({$textColor})'>Image Generation</h3>
-		{#if refImageUrl != ''}
-			<!-- <h3 style='margin-left: 10px;'>using this image</h3> -->
-			<img src={refImageUrl} alt="data for generation" width="30" style='margin-left: 10px;'/>
-		{/if}
-	</summary>
-
-	<div class="imageAndControlsContainer">
-		{#if generatedImageUrl}
-			<img
-				bind:this={generatedImage}
-				src={generatedImageUrl}
-				class="generatedImage"
-				alt="generated file"
-			/>
-		{:else}
-			<div class="generatedImageMockup" style="border: 1px solid hsla({$textColor}, 20%); margin-top: 5px;"></div>
-		{/if}
-		
-		{#if isGeneratingImage}
-			<div style="display: flex; align-items: center;">
-				<span class="warning"></span>
-				<p style="margin-right: 10px;">Generating image</p>
-				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-			</div>
-		{:else}
-			{#if isSettingsVisible}
-				<label for="model">Model</label>
-				<select
-					id="model"
-					name="model"
-					style="color: hsl({$textColor}); background: hsla({$textColor}, 20%);"
-					bind:value={modelOption}
-				>
-					{#if refImageUrl === '' && maskImageUrl === ''}
-					<option value="stable-diffusion-3">stable-diffusion-3</option>
-					<option value="flux-schnell">flux-schnell</option>
-					{:else if refImageUrl != '' && maskImageUrl === ''}
-					<option value="sdxl-controlnet-canny">sdxl-controlnet-canny</option>
-					<!-- <option value="sdxl-controlnet-depth">sdxl-controlnet-depth</option>
-					<option value="sdxl-controlnet-seg">sdxl-controlnet-seg</option>
-					<option value="flux-dev-controlnet-canny">flux-dev-controlnet-canny</option>
-					<option value="flux-dev-controlnet-depth">flux-dev-controlnet-depth</option> -->
-					{:else if maskImageUrl != ''}
-					<option value="flux-dev-inpaint">flux-dev-inpaint</option>
-					{/if}
-					
-					
-					
-
-					<!-- <option value='mistral-7B-Instruct-v0.1'>mistral-7B-Instruct-v0.1</option> -->
-					<!-- <option value='Qwen2-72B-Instruct'>Qwen2-72B-Instruct</option> -->
-				</select>
+			<div class="colorLine" style="background: #FFD7BE;"></div>
+			<h3 style="color: hsl({$textColor})">Image Generation</h3>
+			{#if refImageUrl != ''}
+				<!-- <h3 style='margin-left: 10px;'>using this image</h3> -->
+				<img src={refImageUrl} alt="data for generation" width="30" style="margin-left: 10px;" />
 			{/if}
-			<textarea
-				bind:value={prompt}
-				style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor}); margin: 0 0 5px 0;"
-				placeholder="Type in a descripiton here">{prompt}</textarea
-			>
-			{#if generatedImageUrl === ''}
-				<div style="display: flex; align-items: center;">
+		</summary>
+
+		<div class="imageAndControlsContainer">
+			{#if generatedImageUrl}
+				<img
+					bind:this={generatedImage}
+					src={generatedImageUrl}
+					class="generatedImage"
+					alt="generated file"
+				/>
+			{:else}
+				<div
+					class="generatedImageMockup"
+					style="border: 1px solid hsla({$textColor}, 20%); margin-top: 5px;"
+				></div>
+			{/if}
+
+			{#if isGeneratingImage}
+				<div style="display: flex; align-items: center;" transition:slide>
 					<span class="warning"></span>
-					<p>Please, generate an image to continue</p>
+					<p style="margin-right: 10px;">Generating image</p>
+					<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+				</div>
+			{:else}
+				{#if isSettingsVisible}
+					<div transition:slide style='margin-bottom: 10px;'>
+						<label for="model">Model</label>
+						<select
+							id="model"
+							name="model"
+							style="color: hsl({$textColor}); background: hsla({$textColor}, 20%);"
+							bind:value={modelOption}
+						>
+							{#if refImageUrl === '' && maskImageUrl === ''}
+								<option value="stable-diffusion-3">stable-diffusion-3</option>
+								<option value="flux-schnell">flux-schnell</option>
+							{:else if refImageUrl != '' && maskImageUrl === ''}
+								<option value="sdxl-controlnet-canny">sdxl-controlnet-canny</option>
+								<option value="sdxl-controlnet-depth">sdxl-controlnet-depth</option>
+								<option value="flux-dev-controlnet-depth">flux-dev-controlnet-depth</option>
+								<!-- <option value="sdxl-controlnet-seg">sdxl-controlnet-seg</option>
+					<option value="flux-dev-controlnet-canny">flux-dev-controlnet-canny</option>
+					 -->
+							{:else if maskImageUrl != ''}
+								<option value="flux-dev-inpaint">flux-dev-inpaint</option>
+							{/if}
+
+							<!-- <option value='mistral-7B-Instruct-v0.1'>mistral-7B-Instruct-v0.1</option> -->
+							<!-- <option value='Qwen2-72B-Instruct'>Qwen2-72B-Instruct</option> -->
+						</select>
+					</div>
+				{/if}
+				<textarea
+					bind:value={prompt}
+					style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor}); margin: 0 0 5px 0;"
+					placeholder="Type in a descripiton here">{prompt}</textarea
+				>
+				{#if generatedImageUrl === ''}
+					<div style="display: flex; align-items: center;" transition:slide>
+						<span class="warning"></span>
+						<p>Please, generate an image to continue</p>
+					</div>
+				{/if}
+				<div class="controlsMenu">
+					<button
+						class="generationControlsButton"
+						onclick={async () => {
+							isGeneratingImage = true;
+							const url = await generateImage();
+							console.log(url);
+						}}
+					>
+						{#if isGeneratingImage}
+							<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+						{:else}
+							Generate image
+						{/if}
+					</button>
+					<button
+						class="optionsButton"
+						disabled={generatedImageUrl === '' ? true : false}
+						onclick={() => {
+							addElement($elements, 'text', generatedImageUrl);
+							$elements = $elements;
+						}}
+					>
+						Discuss
+					</button>
+					<button
+						class="optionsButton"
+						disabled={generatedImageUrl === '' ? true : false}
+						onclick={async () => {
+							addElement($elements, 'imageGeneration', generatedImageUrl);
+							$elements = $elements;
+						}}>New Image</button
+					>
+					<button
+						class="optionsButton"
+						disabled={generatedImageUrl === '' ? true : false}
+						onclick={() => {
+							addElement($elements, 'video', generatedImageUrl);
+							$elements = $elements;
+						}}>New Video</button
+					>
+					<button class="settingsButton" onclick={toggleSettings}>Settings</button>
 				</div>
 			{/if}
-			<div class="controlsMenu">
-				<button
-					class="generationControlsButton"
-					onclick={async () => {
-						isGeneratingImage = true;
-						const url = await generateImage();
-						console.log(url);
-					}}
-				>
-					{#if isGeneratingImage}
-						<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-					{:else}
-						Generate image
-					{/if}
-				</button>
-				<button
-					class="optionsButton"
-					disabled={generatedImageUrl === '' ? true : false}
-					onclick={() => {
-						addElement($elements, 'text', generatedImageUrl);
-						$elements = $elements;
-					}}
-				>
-					Discuss
-				</button>
-				<button
-					class="optionsButton"
-					disabled={generatedImageUrl === '' ? true : false}
-					onclick={async () => {
-						addElement($elements, 'imageGeneration', generatedImageUrl);
-						$elements = $elements;
-					}}>New Image</button
-				>
-				<button
-					class="optionsButton"
-					disabled={generatedImageUrl === '' ? true : false}
-					onclick={() => {
-						addElement($elements, 'video', generatedImageUrl);
-						$elements = $elements;
-					}}>New Video</button
-				>
-				<button class="settingsButton" onclick={toggleSettings}>Settings</button>
-			</div>
-		{/if}
-	</div>
+		</div>
 	</details>
 </div>
 
@@ -212,7 +216,4 @@
 		display: flex;
 		align-items: center;
 	}
-	
-
-	
 </style>

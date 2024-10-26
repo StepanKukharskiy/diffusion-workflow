@@ -6,10 +6,11 @@
 	import VideoGeneration from '$lib/VideoGeneration.svelte';
 	import ImageGeneration from '$lib/ImageGeneration.svelte';
 	import Sketch2D from '$lib/Sketch2D.svelte';
+	import Sketch from '$lib/SketchPaper.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
-	let layout = $state('container-block')
+	let layout = $state('container-block');
 
 	function addElement(elements: any = [], type = 'text') {
 		elements.push({
@@ -23,39 +24,37 @@
 		createButton.scrollIntoView({ behavior: 'smooth' });
 	}
 
-	function setLayout(){
-		layout === 'container-block' ? layout = 'container-grid' : layout = 'container-block'
-		console.log(layout)
+	function setLayout() {
+		layout === 'container-block' ? (layout = 'container-grid') : (layout = 'container-block');
+		console.log(layout);
 	}
 </script>
 
-<div class='container'>
-<h1>Ideas Diffusion</h1>
+<div class="container">
+	<h1>Ideas Diffusion</h1>
 	<!-- <button onclick={setLayout}>display grid</button> -->
 
-<div class={layout}>
-	
-
-	<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
-	{#each $elements as element}
-		{#if element.type === 'text'}
-			<TextInput imageUrl={element.imageUrl} />
-		{:else if element.type === 'image'}
-			<ImageInput />
-		{:else if element.type === 'video'}
-			<VideoGeneration refImageUrl={element.imageUrl}/>
-		{:else if element.type === 'imageGeneration'}
-			<ImageGeneration refImageUrl={element.imageUrl} maskImageUrl={element.maskImageUrl} prompt = {element.prompt}/>
-		{:else if element.type==='sketch'}
-		<Sketch2D />
-		{/if}
-	{/each}
-
-	
-
-	
-</div>
-<button
+	<div class={layout}>
+		<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
+		{#each $elements as element}
+			{#if element.type === 'text'}
+				<TextInput imageUrl={element.imageUrl} />
+			{:else if element.type === 'image'}
+				<ImageInput />
+			{:else if element.type === 'video'}
+				<VideoGeneration refImageUrl={element.imageUrl} />
+			{:else if element.type === 'imageGeneration'}
+				<ImageGeneration
+					refImageUrl={element.imageUrl}
+					maskImageUrl={element.maskImageUrl}
+					prompt={element.prompt}
+				/>
+			{:else if element.type === 'sketch'}
+				<Sketch />
+			{/if}
+		{/each}
+	</div>
+	<button
 		bind:this={createButton}
 		style="background: hsl({$textColor}); color: hsl({$bgColor});"
 		class="createButton"
@@ -72,7 +71,7 @@
 				addElement($elements, 'text');
 				$elements = $elements;
 				scrollToCreateButton();
-			}}>text</button
+			}}>chat</button
 		>
 		<button
 			class="createOptionsMenu"
@@ -98,7 +97,8 @@
 </div>
 
 <style>
-	.container, .container-block {
+	.container,
+	.container-block {
 		max-width: 800px;
 		margin-left: auto;
 		margin-right: auto;
