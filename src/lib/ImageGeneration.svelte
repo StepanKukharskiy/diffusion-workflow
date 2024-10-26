@@ -49,9 +49,16 @@
 </script>
 
 <div class="elementContainer">
-	<div class="colorLine" style="background: #FFD7BE;">
+	<details open>
+		<summary>
+	<div class="colorLine" style="background: #FFD7BE;"></div>
 		<h3 style='color: hsl({$textColor})'>Image Generation</h3>
-	</div>
+		{#if refImageUrl != ''}
+			<!-- <h3 style='margin-left: 10px;'>using this image</h3> -->
+			<img src={refImageUrl} alt="data for generation" width="30" style='margin-left: 10px;'/>
+		{/if}
+	</summary>
+
 	<div class="imageAndControlsContainer">
 		{#if generatedImageUrl}
 			<img
@@ -61,14 +68,9 @@
 				alt="generated file"
 			/>
 		{:else}
-			<div class="generatedImageMockup" style="border: 1px solid hsla({$textColor}, 20%);"></div>
+			<div class="generatedImageMockup" style="border: 1px solid hsla({$textColor}, 20%); margin-top: 5px;"></div>
 		{/if}
-		{#if refImageUrl != ''}
-		<div style='margin-bottom: 10px;'>
-			<p>Using this image</p>
-			<img src={refImageUrl} alt="data for generation" width="50" />
-		</div>
-		{/if}
+		
 		{#if isGeneratingImage}
 			<div style="display: flex; align-items: center;">
 				<span class="warning"></span>
@@ -160,6 +162,7 @@
 			</div>
 		{/if}
 	</div>
+	</details>
 </div>
 
 <style>

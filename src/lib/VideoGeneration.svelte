@@ -38,9 +38,11 @@
 </script>
 
 <div class="elementContainer">
-	<div class="colorLine" style="background: #7CFFFB;">
+	<details open>
+		<summary>
+	<div class="colorLine" style="background: #7CFFFB;"></div>
 		<h3 style='color: hsl({$textColor})'>Video Generation</h3>
-	</div>
+		</summary>
 	<div class="imageAndControlsContainer">
 		{#if generatedVideoUrl}
 			<video controls class="generatedVideo">
@@ -48,7 +50,7 @@
 				<track kind="captions" />
 			</video>
 		{:else}
-			<div class="generatedVideoMockup" style="border: 1px solid hsla({$textColor}, 20%);">
+			<div class="generatedVideoMockup" style="border: 1px solid hsla({$textColor}, 20%); margin-top: 5px;">
 				<img src={refImageUrl} alt="initial data" />
 			</div>
 		{/if}
@@ -94,10 +96,12 @@
 					Generate video
 				{/if}
 			</button>
-			<button class="optionsButton" onclick={toggleSettings}>Settings</button>
+			<button class="settingsButton" onclick={toggleSettings}>Settings</button>
 		</div>
         {/if}
 	</div>
+	</details>
+
 </div>
 
 <style>

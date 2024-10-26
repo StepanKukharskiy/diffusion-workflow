@@ -12,8 +12,30 @@ h2, h3, h4 {
     font-weight: 300;
 }
 summary{
+    width: 100%;
+    min-height: 30px;
     display: flex;
+    align-items: center;
+    cursor: pointer;
 }
+summary::-webkit-details-marker {
+    display: none; /* Hide default marker in Safari */
+}
+
+summary::after {
+    align-self: center;
+    content: 'open'; /* Custom marker */
+    font-weight: 300;
+    margin-right: 0.5em;
+    margin-left: auto;
+    /* transition: transform 0.3s;
+    transform-origin: center;  */
+}
+
+details[open] > summary::after {
+    content: 'close'; /* Change marker when open */
+}
+
 button{
     font-size: 1rem;
     cursor: pointer;
@@ -50,12 +72,13 @@ img, video {
 
 .colorLine{
     width: fit-content;
-    min-width: 40px;
+    min-width: 30px;
+    height: 30px;
     border-radius: 2px;
     padding: 10px;
     border-radius: 10px;
-    margin-bottom: 5px;
     margin-right: 10px;
+    box-sizing: border-box;
 }
 .controlsMenu {
     display: flex;

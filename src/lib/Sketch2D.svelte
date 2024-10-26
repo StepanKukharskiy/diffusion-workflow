@@ -164,10 +164,13 @@
 </script>
 
 <div class="elementContainer">
-	<div class="colorLine" style="background: #FFCFF6;">
+	<details open>
+		<summary>
+	<div class="colorLine" style="background: #FFCFF6;"></div>
 		<h3 style='color: hsl({$textColor})'>Sketch</h3>
-	</div>
-	<div class="canvasAndControlsContainer">
+	
+	</summary>
+	<div class="canvasAndControlsContainer" style='margin-top: 10px'>
 		<div class="canvasContainer" style="border: 1px solid hsla({$textColor}, 20%);">
 			<P5wrapper {sketch} />
 		</div>
@@ -216,6 +219,7 @@
 			</div>
 		</div>
 	</div>
+	</details>
 </div>
 
 <style>

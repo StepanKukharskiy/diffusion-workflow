@@ -75,9 +75,11 @@
 </script>
 
 <div class="elementContainer">
-	<div class="colorLine" style="background: #D6C4FF;">
+	<details open>
+		<summary>
+	<div class="colorLine" style="background: #D6C4FF;"></div>
 		<h3 style='color: hsl({$textColor})'>Image Input</h3>
-	</div>
+	</summary>
 	<button
 		class="dropArea"
 		style="border: 1px solid hsla({$textColor}, 20%); color: hsl({$textColor});"
@@ -132,6 +134,7 @@
 			}}>New Video</button
 		>
 	</div>
+	</details>
 </div>
 
 <style>

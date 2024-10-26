@@ -105,8 +105,8 @@
 		<summary>
 			<div class="colorLine" style="background: #A1C9F290;"></div>
 			{#if imageUrl != ''}
-				<img src={imageUrl} alt="data for vision model" width="50" />
-				<h3 style="color: hsl({$textColor})">Image Discussion</h3>
+				<h3 style="margin-right: 10px; color: hsl({$textColor})">Image Discussion</h3>
+				<img src={imageUrl} alt="data for vision model" width="30" />
 			{:else}
 				<h3 style="color: hsl({$textColor})">Chat</h3>
 			{/if}
