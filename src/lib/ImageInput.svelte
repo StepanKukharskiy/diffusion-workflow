@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { textColor, bgColor, elements } from './store';
 	import { page } from '$app/stores';
+	import { slide } from 'svelte/transition';
 
 	let imageFile: any;
 	let fileInput: any;
@@ -77,63 +78,71 @@
 <div class="elementContainer">
 	<details open>
 		<summary>
-	<div class="colorLine" style="background: #D6C4FF;"></div>
-		<h3 style='color: hsl({$textColor})'>Image Input</h3>
-	</summary>
-	<button
-		class="dropArea"
-		style="border: 1px solid hsla({$textColor}, 20%); color: hsl({$textColor});"
-		aria-label="Image upload area"
-		ondrop={handleDrop}
-		ondragover={handleDragOver}
-		onclick={() => {
-			fileInput.click();
-		}}
-	>
-		{#if loadingImage}
-			<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-		{:else if imageUrl === ''}
-			Drag and drop an image here or click to upload
-		{:else}
-			<img src={imageUrl} alt="uploaded file" />
-		{/if}
-	</button>
-	<!-- You can add an input for file selection if needed -->
-	<input
-		type="file"
-		accept="image/*"
-		bind:this={fileInput}
-		onchange={handleFileInputChange}
-		style="display: none;"
-	/>
-
-	{#if imageUrl === ''}
-	<div style='display: flex; align-items: center;'>
-		<span class="warning"></span>
-		<p>Please, provide an image to continue</p>
-	</div>
-	{/if}
-
-	<div class="controlsMenu">
+			<div class="colorLine" style="background: #D6C4FF;"></div>
+			<h3 style="color: hsl({$textColor})">Image Input</h3>
+		</summary>
 		<button
-			class="optionsButton"
-			disabled={imageUrl === '' ? true : false}
+			class="dropArea"
+			style="border: 1px solid hsla({$textColor}, 20%); color: hsl({$textColor});"
+			aria-label="Image upload area"
+			ondrop={handleDrop}
+			ondragover={handleDragOver}
 			onclick={() => {
-				addElement($elements, 'text', imageUrl);
-				$elements = $elements;
+				fileInput.click();
 			}}
 		>
-			New Chat
+			{#if loadingImage}
+				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+			{:else if imageUrl === ''}
+				Drag and drop an image here or click to upload
+			{:else}
+				<img src={imageUrl} alt="uploaded file" />
+			{/if}
 		</button>
-		<button
-			class="optionsButton"
-			disabled={imageUrl === '' ? true : false}
-			onclick={() => {
-				addElement($elements, 'video', imageUrl);
-				$elements = $elements;
-			}}>New Video</button
-		>
-	</div>
+		<!-- You can add an input for file selection if needed -->
+		<input
+			type="file"
+			accept="image/*"
+			bind:this={fileInput}
+			onchange={handleFileInputChange}
+			style="display: none;"
+		/>
+
+		{#if imageUrl === ''}
+			<div style="display: flex; align-items: center;" transition:slide>
+				<span class="warning"></span>
+				<p>Please, provide an image to continue</p>
+			</div>
+		{/if}
+
+		<div class="controlsMenu">
+			<button
+				class="optionsButton"
+				disabled={imageUrl === '' ? true : false}
+				onclick={() => {
+					addElement($elements, 'text', imageUrl);
+					$elements = $elements;
+				}}
+			>
+				New Chat
+			</button>
+			<button
+				class="optionsButton"
+				disabled={imageUrl === '' ? true : false}
+				onclick={async () => {
+					addElement($elements, 'imageGeneration', imageUrl);
+					$elements = $elements;
+				}}>New Image</button
+			>
+			<button
+				class="optionsButton"
+				disabled={imageUrl === '' ? true : false}
+				onclick={() => {
+					addElement($elements, 'video', imageUrl);
+					$elements = $elements;
+				}}>New Video</button
+			>
+		</div>
 	</details>
 </div>
 
@@ -157,7 +166,7 @@
 		overflow-y: auto;
 		margin-bottom: 10px;
 	}
-	
+
 	.dropArea img {
 		width: 100%;
 	}
