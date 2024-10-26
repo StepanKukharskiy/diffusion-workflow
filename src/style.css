@@ -11,6 +11,9 @@ h2, h3, h4 {
     margin: 0;
     font-weight: 300;
 }
+summary{
+    display: flex;
+}
 button{
     font-size: 1rem;
     cursor: pointer;
@@ -47,10 +50,12 @@ img, video {
 
 .colorLine{
     width: fit-content;
+    min-width: 40px;
     border-radius: 2px;
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 5px;
+    margin-right: 10px;
 }
 .controlsMenu {
     display: flex;

@@ -78,15 +78,21 @@
 		console.log(isSettingsVisible);
 	}
 
-	function addElement(elements: any = [], type = 'text', imageUrl = '', maskImageUrl = '', prompt = '') {
+	function addElement(
+		elements: any = [],
+		type = 'text',
+		imageUrl = '',
+		maskImageUrl = '',
+		prompt = ''
+	) {
 		console.log(elements);
-		console.log(prompt)
+		console.log(prompt);
 		elements.push({
 			type: type,
 			systemPrompt: '',
 			query: '',
-			imageUrl: imageUrl, 
-			maskImageUrl: maskImageUrl, 
+			imageUrl: imageUrl,
+			maskImageUrl: maskImageUrl,
 			prompt: prompt
 		});
 
@@ -95,147 +101,141 @@
 </script>
 
 <div class="elementContainer">
-	<div class="colorLine" style="background: #A1C9F290;">
-		<h3 style='color: hsl({$textColor})'>Chat</h3>
-	</div>
-	<!-- <h3>Text</h3> -->
-	{#if imageUrl != ''}
-		<div>
-			<p>Discussing this image</p>
-			<img src={imageUrl} alt="data for vision model" width="50" />
-		</div>
-	{/if}
-	<div class="textAndControlsContainer">
-		<div class="generationControls">
-			<div class="item">
-				<!-- <label for="response">Response</label> -->
-				<!-- <textarea
-					readonly
-					bind:this={responseTextarea}
-					id="response"
-					style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 20%); color: hsl({$textColor})"
-				></textarea> -->
-				{#each answers as answer, i}
-					<!-- <p>Q:</p> -->
-					<p
-						style="background: hsla({$textColor}, 10%); padding: 10px; border-radius: 10px; box-sizing: border-box;"
-					>
-						{queries[i]}
-					</p>
-					<!-- <p>A:</p> -->
-					<StyledModelAnswer htmlContent={answer} />
-				{/each}
-				{#if !isGeneratingText}
-					<!-- <p>{responseText}</p> -->
-
-					<!-- <p>{responseText}</p> -->
-				{/if}
-			</div>
-
-			<div class="item">
-				<!-- <label for="query">Task, question, or prompt</label> -->
-				<textarea
-					bind:this={queryTextarea}
-					oninput={(e) => {
-						query = e.target.value;
-						updateTextareaHeight(queryTextarea);
-					}}
-					id="query"
-					style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor})"
-					placeholder={isFirstGeneration
-						? 'Add your task, question, or prompt here'
-						: 'Ask a follow-up question, add task or prompt'}
-				></textarea>
-			</div>
-			{#if isSettingsVisible === true}
-				<div class="item">
-					<label for="model">Model</label>
-					<select
-						id="model"
-						name="model"
-						style="color: hsl({$textColor}); background: hsla({$textColor}, 10%);"
-						bind:value={modelOption}
-						onchange={() => {
-							console.log(modelOption);
-						}}
-					>
-						<option value="llama3.1-8b">llama3.1-8b</option>
-						<option value="llama3.1-70b">llama3.1-70b</option>
-						<option value="llama3.1-405b">llama3.1-405b</option>
-						<option value="mistral-7B-Instruct-v0.1">mistral-7B-Instruct-v0.1</option>
-						<option value="mixtral-8x22B-Instruct-v0.1">mixtral-8x22B-Instruct-v0.1</option>
-						<option value="Qwen2-72B-Instruct">Qwen2-72B-Instruct</option>
-					</select>
-				</div>
-				<div class="item">
-					<label for="systemPrompt">System prompt</label>
-					<textarea
-						bind:this={systemPromptTextarea}
-						oninput={(e) => {
-							systemPrompt = e.target.value;
-							updateTextareaHeight(systemPromptTextarea);
-						}}
-						id="systemPrompt"
-						style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor})"
-						>{systemPrompt}</textarea
-					>
-				</div>
-			{/if}
-			{#if isGeneratingText}
-			<div style="display: flex; align-items: center;">
-				<span class="warning"></span>
-				<p style="margin-right: 10px;">Generating response</p>
-				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-			</div>
+	<details open>
+		<summary>
+			<div class="colorLine" style="background: #A1C9F290;"></div>
+			{#if imageUrl != ''}
+				<img src={imageUrl} alt="data for vision model" width="50" />
+				<h3 style="color: hsl({$textColor})">Image Discussion</h3>
 			{:else}
-			<div class="controlsMenu">
-				<button
-					class="generationControlsButton"
-					onclick={async () => {
-						isGeneratingText = true;
-						const response = await generateText({
-							model: modelOption,
-							systemPrompt: systemPrompt,
-							query: query
-						});
-						// console.log(response);
-						// responseText = response.generatedText;
-						// updateTextareaHeight(responseText);
-					}}
-				>
-					{#if isGeneratingText}
+				<h3 style="color: hsl({$textColor})">Chat</h3>
+			{/if}
+		</summary>
+		<div class="textAndControlsContainer">
+			<div class="generationControls">
+				<div class="item">
+					{#each answers as answer, i}
+						<!-- <p>Q:</p> -->
+						<p
+							style="background: hsla({$textColor}, 10%); padding: 10px; border-radius: 10px; box-sizing: border-box;"
+						>
+							{queries[i]}
+						</p>
+						<!-- <p>A:</p> -->
+						<StyledModelAnswer htmlContent={answer} />
+					{/each}
+				</div>
+
+				<div class="item">
+					<!-- <label for="query">Task, question, or prompt</label> -->
+					<textarea
+						bind:this={queryTextarea}
+						oninput={(e) => {
+							query = e.target.value;
+							updateTextareaHeight(queryTextarea);
+						}}
+						id="query"
+						style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor})"
+						placeholder={isFirstGeneration
+							? 'Add your task, question, or prompt here'
+							: 'Ask a follow-up question, add task or prompt'}
+					></textarea>
+				</div>
+				{#if isSettingsVisible === true}
+					<div class="item">
+						<label for="model">Model</label>
+						<select
+							id="model"
+							name="model"
+							style="color: hsl({$textColor}); background: hsla({$textColor}, 10%);"
+							bind:value={modelOption}
+							onchange={() => {
+								console.log(modelOption);
+							}}
+						>
+							<option value="llama3.1-8b">llama3.1-8b</option>
+							<option value="llama3.1-70b">llama3.1-70b</option>
+							<option value="llama3.1-405b">llama3.1-405b</option>
+							<option value="mistral-7B-Instruct-v0.1">mistral-7B-Instruct-v0.1</option>
+							<option value="mixtral-8x22B-Instruct-v0.1">mixtral-8x22B-Instruct-v0.1</option>
+							<option value="Qwen2-72B-Instruct">Qwen2-72B-Instruct</option>
+						</select>
+					</div>
+					<div class="item">
+						<label for="systemPrompt">System prompt</label>
+						<textarea
+							bind:this={systemPromptTextarea}
+							oninput={(e) => {
+								systemPrompt = e.target.value;
+								updateTextareaHeight(systemPromptTextarea);
+							}}
+							id="systemPrompt"
+							style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor})"
+							>{systemPrompt}</textarea
+						>
+					</div>
+				{/if}
+				{#if isGeneratingText}
+					<div style="display: flex; align-items: center;">
+						<span class="warning"></span>
+						<p style="margin-right: 10px;">Generating response</p>
 						<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-					{:else}
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-							<path
-								d="M2 2 l0 10 10 0 M2 2 l20 10 -20 10 0 -7"
-								stroke="hsl({$textColor})"
-								stroke-width="2"
-								fill="none"
-								stroke-linecap="round"
-							/>
-						</svg>
-					{/if}
-				</button>
-				<button
-					class="optionsButton"
-					onclick={() => {
-						
-						addElement($elements, 'imageGeneration', imageUrl, '', answers.length > 0 ? answers[answers.length -1] : query);
-						$elements = $elements;
-					}}>New Image</button
-				>
-				<button class="settingsButton" onclick={toggleSettings}>Settings</button>
-				<!-- <button
+					</div>
+				{:else}
+					<div class="controlsMenu">
+						<button
+							class="generationControlsButton"
+							onclick={async () => {
+								isGeneratingText = true;
+								const response = await generateText({
+									model: modelOption,
+									systemPrompt: systemPrompt,
+									query: query
+								});
+								// console.log(response);
+								// responseText = response.generatedText;
+								// updateTextareaHeight(responseText);
+							}}
+						>
+							{#if isGeneratingText}
+								<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+							{:else}
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+									<path
+										d="M2 2 l0 10 10 0 M2 2 l20 10 -20 10 0 -7"
+										stroke="hsl({$textColor})"
+										stroke-width="2"
+										fill="none"
+										stroke-linecap="round"
+									/>
+								</svg>
+							{/if}
+						</button>
+						<button
+							class="optionsButton"
+							onclick={() => {
+								addElement(
+									$elements,
+									'imageGeneration',
+									imageUrl,
+									'',
+									answers.length > 0 ? answers[answers.length - 1] : query
+								);
+								$elements = $elements;
+							}}>New Image</button
+						>
+						<button class="settingsButton" onclick={toggleSettings}>Settings</button>
+						<!-- <button
 					class="removeButton"
 					onclick={() => {}}
 				>
 					Remove
 				</button> -->
+					</div>
+				{/if}
 			</div>
-			{/if}
 		</div>
-	</div>
+	</details>
 </div>
 
 <style>
@@ -270,7 +270,7 @@
 		padding: 5px;
 		box-sizing: border-box;
 	}
-	
+
 	.controlsMenu {
 		display: flex;
 		align-items: center;
