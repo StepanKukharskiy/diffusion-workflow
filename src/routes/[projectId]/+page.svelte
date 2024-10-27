@@ -35,7 +35,6 @@
 
 <div class="container">
 	<h1>Ideas Diffusion</h1>
-	<CodeProject />
 	<!-- <button onclick={setLayout}>display grid</button> -->
 
 	<div class={layout}>
