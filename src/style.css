@@ -39,6 +39,7 @@ details[open] > summary::after {
 
 button{
     font-size: 1rem;
+    font-weight: 300;
     cursor: pointer;
 }
 textarea {

@@ -1,12 +1,15 @@
 <script lang="ts">
-	import { textColor, bgColor, elements } from '$lib/store';
+	import { textColor, bgColor, elements, filesLocalCopy } from '$lib/store';
 
 	import TextInput from '$lib/TextInput.svelte';
 	import ImageInput from '$lib/ImageInput.svelte';
 	import VideoGeneration from '$lib/VideoGeneration.svelte';
 	import ImageGeneration from '$lib/ImageGeneration.svelte';
-	import Sketch2D from '$lib/Sketch2D.svelte';
 	import Sketch from '$lib/SketchPaper.svelte';
+	import CodeEditorMonaco from '$lib/CodeEditorMonaco.svelte';
+	import CodeSnippetMonaco from '$lib/CodeSnippetMonaco.svelte';
+	import FilesPanel from '$lib/FilesPanel.svelte';
+	import CodeProject from '$lib/CodeProject.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -32,6 +35,7 @@
 
 <div class="container">
 	<h1>Ideas Diffusion</h1>
+	<CodeProject />
 	<!-- <button onclick={setLayout}>display grid</button> -->
 
 	<div class={layout}>
@@ -51,6 +55,8 @@
 				/>
 			{:else if element.type === 'sketch'}
 				<Sketch />
+			{:else if element.type === 'code'}
+				<CodeProject />
 			{/if}
 		{/each}
 	</div>
@@ -92,6 +98,16 @@
 				$elements = $elements;
 				scrollToCreateButton();
 			}}>sketch</button
+		>
+		<button
+			class="createOptionsMenu"
+			style="color: hsl({$textColor});"
+			onclick={() => {
+				isCreateOptionsVisible = false;
+				addElement($elements, 'code');
+				$elements = $elements;
+				scrollToCreateButton();
+			}}>code</button
 		>
 	{/if}
 </div>

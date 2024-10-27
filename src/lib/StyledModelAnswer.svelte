@@ -50,14 +50,16 @@
 		let name = '';
 		switch (language) {
 			case 'html':
-				name = 'index.html';
+				name = 'html';
 				break;
 			case 'css':
-				name = 'style.css';
+				name = 'css';
 				break;
 			case 'javascript':
-				name = 'script.js';
+				name = 'js';
 				break;
+			default:
+				name = 'html';
 		}
 		return name;
 	}

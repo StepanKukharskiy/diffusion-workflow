@@ -1,3 +1,15 @@
+import htmlSVG from '$lib/logos/html.svg'
+import cssSVG from '$lib/logos/css.svg'
+import jsSVG from '$lib/logos/js.svg'
+// import mdSVG from '$lib/logos/md.svg'
+import txtSVG from '$lib/logos/txt.svg'
+// import svelteSVG from '$lib/logos/svelte.svg'
+// import threejsSVG from '$lib/logos/threejs.svg'
+// import p5jsSVG from '$lib/logos/p5js.svg'
+// import brainjsSVG from '$lib/logos/brainjs.svg'
+// import glbSVG from '$lib/logos/glb.svg'
+// import arduinoSVG from '$lib/logos/arduino.svg'
+
 export function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = Math.random() * 16 | 0;
@@ -227,4 +239,62 @@ export function generateUUID() {
       imageUrl: ''
 		});
 	}
+
+  export const getFileLogoURL = (fileType:any) => {
+    let logoPath = htmlSVG
+    switch (fileType) {
+          case 'html':
+          logoPath = htmlSVG
+          break;
+  
+          case 'css':
+          logoPath = cssSVG
+          break;
+  
+          case 'js':
+          logoPath = jsSVG
+          break;
+  
+          case 'javascript':
+          logoPath = jsSVG
+          break;
+  
+          // case 'md':
+          // logoPath = mdSVG
+          // break;
+  
+          // case 'txt':
+          // logoPath = txtSVG
+          // break;
+  
+          // case 'svelte':
+          // logoPath = svelteSVG
+          // break;
+  
+          // case 'threejs':
+          // logoPath = threejsSVG
+          // break;
+  
+          // case 'p5js':
+          // logoPath = p5jsSVG
+          // break;
+  
+          // case 'brainjs':
+          // logoPath = brainjsSVG
+          // break;
+  
+          // case 'glb':
+          // logoPath = glbSVG
+          // break;
+  
+          // case 'ino':
+          // logoPath = arduinoSVG
+          // break;
+
+          default:
+          logoPath = txtSVG
+          break;
+      }
+    return logoPath
+  }
   
