@@ -212,8 +212,4 @@
 		height: fit-content;
 		margin-bottom: 10px;
 	}
-	.controlsMenu {
-		display: flex;
-		align-items: center;
-	}
 </style>

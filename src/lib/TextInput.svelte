@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { textColor, bgColor, elements } from '$lib/store';
 	import StyledModelAnswer from './StyledModelAnswer.svelte';
+	import { slide } from 'svelte/transition';
 
 	let { imageUrl = '' } = $props();
 
@@ -9,7 +10,7 @@
 		systemPromptTextarea = $state(),
 		systemPrompt = $state('You are a helpful assistant'),
 		queryTextarea: any,
-		query = '',
+		query = $state(''),
 		responseText = $state(),
 		modelOption = $state('llama3.1-70b'),
 		answers: any = $state([]),
@@ -138,8 +139,14 @@
 						style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor})"
 						placeholder={isFirstGeneration
 							? 'Add your task, question, or prompt here'
-							: 'Ask a follow-up question, add task or prompt'}
+							: 'Ask a follow-up question, add a task or a prompt'}
 					></textarea>
+					{#if query === ''}
+						<div style="display: flex; align-items: center;" transition:slide>
+							<span class="warning"></span>
+							<p>Please, provide a task, a question, or a prompt to continue</p>
+						</div>
+					{/if}
 				</div>
 				{#if isSettingsVisible === true}
 					<div class="item">
@@ -192,6 +199,7 @@
 									systemPrompt: systemPrompt,
 									query: query
 								});
+								updateTextareaHeight(queryTextarea);
 								// console.log(response);
 								// responseText = response.generatedText;
 								// updateTextareaHeight(responseText);
@@ -213,6 +221,7 @@
 						</button>
 						<button
 							class="optionsButton"
+							disabled = {query === '' ? true : false}
 							onclick={() => {
 								addElement(
 									$elements,
