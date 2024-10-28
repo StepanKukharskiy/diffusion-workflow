@@ -2,28 +2,32 @@
 	import { fade } from 'svelte/transition';
 	import {
 		filesLocalCopy,
-		fileToOpen,
-		editorState,
 		width,
 		height,
 		leftPanelWidthSetByUser,
 		bgColor,
 		textColor,
-		runCode
+		elements
 	} from '$lib/store';
 	import ProjectFileCard from '$lib/ProjectFileCard.svelte';
 	import CodeEditorMonaco from '$lib/CodeEditorMonaco.svelte';
+
 	// import JSZip from 'jszip';
 
-	let { files = [], projectName = '', panelWidth = $width * 0.2 + 'px' } = $props();
+	let { uuid, files = [], panelWidth = $width * 0.2 + 'px' } = $props();
+	let editorState = $state(false),
+		fileToOpen = $state('');
 
-	
+		console.log(`uuid from FilesPanel - ${uuid}`)
+
 	function runEditor(fileName = '') {
-		$editorState = !$editorState;
+		editorState = !editorState;
+		fileToOpen = fileName;
 	}
 
 	// let panelWidth = $state($width * 0.3 + 'px');
 	let panelState = $state(true);
+	let runCode = $state(true);
 	let button = $state(),
 		buttonText;
 
@@ -43,7 +47,14 @@
 		}
 	});
 
-    
+	function toggleRunCode() {
+		for (let element of $elements) {
+			if (element.uuid === uuid) {
+				element.run = !element.run;
+				runCode = element.run;
+			}
+		}
+	}
 
 	// var zip = new JSZip()
 
@@ -63,54 +74,62 @@
 	}
 </script>
 
-
-	<div
-		class="panel"
-		style="flex: 0 0 {panelWidth}px; height: 100%; z-index: 2; background: hsl({$bgColor}); border: 1px solid hsl({$textColor +
-			', 20%'})"
-	>
-
-		<!-- <div class='handle' on:pointerdown={()=>{setUserPanelSize = true}} on:pointerup={()=>{setUserPanelSize = false}} on:pointermove={updateUserPanelSize} on:pointerleave={()=>{setUserPanelSize = false}}></div> -->
-		<div class="contentContainer">
-			<div>
-				<h3 style="margin: 0; font-weight: 300; height: 50px;">{projectName}</h3>
-			</div>
-			<div class="filesAndEditorWrapper">
-				{#if $editorState}
-					<div style="height: calc(100% - 0px); background: none;">
-						<CodeEditorMonaco fileName={$fileToOpen} readOnly={false} editorText="Some code here" />
-					</div>
-				{:else}
-					<div class="filesContainer">
-						<p style="margin-top: 0">Click files to open</p>
-						{#each files as file, index}
-							<ProjectFileCard
-								name={file.fileName}
-								action={() => {
-									runEditor(file.fileName);
-								}}
-							/>
-						{/each}
-						<!-- <button class='downloadButton' on:click={downloadFiles} style='color: hsl({$textColor});'>Download files as .zip</button> -->
-					</div>
-				{/if}
-			</div>
-			<div class="bottomButtonsWrapper">
-				<!-- <div class='buttonWrapper' style='background: linear-gradient(hsl({$primaryColor}), hsl({$accentColor}))'>
+<div
+	class="panel"
+	style="flex: 0 0 {panelWidth}px; height: 100%; z-index: 2; background: hsl({$bgColor}); border: 1px solid hsl({$textColor +
+		', 20%'})"
+>
+	<!-- <div class='handle' on:pointerdown={()=>{setUserPanelSize = true}} on:pointerup={()=>{setUserPanelSize = false}} on:pointermove={updateUserPanelSize} on:pointerleave={()=>{setUserPanelSize = false}}></div> -->
+	<div class="contentContainer">
+		<div>
+			<!-- <h3 style="margin: 0; font-weight: 300; height: 30px;">{projectName}</h3> -->
+			{#if editorState}
+				<button
+					class="smallMenuButton"
+					onclick={() => {
+						editorState = false;
+					}}>files</button
+				>
+			{/if}
+		</div>
+		<div
+			class="filesAndEditorWrapper"
+			style="height: {editorState ? 'calc(100% - 70px)' : 'calc(100% - 47px)'}"
+		>
+			{#if editorState}
+				<div style="height: 100%; background: none;">
+					<CodeEditorMonaco
+						{uuid}
+						fileName={fileToOpen}
+						readOnly={false}
+						editorText="Some code here"
+					/>
+				</div>
+			{:else}
+				<div class="filesContainer">
+					<!-- <p style="margin-top: 0">Click files to open</p> -->
+					{#each files as file, index}
+						<ProjectFileCard
+							name={file.fileName}
+							action={() => {
+								runEditor(file.fileName);
+							}}
+						/>
+					{/each}
+					<!-- <button class='downloadButton' on:click={downloadFiles} style='color: hsl({$textColor});'>Download files as .zip</button> -->
+				</div>
+			{/if}
+		</div>
+		<div class="bottomButtonsWrapper">
+			<!-- <div class='buttonWrapper' style='background: linear-gradient(hsl({$primaryColor}), hsl({$accentColor}))'>
                     <button on:click={downloadFiles} style='background: hsl({$bgColor}); color: hsl({$textColor});'>Download</button>
                 </div> -->
-				<button
-					class="generationControlsButton"
-					style="display: flex; align-items: center; justify-content: center; width: 100px; height: 40px; background: hsla({$textColor}, 20%); color: hsl({$textColor}); margin-top: 10px; border: none;"
-					onclick={() => {
-						$runCode = !$runCode;
-						console.log($filesLocalCopy);
-					}}>{$runCode === false ? 'Run' : 'Stop'}</button
-				>
-			</div>
+			<button class="generationControlsButton" onclick={toggleRunCode}
+				>{runCode === false ? 'Run' : 'Stop'}</button
+			>
 		</div>
 	</div>
-
+</div>
 
 <style>
 	.panel {
@@ -127,17 +146,18 @@
 		/* margin: 10px; */
 		/* transition: all 0.25s; */
 	}
-	
+
 	.contentContainer {
 		width: 100%;
 		height: 100%;
 	}
 	.filesAndEditorWrapper {
-		height: calc(100% - 100px);
+		height: calc(100% - 75px);
 		overflow-y: scroll;
 	}
 	.filesContainer {
 		width: 100%;
+		height: calc(100% - 55px);
 	}
 
 	h3 {
@@ -147,5 +167,17 @@
 	.bottomButtonsWrapper {
 		width: 100%;
 		display: flex;
+	}
+	.smallMenuButton {
+		background: none;
+		border: none;
+		font-family: Roboto, sans-serif;
+		font-size: 1rem;
+		font-weight: 300;
+		margin: 0;
+		padding: 0 10px 5px 0px;
+	}
+	.smallMenuButton:hover {
+		text-decoration: underline;
 	}
 </style>

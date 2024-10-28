@@ -298,3 +298,46 @@ export function generateUUID() {
     return logoPath
   }
   
+
+  export let initialCodeFiles = [
+    {
+      fileName: 'index.html',
+      fileData: `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Hello world!</title>
+
+  <!-- import the webpage's stylesheet -->
+  <link rel="stylesheet" href="./style.css" />
+
+  <!-- import the webpage's javascript file -->
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <h2>
+    We can see only a short distance ahead, but we can see plenty there that
+    needs to be done.
+  </h2>
+  <p>Alan Turing, Computing Machinery and Intelligence</p>
+</body>
+</html>
+`
+    },
+    {
+      fileName: 'style.css',
+      fileData: `body{
+          background: red;
+      }`
+    },
+    {
+      fileName: 'script.js',
+      fileData: `console.log('hi')`
+    },
+    {
+      fileName: 'readme.md',
+      fileData: `console.log('hi')`
+    }
+  ]

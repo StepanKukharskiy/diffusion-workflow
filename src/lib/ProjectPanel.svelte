@@ -1,15 +1,25 @@
-<script lang='ts'>
-    import { width, height, filesLocalCopy, consoleMessages, textColor, runCode } from '$lib/store'
+<script lang="ts">
+	import {
+		elements,
+		consoleMessages,
+		textColor
+	} from '$lib/store';
 
-    let userSRCDoc = ''
+	let userSRCDoc = $state('');
+	let { uuid } = $props();
 
-    // for (let file of $filesLocalCopy){
-    //     console.log('file from ProjectPanel ' + file.fileData)
-    // }
+	// for (let file of $filesLocalCopy){
+	//     console.log('file from ProjectPanel ' + file.fileData)
+	// }
 
-    filesLocalCopy.subscribe((value) => {
-        // console.log('updated')
-        userSRCDoc = `<html>
+	console.log(`uuid from ProjectPanel: ${uuid}`)
+
+	$effect(() => {
+		console.log('updated');
+		console.log(`showing project with this: ${uuid}`)
+		for (let element of $elements) {
+			if (element.uuid === uuid && element.run) {
+				userSRCDoc = `<html>
             <body>${getFileContents('index.html')}</body>
             <style>${getFileContents('style.css')}</style>
             <script type='module'>
@@ -30,41 +40,55 @@
                 ${getFileContents('script.js')}
             <\/script>
                
-        </html>`
-    }) 
+        </html>`;
+			}
+		}
+	});
 
-    function getFileContents(fileToSearch = ''){
-        if($runCode === true){
-            for(let file of $filesLocalCopy){
-                if(file.fileName === fileToSearch){
-                    return file.fileData   
-                }
-            }
-        }
-    }
+	function getFileContents(fileToSearch = '') {
+		for (let element of $elements) {
+			if (element.uuid === uuid) {
+				for (let file of element.files) {
+					//console.log(file);
+					if (file.fileName === fileToSearch) {
+						return file.fileData;
+					}
+				}
+			}
+		}
+	}
 
-    function handleMessage(response:any){
-        if(response.data && response.data.source === 'iframe'){
-           $consoleMessages = [...$consoleMessages, response.data.message];
-        }
-    }
-
+	function handleMessage(response: any) {
+		if (response.data && response.data.source === 'iframe') {
+			$consoleMessages = [...$consoleMessages, response.data.message];
+		}
+	}
 </script>
 
 <svelte:window onmessage={handleMessage} />
 
-<div style="width: 100%; height: 100%;" >
-    <iframe srcDoc="{userSRCDoc}" style="width: 100%; height: 100%; border-radius: 15px; box-sizing: border-box; border: 1px solid hsl({$textColor + ', 20%'});" allow="accelerometer; camera; encrypted-media; display-capture; geolocation; gyroscope; microphone; midi; clipboard-read; clipboard-write; web-share" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation allow-downloads allow-presentation" name="Kodiia workspace" loading="lazy" title="userDoc" class="userContainer" ></iframe>
+<div style="width: 100%; height: 100%;">
+	<iframe
+		srcDoc={userSRCDoc}
+		style="width: 100%; height: 100%; border-radius: 15px; box-sizing: border-box; border: 1px solid hsl({$textColor +
+			', 20%'});"
+		allow="accelerometer; camera; encrypted-media; display-capture; geolocation; gyroscope; microphone; midi; clipboard-read; clipboard-write; web-share"
+		sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation allow-downloads allow-presentation"
+		name="Kodiia workspace"
+		loading="lazy"
+		title="userDoc"
+		class="userContainer"
+	></iframe>
 </div>
 
 <style>
-    .userContainer {
-        background: none;
-        color: #1a1a1a;
-        z-index: 0;
-        border: none;
-        border-radius: 15px;
-        /* margin: 0 17px; */
-        /* box-shadow: 0px 0px 10px rgba(61, 149, 238, 0.5); */
-    }
+	.userContainer {
+		background: none;
+		color: #1a1a1a;
+		z-index: 0;
+		border: none;
+		border-radius: 15px;
+		/* margin: 0 17px; */
+		/* box-shadow: 0px 0px 10px rgba(61, 149, 238, 0.5); */
+	}
 </style>

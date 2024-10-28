@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { textColor, bgColor, elements, filesLocalCopy } from '$lib/store';
+	import { generateUUID, initialCodeFiles } from '$lib/utils';
 
 	import TextInput from '$lib/TextInput.svelte';
 	import ImageInput from '$lib/ImageInput.svelte';
@@ -12,12 +13,24 @@
 	let createButton: any;
 	let layout = $state('container-block');
 
+
+
 	function addElement(elements: any = [], type = 'text') {
-		elements.push({
-			type: type,
-			systemPrompt: '',
-			query: ''
-		});
+		if (type === 'code') {
+			elements.push({
+				uuid: generateUUID(),
+				type: type,
+				files: initialCodeFiles,
+				run: true
+			});
+		} else {
+			elements.push({
+				uuid: generateUUID(),
+				type: type,
+				systemPrompt: '',
+				query: ''
+			});
+		}
 	}
 
 	function scrollToCreateButton() {
@@ -31,8 +44,8 @@
 </script>
 
 <div class="container">
-	<h1>Ideas Diffusion</h1>
-	<CodeProject />
+	<h1>Make Conversations</h1>
+	<!-- <CodeProject /> -->
 	<!-- <button onclick={setLayout}>display grid</button> -->
 
 	<div class={layout}>
@@ -53,7 +66,7 @@
 			{:else if element.type === 'sketch'}
 				<Sketch />
 			{:else if element.type === 'code'}
-				<CodeProject />
+				<CodeProject files={element.files} uuid={element.uuid}/>
 			{/if}
 		{/each}
 	</div>

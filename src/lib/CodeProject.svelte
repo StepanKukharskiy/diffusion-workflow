@@ -1,49 +1,13 @@
 <script lang="ts">
-	import { width, height, textColor, bgColor, filesLocalCopy } from './store';
+	import { width, height, textColor, bgColor, elements } from './store';
 	import FilesPanel from './FilesPanel.svelte';
 	import ProjectPanel from './ProjectPanel.svelte';
 	import { page } from '$app/stores';
+	import { generateUUID } from './utils';
 
-	let {
-		files = [
-			{
-				fileName: 'index.html',
-				fileData: `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Hello world!</title>
+let { files, uuid } = $props()
 
-    <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="./style.css" />
-
-    <!-- import the webpage's javascript file -->
-    <script src="./script.js" defer></\script>
-  </head>
-  <body>
-    <h2>
-      We can see only a short distance ahead, but we can see plenty there that
-      needs to be done.
-    </h2>
-    <p>Alan Turing, Computing Machinery and Intelligence</p>
-  </body>
-</html>
-`
-			},
-			{
-				fileName: 'style.css',
-				fileData: `body{
-            background: red;
-        }`
-			},
-			{
-				fileName: 'script.js',
-				fileData: `console.log('hi')`
-			}
-		]
-	} = $props();
 
 	let container: any = $state(),
 		fullScreenMode = $state(false),
@@ -98,6 +62,28 @@
 		console.log(filesPanelDisplay);
 		filesPanelDisplay === 'block' ? (filesPanelDisplay = 'none') : (filesPanelDisplay = 'block');
 	}
+
+	function duplicate(elements: any) {
+		console.log(elements);
+		const currentFiles = getCurrentCodeProjectFiles()
+		const newFiles = currentFiles.map(file => ({ ...file })); // Create a deep copy of the files
+
+		elements.push({
+			uuid: generateUUID(),
+			type: 'code',
+			files: newFiles,
+			run: true
+		});
+
+		console.log(elements);
+	}
+	function getCurrentCodeProjectFiles(){
+		for (let element of $elements) {
+			if (element.uuid === uuid) {
+				return element.files
+			}
+		}
+	}
 </script>
 
 <svelte:window
@@ -117,11 +103,12 @@
 		<summary>
 			<div class="colorLine" style="background: #F7D2C4"></div>
 			<h3 style="color: hsl({$textColor})">Code</h3>
+			<!-- <p style='font-size: 0.5rem;'>{uuid}</p> -->
 		</summary>
-		<div class='projectContainer' style="margin: 10px 0;  min-height: {fullScreenMode ? 'auto' : '400px'};">
+		<div class='projectContainer' style="margin: 10px 0; height: {fullScreenMode ? 'calc(100% - 90px)' : '400px'}">
 			{#if filesPanelDisplay === 'block'}
 			<div
-				style="width: {$width > 400 ? `${filesPanelWidth}px` : 'calc(100% - 15px)'}; height: {$width > 400 ? '' : 'calc(100% - 110px)'}; padding-right: 5px; box-sizing: border-box; position: {$width > 400 ? 'relative' : 'absolute'}; z-index: 2;"
+				style="width: {$width > 700 ? `${filesPanelWidth}px` : 'calc(100% - 15px)'}; height: {$width > 700 ? '' : 'calc(100% - 110px)'}; padding-right: 5px; box-sizing: border-box; position: {$width > 700 ? 'relative' : 'absolute'}; z-index: 2;"
 			>
 				<button
 					bind:this={filesPanelButton}
@@ -146,7 +133,7 @@
 					>
 				</button>
 				
-					<FilesPanel {files} projectName="My App" panelWidth={filesPanelWidth} />
+					<FilesPanel {uuid} {files} panelWidth={filesPanelWidth} />
 				
 			</div>
 			{:else}
@@ -195,11 +182,12 @@
 						style="position: absolute; z-index: 2; top: 5; left: 5; background: #00000005; border-radius: 15px; width: calc(100% - 10px); height: calc(100% - 0px);"
 					></div>
 				{/if}
-				<ProjectPanel />
+				<ProjectPanel {uuid}/>
 			</div>
 		</div>
 		<div class="controlsMenu">
 			<button class="optionsButton" onclick={toggleFullScreen}> Full Screen </button>
+			<button class="optionsButton" onclick={()=>{duplicate($elements)}}> Duplicate </button>
 		</div>
 	</details>
 </div>
