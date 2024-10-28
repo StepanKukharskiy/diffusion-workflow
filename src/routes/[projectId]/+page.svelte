@@ -6,9 +6,6 @@
 	import VideoGeneration from '$lib/VideoGeneration.svelte';
 	import ImageGeneration from '$lib/ImageGeneration.svelte';
 	import Sketch from '$lib/SketchPaper.svelte';
-	import CodeEditorMonaco from '$lib/CodeEditorMonaco.svelte';
-	import CodeSnippetMonaco from '$lib/CodeSnippetMonaco.svelte';
-	import FilesPanel from '$lib/FilesPanel.svelte';
 	import CodeProject from '$lib/CodeProject.svelte';
 
 	let isCreateOptionsVisible = $state(false);
@@ -35,6 +32,7 @@
 
 <div class="container">
 	<h1>Ideas Diffusion</h1>
+	<CodeProject />
 	<!-- <button onclick={setLayout}>display grid</button> -->
 
 	<div class={layout}>

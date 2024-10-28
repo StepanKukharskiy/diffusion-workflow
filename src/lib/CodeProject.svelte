@@ -118,10 +118,10 @@
 			<div class="colorLine" style="background: #F7D2C4"></div>
 			<h3 style="color: hsl({$textColor})">Code</h3>
 		</summary>
-		<div style="display: flex; margin: 10px 0; height: calc(100% - 90px); min-height: {fullScreenMode ? 'auto' : '400px'};">
+		<div class='projectContainer' style="margin: 10px 0;  min-height: {fullScreenMode ? 'auto' : '400px'};">
 			{#if filesPanelDisplay === 'block'}
 			<div
-				style="width: {filesPanelWidth}px; padding-right: 5px; box-sizing: border-box; position: relative; z-index: 2;"
+				style="width: {$width > 400 ? `${filesPanelWidth}px` : 'calc(100% - 15px)'}; height: {$width > 400 ? '' : 'calc(100% - 110px)'}; padding-right: 5px; box-sizing: border-box; position: {$width > 400 ? 'relative' : 'absolute'}; z-index: 2;"
 			>
 				<button
 					bind:this={filesPanelButton}
@@ -186,7 +186,7 @@
 				></div>
 			{/if}
 
-			<div
+			<div class='projectDataContainer'
 				style="flex: 1; padding-left: 5px; box-sizing: border-box; margin-left: 0px; background: none; position: relative;"
 			>
 				{#if resizeState}
@@ -205,6 +205,9 @@
 </div>
 
 <style>
+	.projectContainer{
+		display: flex;
+	}
 	.controlsMenu {
 		display: flex;
 		align-items: center;
@@ -241,4 +244,10 @@
 
 		cursor: pointer;
 	}
+
+	/* @media (max-width: 400px) {
+		.projectContainer{
+			display: block;
+		}
+	} */
 </style>
