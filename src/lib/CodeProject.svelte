@@ -4,10 +4,9 @@
 	import ProjectPanel from './ProjectPanel.svelte';
 	import { page } from '$app/stores';
 	import { generateUUID } from './utils';
+	import { slide } from 'svelte/transition';
 
-
-let { files, uuid } = $props()
-
+	let { files, uuid } = $props();
 
 	let container: any = $state(),
 		fullScreenMode = $state(false),
@@ -25,7 +24,7 @@ let { files, uuid } = $props()
 		// console.log(event.offsetX);
 		// filesPanelWidth = event.clientX;
 		const containerRect = container.getBoundingClientRect();
-    filesPanelWidth = event.clientX - containerRect.left - 10;
+		filesPanelWidth = event.clientX - containerRect.left - 10;
 		if (filesPanelWidth < 200) {
 			filesPanelWidth = 200;
 			resizeState = false;
@@ -65,8 +64,8 @@ let { files, uuid } = $props()
 
 	function duplicate(elements: any) {
 		console.log(elements);
-		const currentFiles = getCurrentCodeProjectFiles()
-		const newFiles = currentFiles.map(file => ({ ...file })); // Create a deep copy of the files
+		const currentFiles = getCurrentCodeProjectFiles();
+		const newFiles = currentFiles.map((file) => ({ ...file })); // Create a deep copy of the files
 
 		elements.push({
 			uuid: generateUUID(),
@@ -77,13 +76,62 @@ let { files, uuid } = $props()
 
 		console.log(elements);
 	}
-	function getCurrentCodeProjectFiles(){
+	function getCurrentCodeProjectFiles() {
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
-				return element.files
+				return element.files;
 			}
 		}
 	}
+
+	let isTemplatesPanelVisible = $state(false);
+	let isLoadingTemplate = $state(false);
+	let templatesList = [
+		'static',
+		'p5.js',
+		'three.js',
+		'brain.js',
+		'CAcraft',
+		'GLB',
+		'FF2D',
+		'FF3D',
+		'flock2D'
+	];
+
+	function toggleTemplates() {
+		isTemplatesPanelVisible = !isTemplatesPanelVisible;
+	}
+
+	async function getTemplate(name = '') {
+		const message = await fetch(`/api/code-templates`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: name
+			})
+		});
+		const messageObject = await message.json();
+		console.log(messageObject);
+
+		return messageObject;
+	}
+
+	async function setTemplate(name = '') {
+		isLoadingTemplate = true;
+		isTemplatesPanelVisible = false;
+		const template = await getTemplate(name);
+		for (let element of $elements) {
+			if (element.uuid === uuid) {
+				element.files = template.files;
+			}
+		}
+		$elements = $elements;
+		isLoadingTemplate = false;
+	}
+
+	//setFiles();
 </script>
 
 <svelte:window
@@ -105,61 +153,89 @@ let { files, uuid } = $props()
 			<h3 style="color: hsl({$textColor})">Code</h3>
 			<!-- <p style='font-size: 0.5rem;'>{uuid}</p> -->
 		</summary>
-		<div class='projectContainer' style="margin: 10px 0; height: {fullScreenMode ? 'calc(100% - 90px)' : '400px'}">
-			{#if filesPanelDisplay === 'block'}
+		{#if isTemplatesPanelVisible}
 			<div
-				style="width: {$width > 700 ? `${filesPanelWidth}px` : 'calc(100% - 15px)'}; height: {$width > 700 ? '' : 'calc(100% - 110px)'}; padding-right: 5px; box-sizing: border-box; position: {$width > 700 ? 'relative' : 'absolute'}; z-index: 2;"
+				class="templatesContainer"
+				style="height: {fullScreenMode
+					? 'calc(100% - 90px)'
+					: '400px'}; border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor});"
 			>
-				<button
-					bind:this={filesPanelButton}
-					class="panelButton"
-					style="border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor});"
-					onclick={togglePanelState}
-				>
-					<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
-						><title>icon_quit</title><line
-							x1="0.5"
-							y1="0.5"
-							x2="18.52"
-							y2="18.52"
-							style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
-						/><line
-							x1="0.5"
-							y1="18.52"
-							x2="18.52"
-							y2="0.5"
-							style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
-						/></svg
+				{#each templatesList as template}
+					<button
+						class="templatesButton"
+						onclick={() => {
+							setTemplate(template);
+						}}
 					>
-				</button>
-				
-					<FilesPanel {uuid} {files} panelWidth={filesPanelWidth} />
-				
+						{template}
+					</button>
+				{/each}
 			</div>
-			{:else}
-			<div style='position: absolute; height: 100%; z-index:2;'>
-			<button
-					bind:this={filesPanelButton}
-					class="panelButton"
-					style="border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor}); left: -10px;"
-					onclick={togglePanelState}
+		{/if}
+		<div
+			class="projectContainer"
+			style="margin: 10px 0; height: {fullScreenMode ? 'calc(100% - 90px)' : '400px'}"
+		>
+			{#if filesPanelDisplay === 'block'}
+				<div
+					style="width: {$width > 700
+						? `${filesPanelWidth}px`
+						: 'calc(100% - 15px)'}; height: {$width > 700
+						? ''
+						: 'calc(100% - 110px)'}; padding-right: 5px; box-sizing: border-box; position: {$width >
+					700
+						? 'relative'
+						: 'absolute'}; z-index: 2;"
 				>
-					<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
-						><title>icon_quit</title><line
-							x1="0.5"
-							y1="0.5"
-							x2="18.52"
-							y2="9.52"
-							style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
-						/><line
-							x1="18.52"
-							y1="9.52"
-							x2="0.5"
-							y2="18.52"
-							style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
-						/></svg
+					<button
+						bind:this={filesPanelButton}
+						class="panelButton"
+						style="border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor});"
+						onclick={togglePanelState}
 					>
-				</button>
+						<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
+							><title>icon_quit</title><line
+								x1="0.5"
+								y1="0.5"
+								x2="18.52"
+								y2="18.52"
+								style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+							/><line
+								x1="0.5"
+								y1="18.52"
+								x2="18.52"
+								y2="0.5"
+								style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+							/></svg
+						>
+					</button>
+
+					<FilesPanel {uuid} {files} panelWidth={filesPanelWidth} />
+				</div>
+			{:else}
+				<div style="position: absolute; height: 100%; z-index:2;">
+					<button
+						bind:this={filesPanelButton}
+						class="panelButton"
+						style="border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor}); left: -10px;"
+						onclick={togglePanelState}
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
+							><title>icon_quit</title><line
+								x1="0.5"
+								y1="0.5"
+								x2="18.52"
+								y2="9.52"
+								style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+							/><line
+								x1="18.52"
+								y1="9.52"
+								x2="0.5"
+								y2="18.52"
+								style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+							/></svg
+						>
+					</button>
 				</div>
 			{/if}
 			{#if $width > 700 && filesPanelDisplay === 'block'}
@@ -173,7 +249,8 @@ let { files, uuid } = $props()
 				></div>
 			{/if}
 
-			<div class='projectDataContainer'
+			<div
+				class="projectDataContainer"
 				style="flex: 1; padding-left: 5px; box-sizing: border-box; margin-left: 0px; background: none; position: relative;"
 			>
 				{#if resizeState}
@@ -182,18 +259,73 @@ let { files, uuid } = $props()
 						style="position: absolute; z-index: 2; top: 5; left: 5; background: #00000005; border-radius: 15px; width: calc(100% - 10px); height: calc(100% - 0px);"
 					></div>
 				{/if}
-				<ProjectPanel {uuid}/>
+				<ProjectPanel {uuid} />
 			</div>
 		</div>
+
+		{#if isLoadingTemplate}
+			<div style="display: flex; align-items: center;" transition:slide>
+				<span class="warning"></span>
+				<p style="margin-right: 10px;">Loading template</p>
+				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+			</div>
+		{/if}
 		<div class="controlsMenu">
 			<button class="optionsButton" onclick={toggleFullScreen}> Full Screen </button>
-			<button class="optionsButton" onclick={()=>{duplicate($elements)}}> Duplicate </button>
+			<button class="optionsButton" onclick={toggleTemplates}> Templates </button>
+			<button
+				class="optionsButton"
+				onclick={() => {
+					duplicate($elements);
+				}}
+			>
+				Duplicate
+			</button>
 		</div>
 	</details>
 </div>
 
 <style>
-	.projectContainer{
+	.templatesContainer {
+		position: absolute;
+		z-index: 10;
+		width: calc(100% - 20px);
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+		gap: 10px;
+		align-items: center;
+		justify-items: center;
+		overflow-y: auto;
+		margin-top: 10px;
+		padding: 10px;
+		box-sizing: border-box;
+		border-radius: 10px;
+	}
+	.templatesButton {
+		width: fit-content;
+		position: relative;
+		align-self: center;
+		max-width: 300px;
+		/* width: 120px; */
+		height: 40px;
+		background: #1a1a1a20;
+		color: #1a1a1a;
+		border: none;
+		border-radius: 10px;
+		padding: 10px;
+		margin-right: 10px;
+		cursor: pointer;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-weight: 300;
+		box-sizing: border-box;
+	}
+	.templatesButton:hover {
+		background: #1a1a1a30;
+	}
+
+	.projectContainer {
 		display: flex;
 	}
 	.controlsMenu {

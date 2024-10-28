@@ -191,11 +191,7 @@
 		width: 100%;
 		height: 100%;
 	}
-	.loader {
-		width: 10px;
-		height: 10px;
-		margin: 0;
-	}
+	
 	.generatedImageMockup,
 	.generatedImage {
 		width: 100%;
