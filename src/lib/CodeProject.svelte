@@ -5,6 +5,7 @@
 	import { page } from '$app/stores';
 	import { generateUUID } from './utils';
 	import { slide } from 'svelte/transition';
+	import bg_image from '$lib/images/bg.webp'
 
 	let { files, uuid } = $props();
 
@@ -18,6 +19,7 @@
 
 	let filesPanelButton: any = $state();
 	let filesPanelDisplay = $state('block');
+
 
 	function resize(event: any) {
 		resizeCoverDiv.style.display = 'block';
@@ -162,6 +164,7 @@
 			>
 				{#each templatesList as template}
 					<button
+					style='background-image: url({bg_image});  background-repeat: no-repeat; background-position: {Math.floor(Math.random()*100)}% {Math.floor(Math.random()*100)}%'
 						class="templatesButton"
 						onclick={() => {
 							setTemplate(template);
@@ -262,14 +265,13 @@
 				<ProjectPanel {uuid} />
 			</div>
 		</div>
-
 		{#if isLoadingTemplate}
 			<div style="display: flex; align-items: center;" transition:slide>
 				<span class="warning"></span>
 				<p style="margin-right: 10px;">Loading template</p>
 				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 			</div>
-		{/if}
+		{:else}
 		<div class="controlsMenu">
 			<button class="optionsButton" onclick={toggleFullScreen}> Full Screen </button>
 			<button class="optionsButton" onclick={toggleTemplates}> Templates </button>
@@ -282,6 +284,7 @@
 				Duplicate
 			</button>
 		</div>
+		{/if}
 	</details>
 </div>
 
@@ -302,12 +305,12 @@
 		border-radius: 10px;
 	}
 	.templatesButton {
-		width: fit-content;
+		width: 100px;
+		height: 100px;
 		position: relative;
 		align-self: center;
 		max-width: 300px;
-		/* width: 120px; */
-		height: 40px;
+
 		background: #1a1a1a20;
 		color: #1a1a1a;
 		border: none;
@@ -322,7 +325,7 @@
 		box-sizing: border-box;
 	}
 	.templatesButton:hover {
-		background: #1a1a1a30;
+		background-color: #1a1a1a30;
 	}
 
 	.projectContainer {

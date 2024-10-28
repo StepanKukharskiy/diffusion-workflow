@@ -329,7 +329,8 @@ export function generateUUID() {
     {
       fileName: 'style.css',
       fileData: `body{
-          background: red;
+          height: 95vh;
+          background: linear-gradient(45deg, pink, beige);
       }`
     },
     {

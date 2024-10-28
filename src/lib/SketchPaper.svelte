@@ -300,9 +300,10 @@
 		display: block;
 		margin: 10px auto;
 		width: 100%;
+		border-radius: 10px;
 	}
 	input {
-		width: 40px;
+		width: 100%;
 		height: 40px;
 		padding: 5px;
 	}
