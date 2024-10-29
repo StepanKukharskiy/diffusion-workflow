@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 	import { generateUUID } from './utils';
 	import { slide } from 'svelte/transition';
-	import bg_image from '$lib/images/bg.webp'
+	import bg_image from '$lib/images/bg.webp';
 
 	let { files, uuid } = $props();
 
@@ -19,7 +19,7 @@
 
 	let filesPanelButton: any = $state();
 	let filesPanelDisplay = $state('block');
-
+	let isTakingScreenshot = $state(false);
 
 	function resize(event: any) {
 		resizeCoverDiv.style.display = 'block';
@@ -62,6 +62,17 @@
 	function togglePanelState() {
 		console.log(filesPanelDisplay);
 		filesPanelDisplay === 'block' ? (filesPanelDisplay = 'none') : (filesPanelDisplay = 'block');
+	}
+	function addElement(elements: any = [], type = 'text', imageUrl = '') {
+		console.log(elements);
+		elements.push({
+			type: type,
+			systemPrompt: '',
+			query: '',
+			imageUrl: imageUrl
+		});
+
+		console.log(elements);
 	}
 
 	function duplicate(elements: any) {
@@ -133,7 +144,88 @@
 		isLoadingTemplate = false;
 	}
 
-	//setFiles();
+	async function getCanvasScreenshotUrl(iframeId = '') {
+		const iframe = document.getElementById(iframeId); // Get the iframe by ID
+		if (iframe) {
+			const iframeWindow = iframe.contentWindow; // Get the iframe's window
+			const iframeDocument = iframeWindow.document;
+			console.log(iframeWindow);
+			console.log(iframeWindow.__THREE__);
+			console.log(iframeDocument);
+
+			// Check if THREE is defined in the iframe
+			if (iframeWindow.__THREE__) {
+				iframeWindow.renderThreeJsScene();
+				// // Find the existing script tag
+				// const scriptTags = iframeDocument.getElementsByTagName('script');
+				// let targetScript = null;
+
+				// for (let script of scriptTags) {
+				// 	if (script.type === 'module' && !script.src.includes('script.js')) {
+				// 		targetScript = script;
+				// 		console.log(targetScript)
+				// 		break;
+				// 	}
+				// }
+
+				// if (targetScript) {
+				// 	// Append the renderScene function to the existing script
+				// 	const renderFunction = `
+                //     function renderScene() {
+                //         renderer.render(scene, camera);
+                //     }
+
+                //     // Expose the render function to the parent window
+                //     window.renderThreeJsScene = renderScene;
+                // `;
+
+				// 	// Create a new script element with the combined content
+				// 	const newScript = iframeDocument.createElement('script');
+				// 	newScript.type = 'module';
+				// 	newScript.text = targetScript.text + renderFunction;
+
+				// 	// Replace the old script with the new one
+				// 	targetScript.parentNode.replaceChild(newScript, targetScript);
+				// 	console.log(iframeDocument)
+				// 	console.log(iframeWindow)
+
+				// 	iframeWindow.renderThreeJsScene();
+				// } else {
+				// 	console.error('Three.js is not loaded in the iframe.');
+				// }
+			}
+			const canvas = iframeDocument.querySelector('canvas'); // Select the canvas element
+			if (canvas) {
+				const dataURL = canvas.toDataURL('image/jpeg'); // Convert canvas to image
+				const blob = await fetch(dataURL).then((res) => res.blob());
+
+				const formData = new FormData();
+				formData.append('file', blob, 'canvas.jpeg');
+				formData.append('projectId', $page.params.projectId);
+				console.log($page.params.projectId);
+				console.log(formData);
+
+				const response = await fetch('/api/save-image', {
+					method: 'POST',
+					body: formData
+				});
+
+				if (!response.ok) {
+					isTakingScreenshot = false;
+					console.error('Upload failed:', response.statusText);
+				} else {
+					const result = await response.json();
+					console.log('Upload successful:', result);
+					isTakingScreenshot = false;
+					return result.url;
+				}
+			} else {
+				console.error(`No canvas found in the iframe with ID: ${iframeId}`);
+			}
+		} else {
+			console.error(`No iframe found with ID: ${iframeId}`);
+		}
+	}
 </script>
 
 <svelte:window
@@ -164,7 +256,9 @@
 			>
 				{#each templatesList as template}
 					<button
-					style='background-image: url({bg_image});  background-repeat: no-repeat; background-position: {Math.floor(Math.random()*100)}% {Math.floor(Math.random()*100)}%'
+						style="background-image: url({bg_image});  background-repeat: no-repeat; background-position: {Math.floor(
+							Math.random() * 100
+						)}% {Math.floor(Math.random() * 100)}%"
 						class="templatesButton"
 						onclick={() => {
 							setTemplate(template);
@@ -271,19 +365,35 @@
 				<p style="margin-right: 10px;">Loading template</p>
 				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 			</div>
+		{:else if isTakingScreenshot}
+			<div style="display: flex; align-items: center;" transition:slide>
+				<span class="warning"></span>
+				<p style="margin-right: 10px;">Taking screenshot</p>
+				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+			</div>
 		{:else}
-		<div class="controlsMenu">
-			<button class="optionsButton" onclick={toggleFullScreen}> Full Screen </button>
-			<button class="optionsButton" onclick={toggleTemplates}> Templates </button>
-			<button
-				class="optionsButton"
-				onclick={() => {
-					duplicate($elements);
-				}}
-			>
-				Duplicate
-			</button>
-		</div>
+			<div class="controlsMenu">
+				<button class="optionsButton" onclick={toggleFullScreen}> Full Screen </button>
+				<button class="optionsButton" onclick={toggleTemplates}> Templates </button>
+				<button
+					class="optionsButton"
+					onclick={() => {
+						duplicate($elements);
+					}}
+				>
+					Duplicate
+				</button>
+				<button
+					class="optionsButton"
+					onclick={async () => {
+						const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
+						addElement($elements, 'imageGeneration', screenshotUrl);
+						$elements = $elements;
+					}}
+				>
+					New Image
+				</button>
+			</div>
 		{/if}
 	</details>
 </div>

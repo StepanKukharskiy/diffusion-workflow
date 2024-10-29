@@ -1,22 +1,14 @@
 <script lang="ts">
-	import {
-		elements,
-		consoleMessages,
-		textColor
-	} from '$lib/store';
+	import { elements, consoleMessages, textColor } from '$lib/store';
 
 	let userSRCDoc = $state('');
 	let { uuid } = $props();
 
-	// for (let file of $filesLocalCopy){
-	//     console.log('file from ProjectPanel ' + file.fileData)
-	// }
-
-	console.log(`uuid from ProjectPanel: ${uuid}`)
+	console.log(`uuid from ProjectPanel: ${uuid}`);
 
 	$effect(() => {
 		console.log('updated');
-		console.log(`showing project with this: ${uuid}`)
+		console.log(`showing project with this: ${uuid}`);
 		for (let element of $elements) {
 			if (element.uuid === uuid && element.run) {
 				userSRCDoc = `<html>
@@ -37,6 +29,13 @@
                         message: {text: value, type: 'error'},
                     }, '*');
                 }
+					function renderScene() {
+                        renderer.render(scene, camera);
+                    }
+
+                    // Expose the render function to the parent window
+                    window.renderThreeJsScene = renderScene;
+					
                 ${getFileContents('script.js')}
             <\/script>
                
@@ -78,6 +77,7 @@
 		loading="lazy"
 		title="userDoc"
 		class="userContainer"
+		id="iframe-{uuid}"
 	></iframe>
 </div>
 

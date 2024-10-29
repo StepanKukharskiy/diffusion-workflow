@@ -238,6 +238,14 @@ export function generateUUID() {
 			query: '',
       imageUrl: ''
 		});
+    // if(type === 'imageGeneration'){
+    // elements.push({
+		// 	type: type,
+		// 	systemPrompt: '',
+		// 	query: '',
+		// 	imageUrl: imageUrl
+		// });
+    // }
 	}
 
   export const getFileLogoURL = (fileType:any) => {
