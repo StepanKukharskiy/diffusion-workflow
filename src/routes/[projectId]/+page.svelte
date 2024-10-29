@@ -52,7 +52,7 @@
 			{#if element.type === 'text'}
 				<TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid}/>
 			{:else if element.type === 'image'}
-				<ImageInput />
+				<ImageInput uuid={element.uuid}/>
 			{:else if element.type === 'video'}
 				<VideoGeneration refImageUrl={element.imageUrl} />
 			{:else if element.type === 'imageGeneration'}

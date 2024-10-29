@@ -7,13 +7,21 @@
 	let generatedImage = $state(),
 		isGeneratingImage = $state(false),
 		{ refImageUrl = '', maskImageUrl = '', prompt = '' } = $props(),
-		modelOption = $state(refImageUrl ? 'sdxl-controlnet-canny' : 'flux-schnell'),
+		modelOption = $state('flux-schnell'),
 		generatedImageUrl = $state(''),
 		isSettingsVisible = $state(false);
+
+		
 
 	onMount(() => {
 		if (prompt != '') {
 			generateImage();
+		}
+		if(refImageUrl != ''){
+			modelOption = 'sdxl-controlnet-canny'
+		}
+		if(maskImageUrl != ''){
+			modelOption = 'flux-dev-inpaint'
 		}
 	});
 
@@ -65,6 +73,10 @@
 			{#if refImageUrl != ''}
 				<!-- <h3 style='margin-left: 10px;'>using this image</h3> -->
 				<img src={refImageUrl} alt="data for generation" width="30" style="margin-left: 10px;" />
+			{/if}
+			{#if maskImageUrl != ''}
+				<!-- <h3 style='margin-left: 10px;'>using this image</h3> -->
+				<img src={maskImageUrl} alt="data for generation" width="30" style="margin-left: 10px;" />
 			{/if}
 		</summary>
 

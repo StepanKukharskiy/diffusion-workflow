@@ -213,10 +213,12 @@ export async function POST({ request, locals, params }) {
                 };
 
                 console.log(input)
-                const output = await replicate.run("zsxkib/flux-dev-inpainting:ca8350ff748d56b3ebbd5a12bd3436c2214262a4ff8619de9890ecc41751a008", { input });
-                const dataUri = output.url().href; // Assuming output is the data URI
-                const base64Data = dataUri.split(',')[1];
-                const imageBuffer = Buffer.from(base64Data, 'base64');
+                const [output] = await replicate.run("zsxkib/flux-dev-inpainting:ca8350ff748d56b3ebbd5a12bd3436c2214262a4ff8619de9890ecc41751a008", { input });
+                console.log(output)
+                console.log(output.url())
+                const imageUrl = output.url().href;
+                const imageResponse = await fetch(imageUrl);
+                const imageBuffer = await imageResponse.arrayBuffer();
                 console.log(imageBuffer)
                 const imageBlob = new Blob([imageBuffer], { type: 'image/webp' });
 
@@ -232,7 +234,7 @@ export async function POST({ request, locals, params }) {
                 });
                 //console.log(imageBuffer)
 
-                console.log(response); // Log the response for debugging
+                //console.log(response); // Log the response for debugging
                 response = {
                     imageUrl: generatedImageFileUrl
                 }
@@ -264,7 +266,7 @@ export async function POST({ request, locals, params }) {
                 });
                 //console.log(imageBuffer)
 
-                console.log(response); // Log the response for debugging
+                //console.log(response); // Log the response for debugging
                 response = {
                     imageUrl: generatedImageFileUrl
                 }
