@@ -3,8 +3,9 @@
 	import StyledModelAnswer from './StyledModelAnswer.svelte';
 	import { slide } from 'svelte/transition';
 
-	let { imageUrl = '' } = $props();
+	let { imageUrl = '', codeProjectUuid = '' } = $props();
 
+	console.log(imageUrl)
 	let isGeneratingText = $state(false),
 		isFirstGeneration = $state(true),
 		systemPromptTextarea = $state(),
@@ -17,6 +18,10 @@
 		queries: any = $state([]);
 	let isSettingsVisible = $state(false);
 
+	if(imageUrl != ''){
+		modelOption = 'llama3.2-11b'
+	}
+
 	function updateTextareaHeight(textarea: any) {
 		textarea.style.height = `auto`;
 		textarea.style.height = `${textarea.scrollHeight}px`;
@@ -25,13 +30,22 @@
 		}
 	}
 
+	function getCodeProjectFilesData(uuid = ''){
+		for(let element of $elements){
+			if(element.uuid === uuid){
+				return JSON.stringify(element.files)
+			}
+		}
+	}
+
 	async function generateText(data = { model: '', systemPrompt: '', query: '' }) {
 		queries.push(query);
 		console.log(data);
+		console.log(codeProjectUuid)
 		let message;
 		console.log(imageUrl);
-		if (imageUrl === '') {
-			message = await fetch(`/api/text-generation`, {
+		if (imageUrl != '') {
+			message = await fetch(`/api/image-vision`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -46,8 +60,24 @@
 			});
 
 			console.log(message);
+		} else if (codeProjectUuid != '') {
+			console.log(`this is code uuid: ${codeProjectUuid}`)
+			message = await fetch(`/api/text-generation`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					model: data.model,
+					systemPrompt: data.systemPrompt,
+					query: data.query + ` Here is my code: ${getCodeProjectFilesData(codeProjectUuid)}`,
+					previousAnswers: answers.join(' ')
+				})
+			});
+
+			console.log(message);
 		} else {
-			message = await fetch(`/api/image-vision`, {
+			message = await fetch(`/api/text-generation`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -108,6 +138,8 @@
 			{#if imageUrl != ''}
 				<h3 style="margin-right: 10px; color: hsl({$textColor})">Image Discussion</h3>
 				<img src={imageUrl} alt="data for vision model" width="30" />
+			{:else if codeProjectUuid != ''}
+				<h3 style="margin-right: 10px; color: hsl({$textColor})">Code Discussion</h3>
 			{:else}
 				<h3 style="color: hsl({$textColor})">Chat</h3>
 			{/if}

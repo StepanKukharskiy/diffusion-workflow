@@ -13,10 +13,6 @@
 	let createButton: any;
 	let layout = $state('container-block');
 
-	
-
-
-
 	function addElement(elements: any = [], type = 'text') {
 		if (type === 'code') {
 			elements.push({
@@ -46,7 +42,7 @@
 </script>
 
 <div class="container">
-	<h1>Make Conversations</h1>
+	<h1>New Conversation</h1>
 	<!-- <CodeProject /> -->
 	<!-- <button onclick={setLayout}>display grid</button> -->
 
@@ -54,7 +50,7 @@
 		<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
 		{#each $elements as element}
 			{#if element.type === 'text'}
-				<TextInput imageUrl={element.imageUrl} />
+				<TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid}/>
 			{:else if element.type === 'image'}
 				<ImageInput />
 			{:else if element.type === 'video'}
@@ -68,19 +64,13 @@
 			{:else if element.type === 'sketch'}
 				<Sketch />
 			{:else if element.type === 'code'}
-				<CodeProject files={element.files} uuid={element.uuid}/>
+				<CodeProject files={element.files} uuid={element.uuid} />
 			{/if}
 		{/each}
 	</div>
-	<button
-		bind:this={createButton}
-		style="background: hsl({$textColor}); color: hsl({$bgColor});"
-		class="createButton"
-		onclick={() => {
-			isCreateOptionsVisible = !isCreateOptionsVisible;
-		}}>Add</button
-	>
+
 	{#if isCreateOptionsVisible}
+	<div class='optionsContainer'>
 		<button
 			class="createOptionsMenu"
 			style="color: hsl({$textColor});"
@@ -121,18 +111,39 @@
 				scrollToCreateButton();
 			}}>code</button
 		>
+	</div>
+	{:else}
+		<button
+			bind:this={createButton}
+			style="background: hsl({$textColor}); color: hsl({$bgColor});"
+			class="createButton"
+			onclick={() => {
+				isCreateOptionsVisible = !isCreateOptionsVisible;
+				setTimeout(()=>{isCreateOptionsVisible = false;}, 10000)
+			}}>Add</button
+		>
 	{/if}
 </div>
 
 <style>
-	.container,
 	.container-block {
-		max-width: 800px;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		max-width: 1200px;
 		margin-left: auto;
 		margin-right: auto;
 	}
+	.container {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin-bottom: 100px;
+	}
 	.container-grid {
-		max-width: 800px;
+		max-width: 1200px;
 		margin-left: auto;
 		margin-right: auto;
 
@@ -144,6 +155,9 @@
 		box-sizing: border-box;
 		border: none;
 		border-radius: 10px;
+	}
+	.createOptionsContainer{
+		width: 100%;
 	}
 	.createOptionsMenu {
 		background: none;

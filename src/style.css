@@ -13,6 +13,9 @@ h2, h3, h4 {
     /* font-weight: 300; */
     font-family: 'Montserrat', sans-serif;
 }
+details{
+    width: 100%;
+}
 summary{
     width: 100%;
     min-height: 30px;
@@ -60,6 +63,7 @@ img, video {
 }
 
 .elementContainer {
+    width: 100%;
     background-color: #f9f9f9;
     position: relative;
     max-width: 800px;

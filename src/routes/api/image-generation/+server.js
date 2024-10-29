@@ -243,10 +243,12 @@ export async function POST({ request, locals, params }) {
                 };
 
                 const [output] = await replicate.run("stability-ai/stable-diffusion-3", { input });
-
-                const dataUri = output.url().href; // Assuming output is the data URI
-                const base64Data = dataUri.split(',')[1];
-                const imageBuffer = Buffer.from(base64Data, 'base64');
+                const imageUrl = output.url().href;
+                const imageResponse = await fetch(imageUrl);
+                const imageBuffer = await imageResponse.arrayBuffer();
+                // const dataUri = output.url().href; // Assuming output is the data URI
+                // const base64Data = dataUri.split(',')[1];
+                // const imageBuffer = Buffer.from(base64Data, 'base64');
                 console.log(imageBuffer)
                 const imageBlob = new Blob([imageBuffer], { type: 'image/webp' });
 
@@ -273,9 +275,13 @@ export async function POST({ request, locals, params }) {
 
                 const [output] = await replicate.run("black-forest-labs/flux-schnell", { input });
                 // const file = output.url();
-                const dataUri = output.url().href; // Assuming output is the data URI
-                const base64Data = dataUri.split(',')[1];
-                const imageBuffer = Buffer.from(base64Data, 'base64');
+                console.log(output.url())
+                const imageUrl = output.url().href;
+                const imageResponse = await fetch(imageUrl);
+                const imageBuffer = await imageResponse.arrayBuffer();
+                // const dataUri = output.url().href; // Assuming output is the data URI
+                // const base64Data = dataUri.split(',')[1];
+                // const imageBuffer = Buffer.from(base64Data, 'base64');
                 console.log(imageBuffer)
                 const imageBlob = new Blob([imageBuffer], { type: 'image/webp' });
 

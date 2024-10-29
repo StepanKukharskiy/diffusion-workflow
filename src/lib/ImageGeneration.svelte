@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { textColor, bgColor, elements } from './store';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 
 	let generatedImage = $state(),
@@ -10,7 +11,14 @@
 		generatedImageUrl = $state(''),
 		isSettingsVisible = $state(false);
 
+	onMount(() => {
+		if (prompt != '') {
+			generateImage();
+		}
+	});
+
 	async function generateImage() {
+		isGeneratingImage = true
 		const message = await fetch(`/api/image-generation`, {
 			method: 'POST',
 			headers: {
@@ -83,7 +91,7 @@
 				</div>
 			{:else}
 				{#if isSettingsVisible}
-					<div transition:slide style='margin-bottom: 10px;'>
+					<div transition:slide style="margin-bottom: 10px;">
 						<label for="model">Model</label>
 						<select
 							id="model"
@@ -125,7 +133,6 @@
 					<button
 						class="generationControlsButton"
 						onclick={async () => {
-							isGeneratingImage = true;
 							const url = await generateImage();
 							console.log(url);
 						}}
@@ -186,12 +193,12 @@
 	.imageAndControlsContainer {
 		display: flex;
 		flex-direction: column;
-		margin-top: 5px;
+		margin-top: 10px;
 		margin-bottom: 5px;
 		width: 100%;
 		height: 100%;
 	}
-	
+
 	.generatedImageMockup,
 	.generatedImage {
 		width: 100%;

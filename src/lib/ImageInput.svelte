@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { textColor, bgColor, elements } from './store';
+	
 	import { page } from '$app/stores';
 	import { slide } from 'svelte/transition';
 
@@ -124,7 +125,7 @@
 					$elements = $elements;
 				}}
 			>
-				New Chat
+				Discuss
 			</button>
 			<button
 				class="optionsButton"

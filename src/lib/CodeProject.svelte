@@ -3,11 +3,12 @@
 	import FilesPanel from './FilesPanel.svelte';
 	import ProjectPanel from './ProjectPanel.svelte';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import { generateUUID } from './utils';
 	import { slide } from 'svelte/transition';
 	import bg_image from '$lib/images/bg.webp';
 
-	let { files, uuid } = $props();
+	let { files, uuid = '' } = $props();
 
 	let container: any = $state(),
 		fullScreenMode = $state(false),
@@ -20,6 +21,12 @@
 	let filesPanelButton: any = $state();
 	let filesPanelDisplay = $state('block');
 	let isTakingScreenshot = $state(false);
+	let controlsMenu: any = $state();
+	let controlsMenuHeight = $state(100);
+
+	onMount(() => {
+		controlsMenuHeight = controlsMenu.offsetHeight;
+	});
 
 	function resize(event: any) {
 		resizeCoverDiv.style.display = 'block';
@@ -31,6 +38,7 @@
 			filesPanelWidth = 200;
 			resizeState = false;
 		}
+		controlsMenuHeight = controlsMenu.offsetHeight;
 	}
 
 	// Function to toggle settings visibility
@@ -63,14 +71,23 @@
 		console.log(filesPanelDisplay);
 		filesPanelDisplay === 'block' ? (filesPanelDisplay = 'none') : (filesPanelDisplay = 'block');
 	}
-	function addElement(elements: any = [], type = 'text', imageUrl = '') {
+	function addElement(elements: any = [], type = 'text', imageUrl = '', codeProjectUuid = '') {
 		console.log(elements);
-		elements.push({
-			type: type,
-			systemPrompt: '',
-			query: '',
-			imageUrl: imageUrl
-		});
+		if (type === 'imageGeneration') {
+			elements.push({
+				type: type,
+				systemPrompt: '',
+				query: '',
+				imageUrl: imageUrl
+			});
+		} else if (type === 'text') {
+			elements.push({
+				type: type,
+				systemPrompt: '',
+				query: '',
+				codeProjectUuid: codeProjectUuid
+			});
+		}
 
 		console.log(elements);
 	}
@@ -109,7 +126,8 @@
 		'FF2D',
 		'FF3D',
 		'flock2D'
-	];
+	],
+	isThereCanvasInIframe:any = $state(false);
 
 	function toggleTemplates() {
 		isTemplatesPanelVisible = !isTemplatesPanelVisible;
@@ -141,58 +159,30 @@
 			}
 		}
 		$elements = $elements;
+		isThereCanvasInIframe = getCanvasInIframe(`iframe-${uuid}`)
 		isLoadingTemplate = false;
 	}
 
-	async function getCanvasScreenshotUrl(iframeId = '') {
+	function getCanvasInIframe(iframeId = ''){
 		const iframe = document.getElementById(iframeId); // Get the iframe by ID
 		if (iframe) {
 			const iframeWindow = iframe.contentWindow; // Get the iframe's window
 			const iframeDocument = iframeWindow.document;
-			console.log(iframeWindow);
-			console.log(iframeWindow.__THREE__);
-			console.log(iframeDocument);
+			if(iframeDocument.querySelector('canvas') != undefined){
+				return true
+			}
+		}
+	}
 
+	async function getCanvasScreenshotUrl(iframeId = '') {
+		isTakingScreenshot = true;
+		const iframe = document.getElementById(iframeId); // Get the iframe by ID
+		if (iframe) {
+			const iframeWindow = iframe.contentWindow; // Get the iframe's window
+			const iframeDocument = iframeWindow.document;
 			// Check if THREE is defined in the iframe
 			if (iframeWindow.__THREE__) {
 				iframeWindow.renderThreeJsScene();
-				// // Find the existing script tag
-				// const scriptTags = iframeDocument.getElementsByTagName('script');
-				// let targetScript = null;
-
-				// for (let script of scriptTags) {
-				// 	if (script.type === 'module' && !script.src.includes('script.js')) {
-				// 		targetScript = script;
-				// 		console.log(targetScript)
-				// 		break;
-				// 	}
-				// }
-
-				// if (targetScript) {
-				// 	// Append the renderScene function to the existing script
-				// 	const renderFunction = `
-                //     function renderScene() {
-                //         renderer.render(scene, camera);
-                //     }
-
-                //     // Expose the render function to the parent window
-                //     window.renderThreeJsScene = renderScene;
-                // `;
-
-				// 	// Create a new script element with the combined content
-				// 	const newScript = iframeDocument.createElement('script');
-				// 	newScript.type = 'module';
-				// 	newScript.text = targetScript.text + renderFunction;
-
-				// 	// Replace the old script with the new one
-				// 	targetScript.parentNode.replaceChild(newScript, targetScript);
-				// 	console.log(iframeDocument)
-				// 	console.log(iframeWindow)
-
-				// 	iframeWindow.renderThreeJsScene();
-				// } else {
-				// 	console.error('Three.js is not loaded in the iframe.');
-				// }
 			}
 			const canvas = iframeDocument.querySelector('canvas'); // Select the canvas element
 			if (canvas) {
@@ -220,9 +210,11 @@
 					return result.url;
 				}
 			} else {
+				isTakingScreenshot = false;
 				console.error(`No canvas found in the iframe with ID: ${iframeId}`);
 			}
 		} else {
+			isTakingScreenshot = false;
 			console.error(`No iframe found with ID: ${iframeId}`);
 		}
 	}
@@ -233,10 +225,14 @@
 		if (resizeState) {
 			resize(e);
 		}
+		console.log(controlsMenu.offsetHeight);
 	}}
 	onpointerup={() => {
 		resizeState = false;
 		// resizeCoverDiv.style.display = 'none';
+	}}
+	onresize={() => {
+		controlsMenuHeight = controlsMenu.offsetHeight;
 	}}
 />
 
@@ -250,9 +246,9 @@
 		{#if isTemplatesPanelVisible}
 			<div
 				class="templatesContainer"
-				style="height: {fullScreenMode
-					? 'calc(100% - 90px)'
-					: '400px'}; border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor});"
+				style="height: {fullScreenMode ? 'calc(100% - 90px)' : '400px'}; 
+					border: 1px solid hsla({$textColor}, 20%); 
+					background: hsl({$bgColor});"
 			>
 				{#each templatesList as template}
 					<button
@@ -275,12 +271,13 @@
 		>
 			{#if filesPanelDisplay === 'block'}
 				<div
+					id="filesPanelContainer"
 					style="width: {$width > 700
 						? `${filesPanelWidth}px`
 						: 'calc(100% - 15px)'}; height: {$width > 700
 						? ''
-						: 'calc(100% - 110px)'}; padding-right: 5px; box-sizing: border-box; position: {$width >
-					700
+						: `calc(100% - ${controlsMenuHeight}px - 70px)`}; 
+						padding-right: 5px; box-sizing: border-box; position: {$width > 700
 						? 'relative'
 						: 'absolute'}; z-index: 2;"
 				>
@@ -372,7 +369,7 @@
 				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 			</div>
 		{:else}
-			<div class="controlsMenu">
+			<div class="controlsMenu" bind:this={controlsMenu}>
 				<button class="optionsButton" onclick={toggleFullScreen}> Full Screen </button>
 				<button class="optionsButton" onclick={toggleTemplates}> Templates </button>
 				<button
@@ -383,8 +380,19 @@
 				>
 					Duplicate
 				</button>
+				
 				<button
 					class="optionsButton"
+					onclick={async () => {
+						addElement($elements, 'text', '', uuid);
+						$elements = $elements;
+					}}
+				>
+					Discuss
+				</button>
+				<button
+					class="optionsButton"
+					disabled = {!isThereCanvasInIframe}
 					onclick={async () => {
 						const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
 						addElement($elements, 'imageGeneration', screenshotUrl);
@@ -440,10 +448,6 @@
 
 	.projectContainer {
 		display: flex;
-	}
-	.controlsMenu {
-		display: flex;
-		align-items: center;
 	}
 	.resizeHandle {
 		width: 10px;
