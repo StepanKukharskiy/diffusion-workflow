@@ -117,17 +117,17 @@
 	let isTemplatesPanelVisible = $state(false);
 	let isLoadingTemplate = $state(false);
 	let templatesList = [
-		'static',
-		'p5.js',
-		'three.js',
-		'brain.js',
-		'CAcraft',
-		'GLB',
-		'FF2D',
-		'FF3D',
-		'flock2D'
-	],
-	isThereCanvasInIframe:any = $state(false);
+			'static',
+			'p5.js',
+			'three.js',
+			'brain.js',
+			'CAcraft',
+			'GLB',
+			'FF2D',
+			'FF3D',
+			'flock2D'
+		],
+		isThereCanvasInIframe: any = $state(false);
 
 	function toggleTemplates() {
 		isTemplatesPanelVisible = !isTemplatesPanelVisible;
@@ -152,24 +152,27 @@
 	async function setTemplate(name = '') {
 		isLoadingTemplate = true;
 		isTemplatesPanelVisible = false;
-		const template = await getTemplate(name);
+		const template = await getTemplate(name)
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
 				element.files = template.files;
+				isThereCanvasInIframe = template.files.some(
+					(file) => typeof file.fileData === 'string' && file.fileData.includes('canvas') || file.fileData.includes('p5.js') || file.fileData.includes('THREE')
+				);
 			}
 		}
 		$elements = $elements;
-		isThereCanvasInIframe = getCanvasInIframe(`iframe-${uuid}`)
+		// isThereCanvasInIframe = getCanvasInIframe(`iframe-${uuid}`);
 		isLoadingTemplate = false;
 	}
 
-	function getCanvasInIframe(iframeId = ''){
+	function getCanvasInIframe(iframeId = '') {
 		const iframe = document.getElementById(iframeId); // Get the iframe by ID
 		if (iframe) {
 			const iframeWindow = iframe.contentWindow; // Get the iframe's window
 			const iframeDocument = iframeWindow.document;
-			if(iframeDocument.querySelector('canvas') != undefined){
-				return true
+			if (iframeDocument.querySelector('canvas') != undefined) {
+				return true;
 			}
 		}
 	}
@@ -380,7 +383,7 @@
 				>
 					Duplicate
 				</button>
-				
+
 				<button
 					class="optionsButton"
 					onclick={async () => {
@@ -392,7 +395,7 @@
 				</button>
 				<button
 					class="optionsButton"
-					disabled = {!isThereCanvasInIframe}
+					disabled={!isThereCanvasInIframe}
 					onclick={async () => {
 						const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
 						addElement($elements, 'imageGeneration', screenshotUrl);
