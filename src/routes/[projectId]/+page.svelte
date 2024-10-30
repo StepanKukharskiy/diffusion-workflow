@@ -86,6 +86,16 @@
 			style="color: hsl({$textColor});"
 			onclick={() => {
 				isCreateOptionsVisible = false;
+				addElement($elements, 'imageGeneration');
+				$elements = $elements;
+				scrollToCreateButton();
+			}}>image</button
+		>
+		<button
+			class="createOptionsMenu"
+			style="color: hsl({$textColor});"
+			onclick={() => {
+				isCreateOptionsVisible = false;
 				addElement($elements, 'file');
 				$elements = $elements;
 				scrollToCreateButton();

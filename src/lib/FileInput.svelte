@@ -143,66 +143,66 @@
 		console.log(elements);
 	}
 
-    function toggleInpaintingMode() {
-        isInpainting = !isInpainting;
-        setTimeout(() => {
-            if (isInpainting && canvas) {
-                paper.setup(canvas);
-                canvas.width = dropArea.clientWidth;
-                canvas.height = dropArea.clientHeight;
-                canvas.style.backgroundColor = 'black';
+    // function toggleInpaintingMode() {
+    //     isInpainting = !isInpainting;
+    //     setTimeout(() => {
+    //         if (isInpainting && canvas) {
+    //             paper.setup(canvas);
+    //             canvas.width = dropArea.clientWidth;
+    //             canvas.height = dropArea.clientHeight;
+    //             canvas.style.backgroundColor = 'black';
 
-                let rectangle: paper.Path.Rectangle | null = null;
-                let startPoint: paper.Point | null = null;
+    //             let rectangle: paper.Path.Rectangle | null = null;
+    //             let startPoint: paper.Point | null = null;
 
-                canvas.onpointerdown = (event: PointerEvent) => {
-                    startPoint = new paper.Point(event.offsetX, event.offsetY);
-                    rectangle = new paper.Path.Rectangle({
-                        point: startPoint,
-                        size: [0, 0],
-                        strokeColor: 'white'
-                    });
-                };
+    //             canvas.onpointerdown = (event: PointerEvent) => {
+    //                 startPoint = new paper.Point(event.offsetX, event.offsetY);
+    //                 rectangle = new paper.Path.Rectangle({
+    //                     point: startPoint,
+    //                     size: [0, 0],
+    //                     strokeColor: 'white'
+    //                 });
+    //             };
 
-                canvas.onpointermove = (event: PointerEvent) => {
-                    if (rectangle && startPoint) {
-                        const endPoint = new paper.Point(event.offsetX, event.offsetY);
-                        rectangle.remove();
-                        rectangle = new paper.Path.Rectangle({
-                            from: startPoint,
-                            to: endPoint,
-                            strokeColor: 'white',
-                            fillColor: 'white'
-                        });
-                    }
-                };
+    //             canvas.onpointermove = (event: PointerEvent) => {
+    //                 if (rectangle && startPoint) {
+    //                     const endPoint = new paper.Point(event.offsetX, event.offsetY);
+    //                     rectangle.remove();
+    //                     rectangle = new paper.Path.Rectangle({
+    //                         from: startPoint,
+    //                         to: endPoint,
+    //                         strokeColor: 'white',
+    //                         fillColor: 'white'
+    //                     });
+    //                 }
+    //             };
 
-                canvas.onpointerup = () => {
-                    rectangle = null;
-                    startPoint = null;
-                };
-            }
-        }, 10);
-    }
+    //             canvas.onpointerup = () => {
+    //                 rectangle = null;
+    //                 startPoint = null;
+    //             };
+    //         }
+    //     }, 10);
+    // }
 
-    async function getMaskUrl() {
-        const canvas = document.getElementById(`${uuid}-canvas`);
-        isSavingMask = true;
-        const dataURL = canvas.toDataURL('image/jpeg');
-        const blob = await fetch(dataURL).then((res) => res.blob());
-        const formData = new FormData();
-        formData.append('file', blob, 'canvas.jpeg');
-        formData.append('projectId', $page.params.projectId);
-        const response = await fetch('/api/save-image', { method: 'POST', body: formData });
-        if (!response.ok) {
-            isSavingMask = false;
-            console.error('Upload failed:', response.statusText);
-        } else {
-            const result = await response.json();
-            isSavingMask = false;
-            return result.url;
-        }
-    }
+    // async function getMaskUrl() {
+    //     const canvas = document.getElementById(`${uuid}-canvas`);
+    //     isSavingMask = true;
+    //     const dataURL = canvas.toDataURL('image/jpeg');
+    //     const blob = await fetch(dataURL).then((res) => res.blob());
+    //     const formData = new FormData();
+    //     formData.append('file', blob, 'canvas.jpeg');
+    //     formData.append('projectId', $page.params.projectId);
+    //     const response = await fetch('/api/save-image', { method: 'POST', body: formData });
+    //     if (!response.ok) {
+    //         isSavingMask = false;
+    //         console.error('Upload failed:', response.statusText);
+    //     } else {
+    //         const result = await response.json();
+    //         isSavingMask = false;
+    //         return result.url;
+    //     }
+    // }
 
     async function get3dSceneScreenshotUrl() {
         renderer.render(scene, camera)
@@ -303,7 +303,7 @@
             >
                 Discuss
             </button>
-            {#if !is3DModel}
+            <!-- {#if !is3DModel}
             <button
                 class="optionsButton"
                 disabled={isOptionsDisabled}
@@ -313,7 +313,7 @@
             >
                 Inpaint
             </button>
-            {/if}
+            {/if} -->
             <button
                 class="optionsButton"
                 disabled={isOptionsDisabled}
