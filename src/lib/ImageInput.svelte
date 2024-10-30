@@ -164,7 +164,7 @@
 		<button
 			class="dropArea"
 			bind:this={dropArea}
-			style="border: 1px solid hsla({$textColor}, 20%); color: hsl({$textColor});"
+			style="border: 1px solid hsla({$textColor}, 20%); color: hsl({$textColor}); min-height: {imageUrl != '' ? 'auto' : '300px'}"
 			aria-label="Image upload area"
 			ondrop={handleDrop}
 			ondragover={handleDragOver}
@@ -193,7 +193,7 @@
 			<div style="display: flex; align-items: center;" transition:slide>
 				<span class="warning"></span>
 				<p>Please, provide an image to continue</p>
-				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+				<!-- <div class="loader" style="border-color: hsl({$textColor}) transparent;"></div> -->
 			</div>
 		{/if}
 
@@ -252,7 +252,7 @@
 	.dropArea {
 		width: 100%;
 		height: 100%;
-		min-height: 300px;
+		 /* min-height: 300px; */
 		/* aspect-ratio: 16 / 9; */
 		resize: none;
 		border-radius: 10px;

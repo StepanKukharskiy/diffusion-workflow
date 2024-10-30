@@ -3,7 +3,7 @@
 	import { generateUUID, initialCodeFiles } from '$lib/utils';
 
 	import TextInput from '$lib/TextInput.svelte';
-	import ImageInput from '$lib/ImageInput.svelte';
+	import FileInput from '$lib/FileInput.svelte';
 	import VideoGeneration from '$lib/VideoGeneration.svelte';
 	import ImageGeneration from '$lib/ImageGeneration.svelte';
 	import Sketch from '$lib/SketchPaper.svelte';
@@ -51,8 +51,8 @@
 		{#each $elements as element}
 			{#if element.type === 'text'}
 				<TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid}/>
-			{:else if element.type === 'image'}
-				<ImageInput uuid={element.uuid}/>
+			{:else if element.type === 'file'}
+				<FileInput uuid={element.uuid}/>
 			{:else if element.type === 'video'}
 				<VideoGeneration refImageUrl={element.imageUrl} />
 			{:else if element.type === 'imageGeneration'}
@@ -86,10 +86,10 @@
 			style="color: hsl({$textColor});"
 			onclick={() => {
 				isCreateOptionsVisible = false;
-				addElement($elements, 'image');
+				addElement($elements, 'file');
 				$elements = $elements;
 				scrollToCreateButton();
-			}}>image</button
+			}}>file</button
 		>
 		<button
 			class="createOptionsMenu"
