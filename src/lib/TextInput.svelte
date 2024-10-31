@@ -54,7 +54,7 @@
 					model: data.model,
 					systemPrompt: data.systemPrompt,
 					query: data.query,
-					previousAnswers: answers.join(' '),
+					previousAnswers: answers,
 					imageUrl: imageUrl
 				})
 			});
