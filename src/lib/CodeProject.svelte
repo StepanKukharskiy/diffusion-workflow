@@ -52,7 +52,7 @@
 		console.log($width);
 		console.log($height);
 		if (fullScreenMode) {
-			container.style.position = 'absolute';
+			container.style.position = 'fixed';
 			container.style.top = 0;
 			container.style.left = 0;
 			container.style.zIndex = 99;

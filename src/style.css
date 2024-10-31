@@ -2,10 +2,14 @@
 body{
     margin: 0;
     padding: 10px;
+    padding-right: 25px;
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
     background: #e9e9e9;
-    
+    background: radial-gradient(circle at bottom, #4233fb50 0%, pink 35%, #f9f9f9);
+    height: 100svh;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 h2, h3, h4 {
@@ -29,7 +33,7 @@ summary::-webkit-details-marker {
 
 summary::after {
     align-self: center;
-    content: 'open'; /* Custom marker */
+    content: '+'; /* Custom marker */
     font-weight: 300;
     margin-right: 0.5em;
     margin-left: auto;
@@ -39,7 +43,7 @@ summary:focus {
   }
 
 details[open] > summary::after {
-    content: 'close'; /* Change marker when open */
+    content: '-'; /* Change marker when open */
 }
 
 button{
@@ -62,6 +66,32 @@ img, video {
     border-radius: 10px;
 }
 
+/* width */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  
+    /* height: 0.5em; */
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: hsl(155, 70%, 55%, 2%);
+    border-radius: 5px;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: hsla(0, 0%, 35%, 0.5);
+    border-radius: 5px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(155, 70%, 55%, 100%);
+  }
+
+
 .elementContainer {
     width: 100%;
     background-color: #f9f9f9;
@@ -76,7 +106,11 @@ img, video {
     flex-direction: column;
     margin-bottom: 10px;
     border-radius: 20px;
-    border: 1px solid #1a1a1a30;
+    border: 1px solid #f9f9f9;
+    background: linear-gradient(45deg, #f9f9f950, transparent);
+    box-shadow: 0 0 10px #1a1a1a20;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
 }
 
 .colorLine{
@@ -155,6 +189,21 @@ img, video {
     box-sizing: border-box;
     font-weight: 300;
 }
+.smallMenuButton {
+    background: none;
+    border: none;
+    color: inherit;
+    font-family: Roboto, sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+  }
+  .smallMenuButton:hover {
+    text-decoration: underline;
+  }
 
 .warning{
     width: 10px; 

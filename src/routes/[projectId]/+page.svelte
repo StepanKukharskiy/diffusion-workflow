@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { textColor, bgColor, elements, filesLocalCopy } from '$lib/store';
+	import { textColor, bgColor, elements, filesLocalCopy, tutorialsPanelState, width } from '$lib/store';
 	import { generateUUID, initialCodeFiles } from '$lib/utils';
 
 	import TextInput from '$lib/TextInput.svelte';
@@ -8,6 +8,8 @@
 	import ImageGeneration from '$lib/ImageGeneration.svelte';
 	import Sketch from '$lib/SketchPaper.svelte';
 	import CodeProject from '$lib/CodeProject.svelte';
+	import NavPanel from '$lib/NavPanel.svelte';
+	import TutorialsPanel from '$lib/TutorialsPanel.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -39,37 +41,50 @@
 		layout === 'container-block' ? (layout = 'container-grid') : (layout = 'container-block');
 		console.log(layout);
 	}
+
+	let discussionWidth = $state('400px')
+	$effect(()=>{
+		if($tutorialsPanelState && $width > 700){
+			discussionWidth = 'calc(100% - 400px)'
+		} else {
+			discussionWidth = '100%'
+		}
+	})
 </script>
 
-<div class="container">
-	<h1>New Conversation</h1>
-	<!-- <CodeProject /> -->
-	<!-- <button onclick={setLayout}>display grid</button> -->
+<NavPanel data={''} />
 
-	<div class={layout}>
-		<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
-		{#each $elements as element}
-			{#if element.type === 'text'}
-				<TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid}/>
-			{:else if element.type === 'file'}
-				<FileInput uuid={element.uuid}/>
-			{:else if element.type === 'video'}
-				<VideoGeneration refImageUrl={element.imageUrl} />
-			{:else if element.type === 'imageGeneration'}
-				<ImageGeneration
-					refImageUrl={element.imageUrl}
-					maskImageUrl={element.maskImageUrl}
-					prompt={element.prompt}
-				/>
-			{:else if element.type === 'sketch'}
-				<Sketch />
-			{:else if element.type === 'code'}
-				<CodeProject files={element.files} uuid={element.uuid} />
-			{/if}
-		{/each}
-	</div>
+<div class="conversationAndTutorialsContainer">
+	<div class="container" style='width: {discussionWidth}'>
 
-	{#if isCreateOptionsVisible}
+			<h1 style="margin-top: 30px;">Start New Conversation</h1>
+		<!-- <CodeProject /> -->
+		<!-- <button onclick={setLayout}>display grid</button> -->
+
+		<div class={layout}>
+			<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
+			{#each $elements as element}
+				{#if element.type === 'text'}
+					<TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid} />
+				{:else if element.type === 'file'}
+					<FileInput uuid={element.uuid} />
+				{:else if element.type === 'video'}
+					<VideoGeneration refImageUrl={element.imageUrl} />
+				{:else if element.type === 'imageGeneration'}
+					<ImageGeneration
+						refImageUrl={element.imageUrl}
+						maskImageUrl={element.maskImageUrl}
+						prompt={element.prompt}
+					/>
+				{:else if element.type === 'sketch'}
+					<Sketch />
+				{:else if element.type === 'code'}
+					<CodeProject files={element.files} uuid={element.uuid} />
+				{/if}
+			{/each}
+		</div>
+
+		<!-- {#if isCreateOptionsVisible}
 	<div class='optionsContainer'>
 		<button
 			class="createOptionsMenu"
@@ -132,10 +147,72 @@
 				setTimeout(()=>{isCreateOptionsVisible = false;}, 10000)
 			}}>Add</button
 		>
+	{/if} -->
+	</div>
+	{#if $tutorialsPanelState}
+		<div>
+			<TutorialsPanel />
+		</div>
 	{/if}
 </div>
 
+<div class="discussionNav">
+	<button
+		class="smallMenuButton"
+		style="color: hsl({$textColor});"
+		onclick={() => {
+			isCreateOptionsVisible = false;
+			addElement($elements, 'text');
+			$elements = $elements;
+			scrollToCreateButton();
+		}}>Start Chat</button
+	>
+	<button
+		class="smallMenuButton"
+		style="color: hsl({$textColor});"
+		onclick={() => {
+			isCreateOptionsVisible = false;
+			addElement($elements, 'imageGeneration');
+			$elements = $elements;
+			scrollToCreateButton();
+		}}>Generate Image</button
+	>
+	<button
+		class="smallMenuButton"
+		style="color: hsl({$textColor});"
+		onclick={() => {
+			isCreateOptionsVisible = false;
+			addElement($elements, 'file');
+			$elements = $elements;
+			scrollToCreateButton();
+		}}>Upload File</button
+	>
+	<button
+		class="smallMenuButton"
+		style="color: hsl({$textColor});"
+		onclick={() => {
+			isCreateOptionsVisible = false;
+			addElement($elements, 'sketch');
+			$elements = $elements;
+			scrollToCreateButton();
+		}}>Create Sketch</button
+	>
+	<button
+		class="smallMenuButton"
+		style="color: hsl({$textColor});"
+		onclick={() => {
+			isCreateOptionsVisible = false;
+			addElement($elements, 'code');
+			$elements = $elements;
+			scrollToCreateButton();
+		}}>Start Coding</button
+	>
+</div>
+
 <style>
+	.conversationAndTutorialsContainer {
+		display: flex;
+	}
 	.container-block {
 		width: 100%;
 		display: flex;
@@ -147,10 +224,16 @@
 	}
 	.container {
 		width: 100%;
+		max-height: calc(100svh - 20px);
+		padding: 15px;
+		padding-right: 20px;
+		padding-bottom: 50px;
+		box-sizing: border-box;
+		overflow-y: scroll;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		margin-bottom: 100px;
+		
 	}
 	.container-grid {
 		max-width: 1200px;
@@ -166,11 +249,32 @@
 		border: none;
 		border-radius: 10px;
 	}
-	.createOptionsContainer{
+	.createOptionsContainer {
 		width: 100%;
 	}
 	.createOptionsMenu {
 		background: none;
 		border: none;
+	}
+	.discussionNav {
+		position: fixed;
+		bottom: 0px;
+		left: 0px;
+		min-height: 40px;
+		width: calc(100% - 20px);
+		box-sizing: border-box;
+		border: 1px solid #f9f9f9;
+		border-radius: 25px;
+		background: #fdfdfd;
+		background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+		backdrop-filter: blur(25px);
+		-webkit-backdrop-filter: blur(25px);
+		padding: 0 20px;
+		margin: 10px;
+		box-shadow: 0 0 10px rgba(152, 152, 152, 0.3);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 5;
 	}
 </style>

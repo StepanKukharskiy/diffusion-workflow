@@ -305,6 +305,16 @@ export function generateUUID() {
       }
     return logoPath
   }
+
+  export const getImageUrl = (collectionName='', recordId='', fileName='') => {
+    try {
+        const url = `api/files/${collectionName}/${recordId}/${fileName}`
+        return url
+    } catch (err) {
+        console.log(err)
+        throw error(err.status, err.message);
+    }
+}
   
 
   export let initialCodeFiles = [

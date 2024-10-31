@@ -415,6 +415,7 @@
 	.generatedImageMockup {
 		aspect-ratio: 16 / 9;
 		margin-bottom: 10px;
+		background: #1a1a1a20;
 	}
 	.generatedImage {
 		height: fit-content;
