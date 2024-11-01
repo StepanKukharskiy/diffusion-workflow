@@ -6,7 +6,7 @@ body{
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
     background: #e9e9e9;
-    background: radial-gradient(circle at bottom, #4233fb50 0%, pink 35%, #f9f9f9);
+    background: radial-gradient(circle at bottom, #4233fb20 0%, #FFC0CB90 35%, #f9f9f9);
     height: 100svh;
     overflow: hidden;
     box-sizing: border-box;
@@ -107,7 +107,7 @@ img, video {
     margin-bottom: 10px;
     border-radius: 20px;
     border: 1px solid #f9f9f9;
-    background: linear-gradient(45deg, #f9f9f950, transparent);
+    background: linear-gradient(45deg, #f9f9f950, #f9f9f990);
     box-shadow: 0 0 10px #1a1a1a20;
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);

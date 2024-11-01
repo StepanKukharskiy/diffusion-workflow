@@ -123,7 +123,7 @@
 		align-items: center; */
 		border: 1px solid #f9f9f9;
 		border-radius: 20px;
-		background: linear-gradient(45deg, #f9f9f9, transparent);
+		background: linear-gradient(45deg, #f9f9f950, #f9f9f990);
 		backdrop-filter: blur(25px);
 		-webkit-backdrop-filter: blur(25px);
 		z-index: 10;
