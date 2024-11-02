@@ -10,8 +10,8 @@ import { writable } from 'svelte/store';
 // #8BC34A - a muted, greenish-yellow color that's fresh and energetic.
 // #6495ED - a soft, blue-purple color that's soothing and suggests innovation.
 
-export let width = writable(1920);
-export let height = writable(1080);
+export let width = writable(0);
+export let height = writable(0);
 export let bgColor = writable('0, 0%, 98%');
 export let textColor = writable('0, 0%, 10%');
 export let dotsColor = writable('0, 0%, 40%');
@@ -67,6 +67,9 @@ export let filesPanelDisplay = writable('block')
 export let leftPanelWidthSetByUser = writable(0)
 
 export let tutorialsPanelState = writable(false)
+
+export let referenceImageUrl = writable('')
+export let chatPanelMode = writable('chat')
 // export let canvasScale = writable(1.0);
 // export let canvasNodesMenuState = writable(false);
 // export let selectedNode = writable('');

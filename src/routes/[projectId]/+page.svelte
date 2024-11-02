@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { textColor, bgColor, elements, filesLocalCopy, tutorialsPanelState, width } from '$lib/store';
+	import {
+		textColor,
+		bgColor,
+		elements,
+		filesLocalCopy,
+		tutorialsPanelState,
+		width
+	} from '$lib/store';
 	import { generateUUID, initialCodeFiles } from '$lib/utils';
 
 	import TextInput from '$lib/TextInput.svelte';
@@ -10,6 +17,11 @@
 	import CodeProject from '$lib/CodeProject.svelte';
 	import NavPanel from '$lib/NavPanel.svelte';
 	import TutorialsPanel from '$lib/TutorialsPanel.svelte';
+	import ChatPanel from '$lib/ChatPanel.svelte';
+	import SimpleText from '$lib/SimpleText.svelte';
+	import SimpleImage from '$lib/SimpleImage.svelte';
+	import SimpleVideo from '$lib/SimpleVideo.svelte';
+	import SimpleCodeProject from '$lib/SimpleCodeProject.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -42,22 +54,23 @@
 		console.log(layout);
 	}
 
-	let discussionWidth = $state('400px')
-	$effect(()=>{
-		if($tutorialsPanelState && $width > 700){
-			discussionWidth = 'calc(100% - 400px)'
+	let discussionWidth = $state('400px');
+	$effect(() => {
+		if ($tutorialsPanelState && $width > 700) {
+			discussionWidth = 'calc(100% - 400px)';
 		} else {
-			discussionWidth = '100%'
+			discussionWidth = '100%';
 		}
-	})
+		console.log($elements);
+	});
 </script>
 
 <NavPanel data={''} />
 
+{#if $width > 0}
 <div class="conversationAndTutorialsContainer">
-	<div class="container" style='width: {discussionWidth}'>
-
-			<h1 style="margin-top: 30px;">Start New Conversation</h1>
+	<div class="container" style="width: {discussionWidth}">
+		<h1 style="margin-top: 50px;">What would you like to discuss?</h1>
 		<!-- <CodeProject /> -->
 		<!-- <button onclick={setLayout}>display grid</button> -->
 
@@ -65,21 +78,28 @@
 			<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
 			{#each $elements as element}
 				{#if element.type === 'text'}
-					<TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid} />
+					<!-- <TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid} /> -->
+					<SimpleText query={element.query} answer={element.answer} uuid={element.uuid}/>
 				{:else if element.type === 'file'}
-					<FileInput uuid={element.uuid} />
+					<FileInput uuid={element.uuid}/>
 				{:else if element.type === 'video'}
-					<VideoGeneration refImageUrl={element.imageUrl} />
+					<!-- <VideoGeneration refImageUrl={element.imageUrl} /> -->
+					 <SimpleVideo videoUrl = {element.videoUrl} uuid={element.uuid}/>
 				{:else if element.type === 'imageGeneration'}
-					<ImageGeneration
+					<!-- <ImageGeneration
 						refImageUrl={element.imageUrl}
 						maskImageUrl={element.maskImageUrl}
 						prompt={element.prompt}
-					/>
+					/> -->
+					<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid}/>
+					{:else if element.type === 'image'}
+
+					<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid}/>
 				{:else if element.type === 'sketch'}
 					<Sketch />
 				{:else if element.type === 'code'}
-					<CodeProject files={element.files} uuid={element.uuid} />
+					<!-- <CodeProject files={element.files} uuid={element.uuid} /> -->
+					 <SimpleCodeProject files={element.files} uuid={element.uuid} />
 				{/if}
 			{/each}
 		</div>
@@ -148,15 +168,22 @@
 			}}>Add</button
 		>
 	{/if} -->
+
+	<div style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 0px; display: flex; justify-content: center; align-items: center;">
+		<ChatPanel />
 	</div>
+	</div>
+	
 	{#if $tutorialsPanelState}
 		<div>
 			<TutorialsPanel />
 		</div>
 	{/if}
 </div>
+{/if}
 
-<div class="discussionNav">
+
+<!-- <div class="discussionNav">
 	<button
 		class="smallMenuButton"
 		style="color: hsl({$textColor});"
@@ -207,7 +234,7 @@
 			scrollToCreateButton();
 		}}>Start Coding</button
 	>
-</div>
+</div> -->
 
 <style>
 	.conversationAndTutorialsContainer {
@@ -227,13 +254,12 @@
 		max-height: calc(100svh - 20px);
 		padding: 15px;
 		padding-right: 20px;
-		padding-bottom: 50px;
+		padding-bottom: 250px;
 		box-sizing: border-box;
 		overflow-y: scroll;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		
 	}
 	.container-grid {
 		max-width: 1200px;

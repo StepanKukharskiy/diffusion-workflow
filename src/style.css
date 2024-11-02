@@ -5,8 +5,8 @@ body{
     padding-right: 25px;
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
-    background: #e9e9e9;
-    background: radial-gradient(circle at bottom, #4233fb20 0%, #FFC0CB90 35%, #f9f9f9);
+    background: #ebebeb;
+    /* background: radial-gradient(circle at bottom, #4233fb20 0%, #FFC0CB90 35%, #f9f9f9); */
     height: 100svh;
     overflow: hidden;
     box-sizing: border-box;
@@ -19,6 +19,8 @@ h2, h3, h4 {
 }
 details{
     width: 100%;
+    font-family: 'Roboto', sans-serif;
+    margin-top: 10px;
 }
 summary{
     width: 100%;
@@ -109,18 +111,17 @@ img, video {
     border: 1px solid #f9f9f9;
     background: linear-gradient(45deg, #f9f9f950, #f9f9f990);
     box-shadow: 0 0 10px #1a1a1a20;
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
 }
 
 .colorLine{
-    width: fit-content;
-    min-width: 30px;
-    height: 30px;
+    width: 100%;
+    /* width: fit-content;
+    min-width: 30px; */
+    height: 5px;
     border-radius: 2px;
-    padding: 10px;
+    /* padding: 10px; */
     border-radius: 10px;
-    margin-right: 10px;
+    /* margin-right: 10px; */
     box-sizing: border-box;
 }
 .controlsMenu {
@@ -152,6 +153,7 @@ img, video {
 }
 .generationControlsButton:disabled {
     opacity: 0.5;
+    cursor: default;
 }
 .optionsButton {
     position: relative;
@@ -187,6 +189,7 @@ img, video {
     border-radius: 10px;
     background: none;
     box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
     font-weight: 300;
 }
 .smallMenuButton {

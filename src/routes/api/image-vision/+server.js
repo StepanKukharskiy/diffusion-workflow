@@ -28,6 +28,7 @@ export async function POST({ request, locals }) {
         const promptAnalysis = await analysePrompt(query.query)
         console.log(promptAnalysis)
         console.log(input)
+        console.log(query.previousAnswers)
         if (promptAnalysis?.toLowerCase() === 'ok') {
             console.log('analysis is ok')
         }

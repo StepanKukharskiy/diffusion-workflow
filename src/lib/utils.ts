@@ -360,3 +360,30 @@ export function generateUUID() {
       fileData: `console.log('hi')`
     }
   ]
+
+  export async function generateVideo(data = { refImageUrl: '', model: '', projectId: '' }) {
+		let generatedVideoUrl = '';
+		const message = await fetch(`/api/video-generation`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				refImageUrl: data.refImageUrl,
+				model: data.model,
+				projectId: data.projectId
+			})
+		});
+		const messageObject = await message.json();
+		generatedVideoUrl = messageObject.videoUrl;
+		console.log(messageObject);
+		return generatedVideoUrl;
+	}
+
+  export function deleteBlock(elements:any, uuid:any){
+    for (let i = 0; i < elements.length; i++) {
+      if (elements[i].uuid === uuid) {
+        elements.splice(i, 1);
+      }
+    }
+  }

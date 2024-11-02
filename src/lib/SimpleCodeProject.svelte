@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { width, height, textColor, bgColor, elements } from './store';
+	import { width, height, textColor, bgColor, elements, referenceImageUrl, chatPanelMode } from './store';
 	import FilesPanel from './FilesPanel.svelte';
 	import ProjectPanel from './ProjectPanel.svelte';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { generateUUID } from './utils';
+	import { generateUUID, deleteBlock } from './utils';
 	import { slide } from 'svelte/transition';
 	import bg_image from '$lib/images/bg.webp';
 
-	let { files, uuid = '' } = $props();
+	let { files = '', uuid = '' } = $props();
 
-	console.log(files)
+	console.log(files);
 
 	let container: any = $state(),
 		fullScreenMode = $state(false),
@@ -28,6 +28,17 @@
 
 	onMount(() => {
 		controlsMenuHeight = controlsMenu.offsetHeight;
+        for (let element of $elements) {
+			if (element.uuid === uuid) {
+				element.files = files;
+				isThereCanvasInIframe = files.some(
+					(file) =>
+						(typeof file.fileData === 'string' && file.fileData.includes('canvas')) ||
+						file.fileData.includes('p5.js') ||
+						file.fileData.includes('THREE')
+				);
+			}
+		}
 	});
 
 	function resize(event: any) {
@@ -66,6 +77,7 @@
 			container.style.width = `100%`;
 			container.style.maxWidth = '800px';
 			container.style.height = `fit-content`;
+			container.style.zIndex = 0;
 		}
 	}
 
@@ -75,13 +87,13 @@
 	}
 	function addElement(elements: any = [], type = 'text', imageUrl = '', codeProjectUuid = '') {
 		console.log(elements);
-		if (type === 'imageGeneration') {
-			elements.push({
-				type: type,
-				systemPrompt: '',
-				query: '',
-				imageUrl: imageUrl
-			});
+		if (type === 'image') {
+			// elements.push({
+			// 	uuid: generateUUID(),
+			// 	type: type,
+			// 	query: '',
+			// 	imageUrl: imageUrl
+			// });
 		} else if (type === 'text') {
 			elements.push({
 				type: type,
@@ -154,12 +166,15 @@
 	async function setTemplate(name = '') {
 		isLoadingTemplate = true;
 		isTemplatesPanelVisible = false;
-		const template = await getTemplate(name)
+		const template = await getTemplate(name);
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
 				element.files = template.files;
 				isThereCanvasInIframe = template.files.some(
-					(file) => typeof file.fileData === 'string' && file.fileData.includes('canvas') || file.fileData.includes('p5.js') || file.fileData.includes('THREE')
+					(file) =>
+						(typeof file.fileData === 'string' && file.fileData.includes('canvas')) ||
+						file.fileData.includes('p5.js') ||
+						file.fileData.includes('THREE')
 				);
 			}
 		}
@@ -230,7 +245,7 @@
 		if (resizeState) {
 			resize(e);
 		}
-		console.log(controlsMenu.offsetHeight);
+		// console.log(controlsMenu.offsetHeight);
 	}}
 	onpointerup={() => {
 		resizeState = false;
@@ -241,152 +256,123 @@
 	}}
 />
 
-<div class="elementContainer" bind:this={container}>
-	<details open style="height: 100%;">
-		<summary>
-			<div class="colorLine" style="background: #F7D2C4"></div>
-			<h3 style="color: hsl({$textColor})">Code</h3>
-			<!-- <p style='font-size: 0.5rem;'>{uuid}</p> -->
-		</summary>
-		{#if isTemplatesPanelVisible}
+<div class="container" bind:this={container}>
+	<div
+		class="projectContainer"
+		style="margin: 10px 0; height: {fullScreenMode ? 'calc(100% - 90px)' : '400px'}"
+	>
+		{#if filesPanelDisplay === 'block'}
 			<div
-				class="templatesContainer"
-				style="height: {fullScreenMode ? 'calc(100% - 90px)' : '400px'}; 
-					border: 1px solid hsla({$textColor}, 20%); 
-					background: hsl({$bgColor});"
-			>
-				{#each templatesList as template}
-					<button
-						style="background-image: url({bg_image});  background-repeat: no-repeat; background-position: {Math.floor(
-							Math.random() * 100
-						)}% {Math.floor(Math.random() * 100)}%"
-						class="templatesButton"
-						onclick={() => {
-							setTemplate(template);
-						}}
-					>
-						{template}
-					</button>
-				{/each}
-			</div>
-		{/if}
-		<div
-			class="projectContainer"
-			style="margin: 10px 0; height: {fullScreenMode ? 'calc(100% - 90px)' : '400px'}"
-		>
-			{#if filesPanelDisplay === 'block'}
-				<div
-					id="filesPanelContainer"
-					style="width: {$width > 700
-						? `${filesPanelWidth}px`
-						: 'calc(100% - 15px)'}; height: {$width > 700
-						? ''
-						: `calc(100% - ${controlsMenuHeight}px - 70px)`}; 
+				id="filesPanelContainer"
+				style="width: {$width > 700
+					? `${filesPanelWidth}px`
+					: 'calc(100% - 15px)'}; height: {$width > 700
+					? ''
+					: `calc(100% - ${controlsMenuHeight}px - 70px)`}; 
 						padding-right: 5px; box-sizing: border-box; position: {$width > 700
-						? 'relative'
-						: 'absolute'}; z-index: 2;"
-				>
-					<button
-						bind:this={filesPanelButton}
-						class="panelButton"
-						style="border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor});"
-						onclick={togglePanelState}
-					>
-						<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
-							><title>icon_quit</title><line
-								x1="0.5"
-								y1="0.5"
-								x2="18.52"
-								y2="18.52"
-								style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
-							/><line
-								x1="0.5"
-								y1="18.52"
-								x2="18.52"
-								y2="0.5"
-								style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
-							/></svg
-						>
-					</button>
-
-					<FilesPanel {uuid} {files} panelWidth={filesPanelWidth} />
-				</div>
-			{:else}
-				<div style="position: absolute; height: 100%; z-index:2;">
-					<button
-						bind:this={filesPanelButton}
-						class="panelButton"
-						style="border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor}); left: -10px;"
-						onclick={togglePanelState}
-					>
-						<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
-							><title>icon_quit</title><line
-								x1="0.5"
-								y1="0.5"
-								x2="18.52"
-								y2="9.52"
-								style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
-							/><line
-								x1="18.52"
-								y1="9.52"
-								x2="0.5"
-								y2="18.52"
-								style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
-							/></svg
-						>
-					</button>
-				</div>
-			{/if}
-			{#if $width > 700 && filesPanelDisplay === 'block'}
-				<div
-					class="resizeHandle"
-					style="background: hsl({$textColor + ', 5%'});"
-					bind:this={resizeHandle}
-					onpointerdown={() => {
-						resizeState = true;
-					}}
-				></div>
-			{/if}
-
-			<div
-				class="projectDataContainer"
-				style="flex: 1; padding-left: 5px; box-sizing: border-box; margin-left: 0px; background: none; position: relative;"
+					? 'relative'
+					: 'absolute'}; z-index: 2;"
 			>
-				{#if resizeState}
-					<div
-						bind:this={resizeCoverDiv}
-						style="position: absolute; z-index: 2; top: 5; left: 5; background: #00000005; border-radius: 15px; width: calc(100% - 10px); height: calc(100% - 0px);"
-					></div>
-				{/if}
-				<ProjectPanel {uuid} />
-			</div>
-		</div>
-		{#if isLoadingTemplate}
-			<div style="display: flex; align-items: center;" transition:slide>
-				<span class="warning"></span>
-				<p style="margin-right: 10px;">Loading template</p>
-				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-			</div>
-		{:else if isTakingScreenshot}
-			<div style="display: flex; align-items: center;" transition:slide>
-				<span class="warning"></span>
-				<p style="margin-right: 10px;">Taking screenshot</p>
-				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-			</div>
-		{:else}
-			<div class="controlsMenu" bind:this={controlsMenu}>
-				<button class="optionsButton" onclick={toggleFullScreen}> Full Screen </button>
-				<button class="optionsButton" onclick={toggleTemplates}> Templates </button>
 				<button
-					class="optionsButton"
-					onclick={() => {
-						duplicate($elements);
-					}}
+					bind:this={filesPanelButton}
+					class="panelButton"
+					style="border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor});"
+					onclick={togglePanelState}
 				>
-					Duplicate
+					<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
+						><title>icon_quit</title><line
+							x1="0.5"
+							y1="0.5"
+							x2="18.52"
+							y2="18.52"
+							style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+						/><line
+							x1="0.5"
+							y1="18.52"
+							x2="18.52"
+							y2="0.5"
+							style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+						/></svg
+					>
 				</button>
 
+				<FilesPanel {uuid} {files} panelWidth={filesPanelWidth} />
+			</div>
+		{:else}
+			<div style="position: absolute; height: 100%; z-index:2;">
 				<button
+					bind:this={filesPanelButton}
+					class="panelButton"
+					style="border: 1px solid hsla({$textColor}, 20%); background: hsl({$bgColor}); left: -10px;"
+					onclick={togglePanelState}
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
+						><title>icon_quit</title><line
+							x1="0.5"
+							y1="0.5"
+							x2="18.52"
+							y2="9.52"
+							style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+						/><line
+							x1="18.52"
+							y1="9.52"
+							x2="0.5"
+							y2="18.52"
+							style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+						/></svg
+					>
+				</button>
+			</div>
+		{/if}
+		{#if $width > 700 && filesPanelDisplay === 'block'}
+			<div
+				class="resizeHandle"
+				style="background: hsl({$textColor + ', 5%'});"
+				bind:this={resizeHandle}
+				onpointerdown={() => {
+					resizeState = true;
+				}}
+			></div>
+		{/if}
+
+		<div
+			class="projectDataContainer"
+			style="flex: 1; padding-left: 5px; box-sizing: border-box; margin-left: 0px; background: none; position: relative;"
+		>
+			{#if resizeState}
+				<div
+					bind:this={resizeCoverDiv}
+					style="position: absolute; z-index: 2; top: 5; left: 5; background: #00000005; border-radius: 15px; width: calc(100% - 10px); height: calc(100% - 0px);"
+				></div>
+			{/if}
+			<ProjectPanel {uuid} />
+		</div>
+	</div>
+	{#if isTakingScreenshot}
+		<div style="display: flex; align-items: center;" transition:slide>
+			<span class="warning"></span>
+			<p style="margin-right: 10px;">Taking screenshot</p>
+			<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+		</div>
+	{/if}
+	<details bind:this={controlsMenu}>
+		<summary>Options</summary>
+		<ul>
+			<li>
+		<button class="settingsButton" onclick={toggleFullScreen}> Full Screen </button>
+		</li>
+		<li>
+		<button
+			class="settingsButton"
+			onclick={() => {
+				duplicate($elements);
+			}}
+		>
+			Duplicate Project
+		</button>
+	</li>
+	<li>
+		<!-- <button
 					class="optionsButton"
 					onclick={async () => {
 						addElement($elements, 'text', '', uuid);
@@ -394,61 +380,48 @@
 					}}
 				>
 					Discuss
-				</button>
-				<button
-					class="optionsButton"
-					disabled={!isThereCanvasInIframe}
-					onclick={async () => {
-						const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
-						addElement($elements, 'imageGeneration', screenshotUrl);
-						$elements = $elements;
-					}}
-				>
-					New Image
-				</button>
-			</div>
-		{/if}
+				</button> -->
+		<button
+			class="settingsButton"
+			disabled={!isThereCanvasInIframe}
+			onclick={async () => {
+				$referenceImageUrl = ''
+				const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
+				$referenceImageUrl = screenshotUrl
+				$chatPanelMode = 'image'
+				// addElement($elements, 'image', screenshotUrl);
+				$elements = $elements;
+			}}
+		>
+			Create Image
+		</button>
+		</li>
+		<li>
+			<button
+				class="settingsButton"
+				onclick={async () => {
+					deleteBlock($elements, uuid)
+					$elements = $elements;
+				}}>Delete</button
+			>
+		</li>
+		</ul>
 	</details>
 </div>
 
 <style>
-	.templatesContainer {
-		position: absolute;
-		z-index: 10;
-		width: calc(100% - 20px);
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-		gap: 10px;
-		align-items: center;
-		justify-items: center;
-		overflow-y: auto;
-		margin-top: 10px;
-		padding: 10px;
-		box-sizing: border-box;
-		border-radius: 10px;
-	}
-	.templatesButton {
-		width: 100px;
-		height: 100px;
+	.container {
+		width: 100%;
 		position: relative;
-		align-self: center;
-		max-width: 300px;
-
-		background: #1a1a1a20;
-		color: #1a1a1a;
-		border: none;
-		border-radius: 10px;
-		padding: 10px;
-		margin-right: 10px;
-		cursor: pointer;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		font-weight: 300;
+		max-width: 800px;
 		box-sizing: border-box;
-	}
-	.templatesButton:hover {
-		background-color: #1a1a1a30;
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		padding: 0px;
+		padding: 10px;
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 10px;
 	}
 
 	.projectContainer {
@@ -485,6 +458,9 @@
 		padding: 0;
 
 		cursor: pointer;
+	}
+    details {
+		border-bottom: 1px solid #1a1a1a20;
 	}
 
 	/* @media (max-width: 400px) {

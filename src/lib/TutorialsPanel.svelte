@@ -113,10 +113,11 @@
 		box-sizing: border-box;
 		width: 400px;
 		min-width: 400px;
-		height: calc(100svh - 120px);
+		height: calc(100svh - 70px);
 		padding: 10px;
 		padding-right: 0;
 		box-sizing: border-box;
+		box-shadow: 0 0 10px rgba(152, 152, 152, 0.3);
 
 		/* display: flex;
 		flex-direction: column;
