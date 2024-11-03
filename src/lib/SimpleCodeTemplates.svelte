@@ -88,6 +88,7 @@
 		border: 1px solid #1a1a1a50;
 		border-radius: 10px;
 		background: #f9f9f9;
+		color: #1a1a1a;
 		padding: 10px;
 		margin: 0 5px 5px 0;
 		font-weight: 300;

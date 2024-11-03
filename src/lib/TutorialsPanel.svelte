@@ -112,7 +112,7 @@
 		top: 60px;
 		box-sizing: border-box;
 		width: 400px;
-		min-width: 400px;
+		/* min-width: 400px; */
 		height: calc(100svh - 70px);
 		padding: 10px;
 		padding-right: 0;
@@ -143,6 +143,7 @@
 		margin: 0 10px 10px 0;
 		border: 1px solid #f9f9f9;
 		border-radius: 20px;
+		color: #1a1a1a;
 		background: #f9f9f9;
 	}
 	.tutorialButton:hover {
