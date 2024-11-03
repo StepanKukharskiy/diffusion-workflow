@@ -85,7 +85,7 @@
 		align-items: center;
 	}
 	.templatesButton {
-		border: none;
+		border: 1px solid #1a1a1a50;
 		border-radius: 10px;
 		background: #f9f9f9;
 		padding: 10px;

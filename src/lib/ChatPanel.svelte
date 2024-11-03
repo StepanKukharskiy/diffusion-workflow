@@ -64,7 +64,7 @@
 
 <div
 	class="chatContainer"
-	style="border: 1px solid {color}; box-shadow: inset 0 0 10px {color}, 0 0 20px {color};"
+	style="border: 2px solid {color}; box-shadow: inset 0 0 10px {color};"
 >
 	{#if $chatPanelMode === 'chat'}
 		<SimpleTextGeneration />
@@ -125,8 +125,8 @@
 		max-width: 800px;
 		box-sizing: border-box;
 		border-radius: 20px;
-		background: #fdfdfd;
-		background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25));
+		background: #f9f9f9;
+		/* background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25)); */
 		backdrop-filter: blur(25px);
 		-webkit-backdrop-filter: blur(25px);
 		padding: 10px;

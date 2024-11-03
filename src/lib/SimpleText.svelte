@@ -95,7 +95,7 @@
 	}
 	.query {
 		/* background: #1a1a1a20; */
-		padding: 10px;
+		padding: 10px 0;
 		box-sizing: border-box;
 		border-radius: 10px;
 	}

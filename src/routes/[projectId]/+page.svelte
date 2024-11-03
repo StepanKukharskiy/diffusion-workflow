@@ -253,7 +253,7 @@
 		width: 100%;
 		max-height: calc(100svh - 20px);
 		padding: 15px;
-		padding-right: 20px;
+		/* padding-right: 20px; */
 		padding-bottom: 250px;
 		box-sizing: border-box;
 		overflow-y: scroll;
