@@ -22,6 +22,7 @@
 	import SimpleImage from '$lib/SimpleImage.svelte';
 	import SimpleVideo from '$lib/SimpleVideo.svelte';
 	import SimpleCodeProject from '$lib/SimpleCodeProject.svelte';
+	import SimpleSketch from '$lib/SimpleSketch.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -96,7 +97,8 @@
 
 					<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid}/>
 				{:else if element.type === 'sketch'}
-					<Sketch />
+					<!-- <Sketch /> -->
+					 <SimpleSketch shapes={element.shapes} uuid={element.uuid}/>
 				{:else if element.type === 'code'}
 					<!-- <CodeProject files={element.files} uuid={element.uuid} /> -->
 					 <SimpleCodeProject files={element.files} uuid={element.uuid} />

@@ -140,9 +140,10 @@
 	.tutorialButton {
 		font-weight: 300;
 		padding: 10px;
-		margin: 0 10px 10px 0;
+		margin: 0 5px 5px 0;
 		border: 1px solid #f9f9f9;
-		border-radius: 20px;
+		border: 1px solid #1a1a1a30;
+		border-radius: 10px;
 		color: #1a1a1a;
 		background: #f9f9f9;
 	}

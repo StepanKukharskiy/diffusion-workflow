@@ -16,6 +16,7 @@ export let bgColor = writable('0, 0%, 98%');
 export let textColor = writable('0, 0%, 10%');
 export let dotsColor = writable('0, 0%, 40%');
 export let elements:any = writable([])
+export let gradientColor = writable('#f9f9f9')
 
 export let consolePanelState = writable(true);
 export let consoleMessages = writable([]);

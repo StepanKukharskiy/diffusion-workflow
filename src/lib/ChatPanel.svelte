@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { referenceImageUrl, chatPanelMode } from './store';
+	import { referenceImageUrl, chatPanelMode, gradientColor } from './store';
 	import SimpleImageGeneration from './SimpleImageGeneration.svelte';
 	import SimpleFileInput from './SimpleFileInput.svelte';
 	import SimpleTextGeneration from './SimpleTextGeneration.svelte';
 	import SimpleCodeTemplates from './SimpleCodeTemplates.svelte';
 	import SimpleVideoGeneration from './SimpleVideoGeneration.svelte';
+	import SimpleSketchGeneration from './SimpleSketchGeneration.svelte';
 
 	let mode = $state('chat'),
 		isSettingsVisible = $state(false),
@@ -50,22 +51,29 @@
 
 		if ($chatPanelMode === 'chat') {
 			color = '#A1C9F2';
+			$gradientColor = color;
 		} else if ($chatPanelMode === 'image') {
 			color = '#FFD7BE';
+			$gradientColor = color;
 		} else if ($chatPanelMode === 'file') {
 			color = '#D6C4FF';
+			$gradientColor = color;
 		} else if ($chatPanelMode === 'code') {
 			color = '#0eede590';
-		}  else if ($chatPanelMode === 'video') {
+			$gradientColor = color;
+		} else if ($chatPanelMode === 'video') {
 			color = '#f673ff90';
+			$gradientColor = color;
+		} else if ($chatPanelMode === 'sketch') {
+			color = '#8BC34A90';
+			$gradientColor = color;
 		}
+
+		document.body.style.setProperty('--gradientColor', $gradientColor);
 	});
 </script>
 
-<div
-	class="chatContainer"
-	style="border: 2px solid {color}; box-shadow: inset 0 0 10px {color};"
->
+<div class="chatContainer" style="border: 1px solid {color}; box-shadow: 0 0 20px {color};">
 	{#if $chatPanelMode === 'chat'}
 		<SimpleTextGeneration />
 	{:else if $chatPanelMode === 'image'}
@@ -76,6 +84,8 @@
 		<SimpleCodeTemplates />
 	{:else if $chatPanelMode === 'video'}
 		<SimpleVideoGeneration />
+	{:else if $chatPanelMode === 'sketch'}
+		<SimpleSketchGeneration />
 	{/if}
 
 	<div class="modeOptions">
@@ -91,7 +101,8 @@
 			style="text-decoration: {$chatPanelMode === 'image' ? 'underline' : 'none'}"
 			onclick={() => {
 				$chatPanelMode = 'image';
-			}}>Image</button
+			}}
+			>Image</button
 		>
 		<button
 			class="settingsButton"
@@ -109,12 +120,18 @@
 		>
 		<button
 			class="settingsButton"
+			style="text-decoration: {$chatPanelMode === 'sketch' ? 'underline' : 'none'}"
+			onclick={() => {
+				$chatPanelMode = 'sketch';
+			}}>Sketch</button
+		>
+		<button
+			class="settingsButton"
 			style="text-decoration: {$chatPanelMode === 'code' ? 'underline' : 'none'}"
 			onclick={() => {
 				$chatPanelMode = 'code';
 			}}>Code</button
 		>
-		
 	</div>
 </div>
 
@@ -125,7 +142,7 @@
 		max-width: 800px;
 		box-sizing: border-box;
 		border-radius: 20px;
-		background: #f9f9f9;
+		background: #fff;
 		/* background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25)); */
 		backdrop-filter: blur(25px);
 		-webkit-backdrop-filter: blur(25px);
@@ -142,5 +159,6 @@
 	}
 	.modeOptions {
 		display: flex;
+		margin-top: 10px;
 	}
 </style>
