@@ -11,6 +11,7 @@
 	let tool: paper.Tool;
 	let path: paper.Path | null = null;
 	let color = $state('#ffffff'); // Default color
+	let project: paper.Project | null = null;
 
 	// Define a type for shapes
 	type Shape =
@@ -19,7 +20,7 @@
 		| { type: 'path'; segments: paper.Segment[]; color: string };
 
 	let { shapes = [], uuid = '' }: { shapes: Shape[]; uuid: any } = $props();
-	console.log(shapes);
+
 	// let shapes: Shape[] = []; // Array to store shapes
 	let isMakingScreenshot = $state(false),
 		isEmptySketch = $state(true),
@@ -39,6 +40,15 @@
 				size: [canvas.width, canvas.height],
 				fillColor: 'black'
 			});
+
+			// const element = $elements.find(el => el.uuid === uuid);
+
+			for (let element of $elements) {
+				if (element.uuid === uuid) {
+					shapes = element.shapes;
+					element.color = color
+				}
+			}
 
 			// Redraw all shapes from the array
 			shapes.forEach((shape) => {
@@ -84,15 +94,25 @@
 
 	onMount(() => {
 		if (typeof window !== 'undefined') {
+			for (let element of $elements) {
+				if (element.uuid === uuid) {
+					shapes = element.shapes;
+				}
+			}
+
 			paper.setup(canvas);
 			console.log(shapes);
-            if(shapes.length > 0){isEmptySketch = false}
+			console.log(canvas)
+			console.log(color)
+			if (shapes.length > 0) {
+				isEmptySketch = false;
+			}
 			setAspectRatio('16:9'); // Default to 16:9
 
 			setTimeout(() => {
 				resizeCanvas(canvas.parentElement.clientWidth - 10, canvas.parentElement.clientHeight);
 			}, 100);
-
+			
 			// Set the background to black
 			const background = new paper.Path.Rectangle({
 				point: [0, 0],
@@ -100,8 +120,9 @@
 				fillColor: 'black'
 			});
 
+			
 			tool = new paper.Tool();
-
+			console.log(tool)
 			tool.onMouseDown = (event) => {
 				console.log('Mouse down on shape:', selectedShape);
 				if (selectedShape === 'rectangle') {
@@ -156,20 +177,48 @@
 				if (path) {
 					// Add the drawn shape to the shapes array
 					if (selectedShape === 'rectangle') {
-						shapes.push({ type: 'rectangle', bounds: path.bounds, color });
+						for (let element of $elements) {
+							if (element.uuid === uuid) {
+								element.shapes.push({ type: 'rectangle', bounds: path.bounds, color: element.color });
+							}
+						}
+						// shapes.push({ type: 'rectangle', bounds: path.bounds, color });
 					} else if (selectedShape === 'circle') {
 						const circle = path as paper.Path.Circle;
-						shapes.push({
-							type: 'circle',
-							center: circle.bounds.center,
-							radius: circle.bounds.width / 2,
-							color
-						});
+						for (let element of $elements) {
+							if (element.uuid === uuid) {
+								element.shapes.push({
+									type: 'circle',
+									center: circle.bounds.center,
+									radius: circle.bounds.width / 2,
+									color: element.color
+								});
+							}
+						}
+						// shapes.push({
+						// 	type: 'circle',
+						// 	center: circle.bounds.center,
+						// 	radius: circle.bounds.width / 2,
+						// 	color
+						// });
 					} else if (selectedShape === 'path') {
-						shapes.push({ type: 'path', segments: path.segments, color });
+						for (let element of $elements) {
+							if (element.uuid === uuid) {
+								element.shapes.push({ type: 'path', segments: path.segments, color: element.color });
+							}
+						}
+						// shapes.push({ type: 'path', segments: path.segments, color });
 					}
 					path = null; // Reset path after drawing
 				}
+
+				// for (let element of $elements) {
+				// 	if (element.uuid === uuid) {
+				// 		element.shapes = shapes;
+				// 	}
+				// }
+				console.log(shapes);
+				console.log($elements);
 
 				if (shapes.length > 0) {
 					isEmptySketch = false;
@@ -184,11 +233,14 @@
 	onDestroy(() => {
 		if (typeof window !== 'undefined') {
 			window.removeEventListener('resize', () => setAspectRatio('16:9'));
+			path = null
+			tool = new paper.Tool()
+			color = ''
 		}
 	});
 
 	async function getScreenshotUrl() {
-        console.log('getting screenshot')
+		console.log('getting screenshot');
 		const canvas = document.getElementById(`${uuid}-canvas`);
 		isMakingScreenshot = true;
 		const dataURL = canvas.toDataURL('image/jpeg');
@@ -234,7 +286,19 @@
 	{/if}
 
 	<div class="controlsMenu" style="margin-bottom: 10px;" transition:slide>
-		<input type="color" class="optionsButton" bind:value={color} />
+		<input
+			type="color"
+			class="optionsButton"
+			bind:value={color}
+			onchange={() => {
+				console.log(color);
+				for(let element of $elements){
+					if(element.uuid === uuid){
+						element.color = color
+					}
+				}
+			}}
+		/>
 		<button
 			class="optionsButton"
 			style="border: {selectedShape === 'rectangle' ? '3px' : '1px'} solid hsla({$textColor}, 100%)"
@@ -290,8 +354,8 @@
 						disabled={isEmptySketch === true ? true : false}
 						onclick={async () => {
 							sketchUrl = await getScreenshotUrl();
-							$referenceImageUrl = sketchUrl
-							$chatPanelMode = 'chat'
+							$referenceImageUrl = sketchUrl;
+							$chatPanelMode = 'chat';
 						}}>Discuss</button
 					>
 				</li>
@@ -300,9 +364,9 @@
 						class="settingsButton"
 						disabled={isEmptySketch === true ? true : false}
 						onclick={async () => {
-                            sketchUrl = await getScreenshotUrl();
-                            $referenceImageUrl = sketchUrl
-							$chatPanelMode = 'image'
+							sketchUrl = await getScreenshotUrl();
+							$referenceImageUrl = sketchUrl;
+							$chatPanelMode = 'image';
 						}}>Create new image with this sketch</button
 					>
 				</li>

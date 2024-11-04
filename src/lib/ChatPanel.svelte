@@ -14,6 +14,7 @@
 	let imageUrl = '',
 		codeProjectUuid = '';
 
+
 	// function addElement(
 	// 		elements: any = [],
 	// 		type = 'text',
@@ -49,11 +50,39 @@
 		// #8BC34A - a muted, greenish-yellow color that's fresh and energetic.
 		// #6495ED - a soft, blue-purple color that's soothing and suggests innovation.
 
+		// Green
+		// HSL: 120°, 50%, 50%
+		// Hex: #34C759
+
+		// Yellow
+		// HSL: 60°, 50%, 50%
+		// Hex: #F7DC6F
+
+		// Orange
+		// HSL: 30°, 50%, 50%
+		// Hex: #FFA07A
+
+		// Pink
+		// HSL: 340°, 50%, 50%
+		// Hex: #FFC0CB
+
+		// Purple
+		// HSL: 270°, 50%, 50%
+		// Hex: #C7B8EA
+
+		// Blue
+		// HSL: 210°, 50%, 50%
+		// Hex: #4682B4
+
+		// Silver
+		// HSL: 0°, 0%, 50%
+		// Hex: #C5C5C5
+
 		if ($chatPanelMode === 'chat') {
-			color = '#A1C9F2';
+			color = '#A1C9F290';
 			$gradientColor = color;
 		} else if ($chatPanelMode === 'image') {
-			color = '#FFD7BE';
+			color = '#F7DC6F';
 			$gradientColor = color;
 		} else if ($chatPanelMode === 'file') {
 			color = '#D6C4FF';
@@ -65,7 +94,7 @@
 			color = '#f673ff90';
 			$gradientColor = color;
 		} else if ($chatPanelMode === 'sketch') {
-			color = '#8BC34A90';
+			color = '#ffef4b90';
 			$gradientColor = color;
 		}
 
@@ -100,9 +129,9 @@
 			class="settingsButton"
 			style="text-decoration: {$chatPanelMode === 'image' ? 'underline' : 'none'}"
 			onclick={() => {
+
 				$chatPanelMode = 'image';
-			}}
-			>Image</button
+			}}>Image</button
 		>
 		<button
 			class="settingsButton"
@@ -127,7 +156,7 @@
 		>
 		<button
 			class="settingsButton"
-			style="text-decoration: {$chatPanelMode === 'code' ? 'underline' : 'none'}"
+			style="text-decoration: {$chatPanelMode === 'code' ? 'underline' : 'none'};"
 			onclick={() => {
 				$chatPanelMode = 'code';
 			}}>Code</button
@@ -158,7 +187,7 @@
 		transition: all 0.25s;
 	}
 	.modeOptions {
-		display: flex;
+		display: ruby;
 		margin-top: 10px;
 	}
 </style>

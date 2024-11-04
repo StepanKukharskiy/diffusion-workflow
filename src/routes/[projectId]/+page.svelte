@@ -24,6 +24,7 @@
 	import SimpleCodeProject from '$lib/SimpleCodeProject.svelte';
 	import SimpleSketch from '$lib/SimpleSketch.svelte';
 
+
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
 	let layout = $state('container-block');
@@ -71,7 +72,7 @@
 {#if $width > 0}
 <div class="conversationAndTutorialsContainer">
 	<div class="container" style="width: {discussionWidth}">
-		<h1 style="margin-top: 50px;">What would you like to discuss?</h1>
+		<h1 style="margin-top: 50px;">What would you like to create?</h1>
 		<!-- <CodeProject /> -->
 		<!-- <button onclick={setLayout}>display grid</button> -->
 
@@ -98,7 +99,8 @@
 					<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid}/>
 				{:else if element.type === 'sketch'}
 					<!-- <Sketch /> -->
-					 <SimpleSketch shapes={element.shapes} uuid={element.uuid}/>
+					<SimpleSketch shapes={element.shapes} uuid={element.uuid}/>
+					 <!-- <SketchTest shapes={element.shapes} uuid={element.uuid} /> -->
 				{:else if element.type === 'code'}
 					<!-- <CodeProject files={element.files} uuid={element.uuid} /> -->
 					 <SimpleCodeProject files={element.files} uuid={element.uuid} />
