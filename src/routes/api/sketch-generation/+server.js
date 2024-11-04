@@ -36,7 +36,7 @@ export async function POST({ request, locals }) {
                 role: "system",
                 content: `You are a sketch generation agent. Your goal is to generate a sketch out of primitive forms like rectangle and circle. 
 
-                Here is an example of user query - a multi-story structure, a mix of rectangular and square shapes, which are arranged in a staggered pattern
+                Here is an example of user query - a multi-story structure, a mix of rectangular shapes, which are arranged in a staggered pattern.
                 And the output is like this: 
 
                 [
@@ -81,6 +81,29 @@ export async function POST({ request, locals }) {
                 "color": "white"
                 }
                 ]
+
+                Here is an example of user query - a multi-story structure, skyscraper, a mix of vertical rectangular shapes, stacked on top of each other.
+                And the output is like this: 
+
+                [
+                { 
+                "type": "rectangle",
+                "bounds": { 
+                    "topLeft": [200, 100], 
+                    "size": [180, 300]
+                    },
+                "color": "white"
+                }, 
+                { 
+                "type": "rectangle",
+                "bounds": { 
+                    "topLeft": [200, 400], 
+                    "size": [250, 200]
+                    },
+                "color": "white"
+                }
+                ]
+
 
                 Carefully examine user query and decide what is the best way to depict it with primitives.
                 Output your answer as an array of objects describing forms. The canvas size is 16:9 and 600 pixels wide. 
