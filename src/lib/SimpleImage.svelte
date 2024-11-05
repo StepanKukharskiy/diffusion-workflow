@@ -120,7 +120,7 @@
 					>
 				</li>
 				<li>
-					<a href={imageUrl} download="image.png" target="_blank" class="settingsButton" style='padding: 10px 5px; color: #1a1a1a; text-decoration: none; display: block;'
+					<a href={imageUrl} download="image.png" target="_blank" class="settingsButton" style='padding: 2px 10px; color: #1a1a1a; text-decoration: none; display: block;'
 						>Download</a
 					>
 				</li>

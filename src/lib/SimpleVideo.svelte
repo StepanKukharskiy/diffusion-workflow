@@ -19,7 +19,7 @@
 						download="video.mp4"
 						target="_blank"
 						class="downloadButton"
-						style="padding: 0 5px; color: #1a1a1a; text-decoration: none; margin: 10px 0; display: block;"
+						style="padding: 2px 10px; color: #1a1a1a; text-decoration: none; margin: 10px 0; display: block;"
 						>Download</a
 					>
 				</li>
