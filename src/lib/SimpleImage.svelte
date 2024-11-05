@@ -44,6 +44,12 @@
 		// if (maskImageUrl != '') {
 		// 	modelOption = 'flux-dev-inpaint';
 		// }
+		if (maskImageUrl != '') {
+			modelOption = 'flux-dev-inpaint';
+		}
+		if ($referenceImageUrl != '') {
+			modelOption = 'sdxl-controlnet-canny';
+		}
 		console.log('query: ' + query);
 		const message = await fetch(`/api/image-generation`, {
 			method: 'POST',
@@ -51,7 +57,7 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				refImageUrl: refImageUrl,
+				refImageUrl: $referenceImageUrl,
 				maskUrl: maskImageUrl,
 				prompt: query,
 				model: modelOption,

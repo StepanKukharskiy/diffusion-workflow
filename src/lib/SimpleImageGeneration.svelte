@@ -61,7 +61,7 @@
 		generatedImageUrl = messageObject.imageUrl;
 		console.log(`api response: ${messageObject}`);
 		isGeneratingImage = false;
-		$referenceImageUrl = '';
+		// $referenceImageUrl = '';
 		return generatedImageUrl;
 	}
 </script>

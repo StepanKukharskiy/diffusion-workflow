@@ -62,12 +62,12 @@
 
             <button class='menuButton' on:click={()=>{mobileMenuDisplay === 'none' ? mobileMenuDisplay = 'block' : mobileMenuDisplay = 'none'}}>
                 {#if mobileMenuDisplay === 'none'}
-                    <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <svg width='50' height='50' viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
                         <line x1="10" y1="20" x2="40" y2="20" stroke="#1a1a1a" stroke-width='2' />
                         <line x1="10" y1="30" x2="40" y2="30" stroke="#1a1a1a" stroke-width='2' />
                     </svg>
                 {:else}
-                    <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <svg width='50' height='50' viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
                         <line x1="15" y1="15" x2="35" y2="35" stroke="#1a1a1a" stroke-width='2' />
                         <line x1="15" y1="35" x2="35" y2="15" stroke="#1a1a1a" stroke-width='2' />
                     </svg>
