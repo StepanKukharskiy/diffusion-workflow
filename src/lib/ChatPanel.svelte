@@ -219,7 +219,7 @@
 		margin: 0;
 		height: 25px;
 		border: 1px solid #1a1a1a30;
-		background: #1a1a1a10;
+		background: #f9f9f9;
 		border-radius: 10px 10px 0 0;
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
