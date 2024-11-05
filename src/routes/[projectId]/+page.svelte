@@ -255,7 +255,7 @@
 	}
 	.container {
 		width: 100%;
-		max-height: calc(100svh - 20px);
+		max-height: calc(100vh - 20px);
 		padding: 15px;
 		/* padding-right: 20px; */
 		padding-bottom: 250px;
