@@ -14,6 +14,8 @@
 	let imageUrl = '',
 		codeProjectUuid = '';
 
+	let panelState = $state(true)
+
 	// function addElement(
 	// 		elements: any = [],
 	// 		type = 'text',
@@ -101,7 +103,9 @@
 	});
 </script>
 
+{#if panelState}
 <div class="chatContainer" style="border: 1px solid {color}; box-shadow: 0 0 20px {color};">
+	
 	{#if $chatPanelMode === 'chat'}
 		<SimpleTextGeneration />
 	{:else if $chatPanelMode === 'image'}
@@ -160,7 +164,11 @@
 			}}>Code</button
 		>
 	</div>
+	<button class='panelStateButton' onclick={()=>{panelState = !panelState}}>&#8744; minify</button>
 </div>
+{:else}
+<button class='panelStateHiddenButton' onclick={()=>{panelState = !panelState}}>controls</button>
+{/if}
 
 <style>
 	.chatContainer {
@@ -188,5 +196,32 @@
 		display: flex;
 		flex-wrap: wrap;
 		margin-top: 10px;
+	}
+	.panelStateButton{
+		/* position: absolute; */
+		/* top: -25px;
+		left: 20px; */
+		margin: 0;
+		height: 25px;
+		border: none;
+		background: none;
+		border-radius: 10px 10px 0 0;
+		font-family: 'Roboto', sans-serif;
+		font-weight: 300;
+	}
+	.panelStateButton:hover{
+		text-decoration: underline;
+	}
+	.panelStateHiddenButton{
+		/* position: absolute; */
+		/* top: -25px;
+		left: 20px; */
+		margin: 0;
+		height: 25px;
+		border: 1px solid #1a1a1a30;
+		background: #1a1a1a10;
+		border-radius: 10px 10px 0 0;
+		font-family: 'Roboto', sans-serif;
+		font-weight: 300;
 	}
 </style>
