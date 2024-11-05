@@ -86,6 +86,11 @@
 							onclick={async () => {
 								const url = await generateImage();
 								imageUrl = url;
+								for(let element of $elements){
+									if(element.uuid === uuid){
+										element.imageUrl = url
+									}
+								}
 								// addElement($elements, 'image', query, url)
 							}}>Retry generation</button
 						>
