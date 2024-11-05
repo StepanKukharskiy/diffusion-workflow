@@ -14,7 +14,6 @@
 	let imageUrl = '',
 		codeProjectUuid = '';
 
-
 	// function addElement(
 	// 		elements: any = [],
 	// 		type = 'text',
@@ -129,7 +128,6 @@
 			class="settingsButton"
 			style="text-decoration: {$chatPanelMode === 'image' ? 'underline' : 'none'}"
 			onclick={() => {
-
 				$chatPanelMode = 'image';
 			}}>Image</button
 		>
@@ -187,7 +185,8 @@
 		transition: all 0.25s;
 	}
 	.modeOptions {
-		display: ruby;
+		display: flex;
+		flex-wrap: wrap;
 		margin-top: 10px;
 	}
 </style>
