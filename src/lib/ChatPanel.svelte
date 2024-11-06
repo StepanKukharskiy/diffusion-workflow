@@ -164,10 +164,10 @@
 			}}>Code</button
 		>
 	</div>
-	<button class='panelStateButton' onclick={()=>{panelState = !panelState}}>&#8744; minify</button>
+	<button class='panelStateButton' onclick={()=>{panelState = !panelState}}> minify &#8897;</button>
 </div>
 {:else}
-<button class='panelStateHiddenButton' onclick={()=>{panelState = !panelState}}>controls</button>
+<button class='panelStateHiddenButton' onclick={()=>{panelState = !panelState}}>controls &#8896;</button>
 {/if}
 
 <style>

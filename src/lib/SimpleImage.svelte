@@ -78,7 +78,12 @@
 	{#if !isGenerating}
 		<details>
 			<summary>Options</summary>
+			{#if query != 'uploaded file'}
+			<label for='prompt-{uuid}'>Description</label>
+				<textarea id='prompt-{uuid}'>{query}</textarea>
+				{/if}
 			<ul>
+				
 				{#if query != 'uploaded file'}
 					<li>
 						<button
@@ -169,5 +174,8 @@
 	}
 	details {
 		border-bottom: 1px solid #1a1a1a20;
+	}
+	li {
+		height: fit-content;
 	}
 </style>
