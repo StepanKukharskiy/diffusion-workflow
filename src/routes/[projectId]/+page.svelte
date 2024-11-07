@@ -25,7 +25,6 @@
 	import SimpleSketch from '$lib/SimpleSketch.svelte';
 	import Simple3dViewer from '$lib/Simple3dViewer.svelte';
 
-
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
 	let layout = $state('container-block');
@@ -70,52 +69,47 @@
 
 <NavPanel data={''} />
 
-
-
-
 {#if $width > 0}
-<div class="conversationAndTutorialsContainer">
-	<div class="container" style="width: {discussionWidth}">
-		<h1 style="margin-top: 50px;">What would you like to create?</h1>
-		<!-- <CodeProject /> -->
-		<!-- <button onclick={setLayout}>display grid</button> -->
+	<div class="conversationAndTutorialsContainer">
+		<div class="container" style="width: {discussionWidth}">
+			<h1 style="margin-top: 50px;">What would you like to create?</h1>
+			<!-- <CodeProject /> -->
+			<!-- <button onclick={setLayout}>display grid</button> -->
 
-		<div class={layout}>
-			
-			<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
-			{#each $elements as element}
-				{#if element.type === 'text'}
-					<!-- <TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid} /> -->
-					<SimpleText query={element.query} answer={element.answer} uuid={element.uuid}/>
-				{:else if element.type === 'file'}
-					<FileInput uuid={element.uuid}/>
-				{:else if element.type === 'video'}
-					<!-- <VideoGeneration refImageUrl={element.imageUrl} /> -->
-					 <SimpleVideo videoUrl = {element.videoUrl} uuid={element.uuid}/>
-				{:else if element.type === 'imageGeneration'}
-					<!-- <ImageGeneration
+			<div class={layout}>
+				<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
+				{#each $elements as element}
+					{#if element.type === 'text'}
+						<!-- <TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid} /> -->
+						<SimpleText query={element.query} answer={element.answer} uuid={element.uuid} />
+					{:else if element.type === 'file'}
+						<FileInput uuid={element.uuid} />
+					{:else if element.type === 'video'}
+						<!-- <VideoGeneration refImageUrl={element.imageUrl} /> -->
+						<SimpleVideo videoUrl={element.videoUrl} uuid={element.uuid} />
+					{:else if element.type === 'imageGeneration'}
+						<!-- <ImageGeneration
 						refImageUrl={element.imageUrl}
 						maskImageUrl={element.maskImageUrl}
 						prompt={element.prompt}
 					/> -->
-					<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid}/>
+						<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid} />
 					{:else if element.type === 'image'}
+						<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid} />
+					{:else if element.type === 'sketch'}
+						<!-- <Sketch /> -->
+						<SimpleSketch shapes={element.shapes} uuid={element.uuid} />
+						<!-- <SketchTest shapes={element.shapes} uuid={element.uuid} /> -->
+					{:else if element.type === 'code'}
+						<!-- <CodeProject files={element.files} uuid={element.uuid} /> -->
+						<SimpleCodeProject files={element.files} uuid={element.uuid} />
+					{:else if element.type === '3dViewer'}
+						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} />
+					{/if}
+				{/each}
+			</div>
 
-					<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid}/>
-				{:else if element.type === 'sketch'}
-					<!-- <Sketch /> -->
-					<SimpleSketch shapes={element.shapes} uuid={element.uuid}/>
-					 <!-- <SketchTest shapes={element.shapes} uuid={element.uuid} /> -->
-				{:else if element.type === 'code'}
-					<!-- <CodeProject files={element.files} uuid={element.uuid} /> -->
-					 <SimpleCodeProject files={element.files} uuid={element.uuid} />
-				{:else if element.type === '3dViewer'}
-				<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid}/>
-				{/if}
-			{/each}
-		</div>
-
-		<!-- {#if isCreateOptionsVisible}
+			<!-- {#if isCreateOptionsVisible}
 	<div class='optionsContainer'>
 		<button
 			class="createOptionsMenu"
@@ -180,19 +174,20 @@
 		>
 	{/if} -->
 
-	<div style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 0px; display: flex; justify-content: center; align-items: center;">
-		<ChatPanel />
-	</div>
-	</div>
-	
-	{#if $tutorialsPanelState}
-		<div>
-			<TutorialsPanel />
+			<div
+				style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 0px; display: flex; justify-content: center; align-items: center;"
+			>
+				<ChatPanel />
+			</div>
 		</div>
-	{/if}
-</div>
-{/if}
 
+		{#if $tutorialsPanelState}
+			<div>
+				<TutorialsPanel />
+			</div>
+		{/if}
+	</div>
+{/if}
 
 <!-- <div class="discussionNav">
 	<button
