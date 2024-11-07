@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { elements, referenceImageUrl, textColor, chatPanelMode } from './store';
-	import { generateUUID, generateVideo, deleteBlock } from './utils';
+	import { generateUUID, generateVideo, deleteBlock, generateModel } from './utils';
 	let { imageUrl = '', query = '', uuid = '' } = $props();
 
 	console.log($elements);
@@ -12,7 +12,8 @@
 		type = 'text',
 		query = '',
 		generatedImageUrl = '',
-		generatedVideoUrl = ''
+		generatedVideoUrl = '',
+		generatedModelUrl = ''
 	) {
 		if (type === 'image') {
 			elements.push({
@@ -28,6 +29,14 @@
 				query: query,
 				refImageUrl: generatedImageUrl,
 				videoUrl: generatedVideoUrl
+			});
+		}  else if (type === '3dViewer') {
+			elements.push({
+				uuid: generateUUID(),
+				type: type,
+				query: query,
+				refImageUrl: generatedImageUrl,
+				modelUrl: generatedModelUrl
 			});
 		}
 		console.log(elements);
@@ -133,6 +142,22 @@
 							addElement($elements, 'video', query, imageUrl, url);
 							$elements = $elements;
 						}}>Turn to video</button
+					>
+				</li>
+				<li>
+					<button
+						class="settingsButton"
+						onclick={async () => {
+							isGenerating = true;
+							const url = await generateModel({
+								refImageUrl: imageUrl,
+								projectId: $page.params.projectId
+							});
+							isGenerating = false;
+							console.log(url)
+							addElement($elements, '3dViewer', query, imageUrl, '', url);
+							$elements = $elements;
+						}}>Turn to 3D</button
 					>
 				</li>
 				<li>

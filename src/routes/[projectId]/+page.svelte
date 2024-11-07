@@ -23,6 +23,7 @@
 	import SimpleVideo from '$lib/SimpleVideo.svelte';
 	import SimpleCodeProject from '$lib/SimpleCodeProject.svelte';
 	import SimpleSketch from '$lib/SimpleSketch.svelte';
+	import Simple3dViewer from '$lib/Simple3dViewer.svelte';
 
 
 	let isCreateOptionsVisible = $state(false);
@@ -69,6 +70,9 @@
 
 <NavPanel data={''} />
 
+
+
+
 {#if $width > 0}
 <div class="conversationAndTutorialsContainer">
 	<div class="container" style="width: {discussionWidth}">
@@ -77,6 +81,7 @@
 		<!-- <button onclick={setLayout}>display grid</button> -->
 
 		<div class={layout}>
+			
 			<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
 			{#each $elements as element}
 				{#if element.type === 'text'}
@@ -104,6 +109,8 @@
 				{:else if element.type === 'code'}
 					<!-- <CodeProject files={element.files} uuid={element.uuid} /> -->
 					 <SimpleCodeProject files={element.files} uuid={element.uuid} />
+				{:else if element.type === '3dViewer'}
+				<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid}/>
 				{/if}
 			{/each}
 		</div>

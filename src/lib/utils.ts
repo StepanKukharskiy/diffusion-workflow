@@ -380,6 +380,24 @@ export function generateUUID() {
 		return generatedVideoUrl;
 	}
 
+  export async function generateModel(data = { refImageUrl: '', projectId: '' }) {
+		let generatedVideoUrl = '';
+		const message = await fetch(`/api/3d-generation`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				refImageUrl: data.refImageUrl,
+				projectId: data.projectId
+			})
+		});
+		const messageObject = await message.json();
+		generatedVideoUrl = messageObject.modelUrl;
+		console.log(messageObject);
+		return generatedVideoUrl;
+	}
+
   export function deleteBlock(elements:any, uuid:any){
     for (let i = 0; i < elements.length; i++) {
       if (elements[i].uuid === uuid) {
