@@ -14,7 +14,7 @@
 	let imageUrl = '',
 		codeProjectUuid = '';
 
-	let panelState = $state(true)
+	let panelState = $state(true);
 
 	// function addElement(
 	// 		elements: any = [],
@@ -104,70 +104,102 @@
 </script>
 
 {#if panelState}
-<div class="chatContainer" style="border: 1px solid {color}; box-shadow: 0 0 20px {color};">
-	
-	{#if $chatPanelMode === 'chat'}
-		<SimpleTextGeneration />
-	{:else if $chatPanelMode === 'image'}
-		<SimpleImageGeneration />
-	{:else if $chatPanelMode === 'file'}
-		<SimpleFileInput />
-	{:else if $chatPanelMode === 'code'}
-		<SimpleCodeTemplates />
-	{:else if $chatPanelMode === 'video'}
-		<SimpleVideoGeneration />
-	{:else if $chatPanelMode === 'sketch'}
-		<SimpleSketchGeneration />
-	{/if}
+	<div class="chatContainer" style="border: 1px solid {color}; box-shadow: 0 0 20px {color};">
+		{#if $chatPanelMode === 'chat'}
+			<SimpleTextGeneration />
+		{:else if $chatPanelMode === 'image'}
+			<SimpleImageGeneration />
+		{:else if $chatPanelMode === 'file'}
+			<SimpleFileInput />
+		{:else if $chatPanelMode === 'code'}
+			<SimpleCodeTemplates />
+		{:else if $chatPanelMode === 'video'}
+			<SimpleVideoGeneration />
+		{:else if $chatPanelMode === 'sketch'}
+			<SimpleSketchGeneration />
+		{/if}
 
-	<div class="modeOptions">
+		<div class="modeOptions">
+			<button
+				class="settingsButton"
+				style="text-decoration: {$chatPanelMode === 'chat' ? 'underline' : 'none'}"
+				onclick={() => {
+					$chatPanelMode = 'chat';
+				}}>Chat</button
+			>
+			<button
+				class="settingsButton"
+				style="text-decoration: {$chatPanelMode === 'image' ? 'underline' : 'none'}"
+				onclick={() => {
+					$chatPanelMode = 'image';
+				}}>Image</button
+			>
+			<button
+				class="settingsButton"
+				style="text-decoration: {$chatPanelMode === 'video' ? 'underline' : 'none'}"
+				onclick={() => {
+					$chatPanelMode = 'video';
+				}}>Video</button
+			>
+			<button
+				class="settingsButton"
+				style="text-decoration: {$chatPanelMode === 'file' ? 'underline' : 'none'}"
+				onclick={() => {
+					$chatPanelMode = 'file';
+				}}>File</button
+			>
+			<button
+				class="settingsButton"
+				style="text-decoration: {$chatPanelMode === 'sketch' ? 'underline' : 'none'}"
+				onclick={() => {
+					$chatPanelMode = 'sketch';
+				}}>Sketch</button
+			>
+			<button
+				class="settingsButton"
+				style="text-decoration: {$chatPanelMode === 'code' ? 'underline' : 'none'};"
+				onclick={() => {
+					$chatPanelMode = 'code';
+				}}>Code</button
+			>
+		</div>
 		<button
-			class="settingsButton"
-			style="text-decoration: {$chatPanelMode === 'chat' ? 'underline' : 'none'}"
+			class="panelStateButton"
 			onclick={() => {
-				$chatPanelMode = 'chat';
-			}}>Chat</button
+				panelState = !panelState;
+			}}
 		>
-		<button
-			class="settingsButton"
-			style="text-decoration: {$chatPanelMode === 'image' ? 'underline' : 'none'}"
-			onclick={() => {
-				$chatPanelMode = 'image';
-			}}>Image</button
-		>
-		<button
-			class="settingsButton"
-			style="text-decoration: {$chatPanelMode === 'video' ? 'underline' : 'none'}"
-			onclick={() => {
-				$chatPanelMode = 'video';
-			}}>Video</button
-		>
-		<button
-			class="settingsButton"
-			style="text-decoration: {$chatPanelMode === 'file' ? 'underline' : 'none'}"
-			onclick={() => {
-				$chatPanelMode = 'file';
-			}}>File</button
-		>
-		<button
-			class="settingsButton"
-			style="text-decoration: {$chatPanelMode === 'sketch' ? 'underline' : 'none'}"
-			onclick={() => {
-				$chatPanelMode = 'sketch';
-			}}>Sketch</button
-		>
-		<button
-			class="settingsButton"
-			style="text-decoration: {$chatPanelMode === 'code' ? 'underline' : 'none'};"
-			onclick={() => {
-				$chatPanelMode = 'code';
-			}}>Code</button
+			minify<svg
+			style='margin-left: 5px'
+				width="10"
+				height="10"
+				viewBox="0 0 100 100"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<line x1="20" y1="20" x2="50" y2="80" stroke="#1a1a1a" stroke-width="10" />
+				<line x1="50" y1="80" x2="80" y2="20" stroke="#1a1a1a" stroke-width="10" />
+			</svg></button
 		>
 	</div>
-	<button class='panelStateButton' onclick={()=>{panelState = !panelState}}> minify &#8897;</button>
-</div>
 {:else}
-<button class='panelStateHiddenButton' onclick={()=>{panelState = !panelState}}>controls &#8896;</button>
+	<button
+		class="panelStateHiddenButton"
+		onclick={() => {
+			panelState = !panelState;
+		}}
+		>controls<svg
+		style='margin-left: 5px'
+			width="10"
+			height="10"
+			viewBox="0 0 100 100"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<line x1="20" y1="80" x2="50" y2="20" stroke="#1a1a1a" stroke-width="10" />
+			<line x1="50" y1="20" x2="80" y2="80" stroke="#1a1a1a" stroke-width="10" />
+		</svg></button
+	>
 {/if}
 
 <style>
@@ -197,7 +229,7 @@
 		flex-wrap: wrap;
 		margin-top: 10px;
 	}
-	.panelStateButton{
+	.panelStateButton {
 		/* position: absolute; */
 		/* top: -25px;
 		left: 20px; */
@@ -208,11 +240,12 @@
 		border-radius: 10px 10px 0 0;
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
+		color: #1a1a1a;
 	}
-	.panelStateButton:hover{
+	.panelStateButton:hover {
 		text-decoration: underline;
 	}
-	.panelStateHiddenButton{
+	.panelStateHiddenButton {
 		/* position: absolute; */
 		/* top: -25px;
 		left: 20px; */
@@ -223,5 +256,6 @@
 		border-radius: 10px 10px 0 0;
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
+		color: #1a1a1a;
 	}
 </style>
