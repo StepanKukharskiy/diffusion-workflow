@@ -37,6 +37,8 @@ summary {
     display: flex;
     align-items: center;
     cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
 }
 
 summary::-webkit-details-marker {

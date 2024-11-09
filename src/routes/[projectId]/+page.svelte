@@ -8,6 +8,7 @@
 		width
 	} from '$lib/store';
 	import { generateUUID, initialCodeFiles } from '$lib/utils';
+	import { page } from '$app/stores';
 
 	import TextInput from '$lib/TextInput.svelte';
 	import FileInput from '$lib/FileInput.svelte';
@@ -28,6 +29,20 @@
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
 	let layout = $state('container-block');
+
+	// async function test(fileName = ''){
+	// 	await fetch(`/api/get-file`, {
+	// 		method: 'POST',
+	// 		headers: {
+	// 			'Content-Type': 'application/json'
+	// 		},
+	// 		body: JSON.stringify({
+	// 			projectId: $page.params.projectId,
+	// 			fileName: fileName
+	// 		})
+	// 	})
+	// }
+	// test('flux_schnell_vFph2bakxl.webp')
 
 	function addElement(elements: any = [], type = 'text') {
 		if (type === 'code') {

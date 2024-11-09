@@ -30,7 +30,7 @@
 				refImageUrl: generatedImageUrl,
 				videoUrl: generatedVideoUrl
 			});
-		}  else if (type === '3dViewer') {
+		} else if (type === '3dViewer') {
 			elements.push({
 				uuid: generateUUID(),
 				type: type,
@@ -88,11 +88,12 @@
 		<details>
 			<summary>Options</summary>
 			{#if query != 'uploaded file'}
-			<label for='prompt-{uuid}'>Description</label>
-				<textarea id='prompt-{uuid}'>{query}</textarea>
-				{/if}
+				<label for="prompt-{uuid}">Description</label>
+				<textarea id="prompt-{uuid}">{query}</textarea>
+				<label for="prompt-{uuid}">File url</label>
+				<textarea id="prompt-{uuid}">{`api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`}</textarea>
+			{/if}
 			<ul>
-				
 				{#if query != 'uploaded file'}
 					<li>
 						<button
@@ -100,9 +101,9 @@
 							onclick={async () => {
 								const url = await generateImage();
 								imageUrl = url;
-								for(let element of $elements){
-									if(element.uuid === uuid){
-										element.imageUrl = url
+								for (let element of $elements) {
+									if (element.uuid === uuid) {
+										element.imageUrl = url;
 									}
 								}
 								// addElement($elements, 'image', query, url)
@@ -114,8 +115,8 @@
 					<button
 						class="settingsButton"
 						onclick={async () => {
-							$referenceImageUrl = imageUrl
-							$chatPanelMode = 'chat'
+							$referenceImageUrl = imageUrl;
+							$chatPanelMode = 'chat';
 						}}>Discuss</button
 					>
 				</li>
@@ -123,8 +124,8 @@
 					<button
 						class="settingsButton"
 						onclick={async () => {
-							$referenceImageUrl = imageUrl
-							$chatPanelMode = 'image'
+							$referenceImageUrl = imageUrl;
+							$chatPanelMode = 'image';
 						}}>Create new image</button
 					>
 				</li>
@@ -154,14 +155,19 @@
 								projectId: $page.params.projectId
 							});
 							isGenerating = false;
-							console.log(url)
+							console.log(url);
 							addElement($elements, '3dViewer', query, imageUrl, '', url);
 							$elements = $elements;
 						}}>Turn to 3D</button
 					>
 				</li>
 				<li>
-					<a href={imageUrl} download="image.png" target="_blank" class="settingsButton" style='padding: 2px 10px; color: #1a1a1a; text-decoration: none; display: block;'
+					<a
+						href={imageUrl}
+						download="image.png"
+						target="_blank"
+						class="settingsButton"
+						style="padding: 2px 10px; color: #1a1a1a; text-decoration: none; display: block;"
 						>Download</a
 					>
 				</li>
@@ -169,7 +175,7 @@
 					<button
 						class="settingsButton"
 						onclick={async () => {
-							deleteBlock($elements, uuid)
+							deleteBlock($elements, uuid);
 							$elements = $elements;
 						}}>Delete</button
 					>
