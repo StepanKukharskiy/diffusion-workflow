@@ -209,7 +209,7 @@ video {
 }
 
 .settingsButton {
-    height: 40px;
+    height: 30px;
     border: none;
     border-radius: 10px;
     background: none;
@@ -218,6 +218,7 @@ video {
     font-weight: 300;
     color: #1a1a1a;
     display: flex;
+    align-items: center;
 }
 
 .smallMenuButton {

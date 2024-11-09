@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { referenceImageUrl, chatPanelMode, gradientColor } from './store';
+	import { slide } from 'svelte/transition';
 	import SimpleImageGeneration from './SimpleImageGeneration.svelte';
 	import SimpleFileInput from './SimpleFileInput.svelte';
 	import SimpleTextGeneration from './SimpleTextGeneration.svelte';
@@ -122,42 +123,42 @@
 		<div class="modeOptions">
 			<button
 				class="settingsButton"
-				style="text-decoration: {$chatPanelMode === 'chat' ? 'underline' : 'none'}"
+				style="background: {$chatPanelMode === 'chat' ? color : 'none'};"
 				onclick={() => {
 					$chatPanelMode = 'chat';
 				}}>Chat</button
 			>
 			<button
 				class="settingsButton"
-				style="text-decoration: {$chatPanelMode === 'image' ? 'underline' : 'none'}"
+				style="background: {$chatPanelMode === 'image' ? color : 'none'};"
 				onclick={() => {
 					$chatPanelMode = 'image';
 				}}>Image</button
 			>
 			<button
 				class="settingsButton"
-				style="text-decoration: {$chatPanelMode === 'video' ? 'underline' : 'none'}"
+				style="background: {$chatPanelMode === 'video' ? color : 'none'};"
 				onclick={() => {
 					$chatPanelMode = 'video';
 				}}>Video</button
 			>
 			<button
 				class="settingsButton"
-				style="text-decoration: {$chatPanelMode === 'file' ? 'underline' : 'none'}"
+				style="background: {$chatPanelMode === 'file' ? color : 'none'};"
 				onclick={() => {
 					$chatPanelMode = 'file';
 				}}>File</button
 			>
 			<button
 				class="settingsButton"
-				style="text-decoration: {$chatPanelMode === 'sketch' ? 'underline' : 'none'}"
+				style="background: {$chatPanelMode === 'sketch' ? color : 'none'};"
 				onclick={() => {
 					$chatPanelMode = 'sketch';
 				}}>Sketch</button
 			>
 			<button
 				class="settingsButton"
-				style="text-decoration: {$chatPanelMode === 'code' ? 'underline' : 'none'};"
+				style="background: {$chatPanelMode === 'code' ? color : 'none'};"
 				onclick={() => {
 					$chatPanelMode = 'code';
 				}}>Code</button
