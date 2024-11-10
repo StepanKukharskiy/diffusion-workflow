@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { textColor, bgColor, elements } from './store';
+	import { deleteBlock } from './utils';
 	import paper from 'paper';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
@@ -141,6 +142,32 @@
 		id="{uuid}-canvas"
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
+	<details>
+		<summary>Options</summary>
+			<label for="prompt-{uuid}">File url</label>
+			<textarea id="prompt-{uuid}">{`api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</textarea>
+		<ul>
+			<li>
+				<a
+					href={modelUrl}
+					download="model.glb"
+					target="_blank"
+					class="settingsButton"
+					style="padding: 2px 10px; color: #1a1a1a; text-decoration: none; display: block;"
+					>Download</a
+				>
+			</li>
+			<li>
+				<button
+					class="settingsButton"
+					onclick={async () => {
+						deleteBlock($elements, uuid);
+						$elements = $elements;
+					}}>Delete</button
+				>
+			</li>
+		</ul>
+	</details>
 </div>
 
 <style>
@@ -148,10 +175,16 @@
 		width: 100%;
 		max-width: 800px;
 		margin-bottom: 50px;
-		border: 1px solid #1a1a1a30;
-		border-radius: 10px;
 	}
 	canvas {
 		z-index: 10;
+		border: 1px solid #1a1a1a30;
+		border-radius: 10px;
+	}
+	details {
+		border-bottom: 1px solid #1a1a1a20;
+	}
+	li {
+		height: fit-content;
 	}
 </style>
