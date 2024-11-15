@@ -91,7 +91,7 @@
 		<div class="container" style="width: {discussionWidth}">
 			<h1 style="margin-top: 50px;">What would you like to create?</h1>
 
-			<Simple3dViewer modelUrl={'https://kodiia-db.pockethost.io/api/files/u2gxg2hnw25d8mw/0xjag4dn7c30f4d/model_w68J61XGn4.glb'} uuid={''} />
+			<!-- <Simple3dViewer modelUrl={'https://kodiia-db.pockethost.io/api/files/u2gxg2hnw25d8mw/0xjag4dn7c30f4d/model_w68J61XGn4.glb'} uuid={''} /> -->
 			<!-- <CodeProject /> -->
 			<!-- <button onclick={setLayout}>display grid</button> -->
 
