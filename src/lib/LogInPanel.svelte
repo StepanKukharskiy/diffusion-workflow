@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { textColor, bgColor, loginPanelState } from './store';
+	import { textColor, bgColor, loginPanelState, isUserAuthenticated } from './store';
 	import { slide } from 'svelte/transition';
 
 	let email = '',
@@ -13,12 +13,13 @@
 		const formData = new FormData();
 		formData.append('email', email);
 		formData.append('password', password);
-		const response = await fetch('/api/login', { method: 'POST', body: formData });
+		const response = await fetch('/api/user/login', { method: 'POST', body: formData });
 		const responseObject = await response.json();
 		console.log(responseObject);
 		if (responseObject.message === 'Success') {
 			isLoggingIn = false;
 			$loginPanelState = false;
+			$isUserAuthenticated = true;
 		} else {
             isLoggingIn = false;
 			errorMessage = responseObject.message;
@@ -28,10 +29,7 @@
 
 <div class="loginContainer">
 	<h2>Log In</h2>
-    <p style="margin: 10px 0 0 0;">or</p>
-	<p style="margin: 10px 0 0 0;">
-		<a href="/register" style="color: hsl({$textColor});">sing up</a> if you don't have an account.
-	</p>
+	
 
 	<div class="inputContainer">
 		<label for="email" class="formLabel">
@@ -80,6 +78,10 @@
 	{#if errorMessage != ''}
 		<p>{errorMessage}</p>
 	{/if}
+
+	<p style="margin: 10px 0 0 0;">
+		Don't have an account? <a href="/register" style="color: hsl({$textColor});">Sign Up</a>
+	</p>
 
 	<!-- {#if form?.notVerified}
         <div class='alertContainer'>

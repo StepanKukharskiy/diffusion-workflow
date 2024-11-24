@@ -11,7 +11,7 @@
 		queryTextarea: any,
 		query = $state(''),
 		responseText = $state(),
-		modelOption = $state('llama3.1-70b'),
+		modelOption = $state('llama3.1-405b'),
 		answers: any = $state([]),
 		queries: any = $state([]);
 

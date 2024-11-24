@@ -14,11 +14,10 @@ try {
     if (locals.pb.authStore.isValid) {
         const currentTime = new Date().toISOString();
         // Update the last login time for the authenticated user
-        await locals.pb.collection("users").update(locals.pb.authStore.model.id, { lastLogin: currentTime });
-        console.log(locals.user); 
+        await locals.pb.collection("users").update(locals.pb.authStore.model.id, { lastLogin: currentTime }); 
         response = { 
             message: 'Success',
-            user: locals.user
+            //user: locals.user
         }               
     }else{
         locals.pb.authStore.clear()

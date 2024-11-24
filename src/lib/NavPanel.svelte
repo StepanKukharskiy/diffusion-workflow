@@ -1,7 +1,15 @@
 <script>
 	// import kodiia_logo_bw from '$lib/logos/kodiia_logo_bw.svg'
 	import kodiia_small from '$lib/logos/kodiia_small.svg';
-	import { bgColor, textColor, width, height, tutorialsPanelState, loginPanelState } from './store';
+	import {
+		bgColor,
+		textColor,
+		width,
+		height,
+		tutorialsPanelState,
+		loginPanelState,
+		isUserAuthenticated
+	} from './store';
 	import { page } from '$app/stores';
 	import LogInPanel from './LogInPanel.svelte';
 
@@ -27,8 +35,21 @@
 	//     }
 	// }
 
+	let isLoggingOut = false;
+
 	function toggleTutorials() {
 		$tutorialsPanelState = !$tutorialsPanelState;
+	}
+
+	async function logout() {
+		isLoggingOut = true;
+		const formData = new FormData();
+		const response = await fetch('/api/user/logout', { method: 'POST', body: formData });
+		const responseObject = await response.json();
+		if (responseObject.message === 'Logged out') {
+			$isUserAuthenticated = false;
+			isLoggingOut = false;
+		}
 	}
 
 	let mobileMenuDisplay = 'none';
@@ -43,10 +64,12 @@
 
 			<div class="desktopMenu">
 				<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
-				{#if data.user}
-					<form action="/logout" method="POST">
-						<button type="submit" class="smallMenuButton">Log Out</button>
-					</form>
+				{#if $isUserAuthenticated}
+					{#if !isLoggingOut}
+						<button type="submit" class="smallMenuButton" onclick={logout}>Log Out</button>
+					{:else}
+						<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+					{/if}
 					<!-- <button class="smallMenuButton" on:click='{()=>{stylesPanelState.set(true)}}'>Set theme</button> -->
 				{:else}
 					<!-- <a class="smallMenuButton" href="/register">Sign Up</a> -->
@@ -101,20 +124,22 @@
 				}}>Resources</button
 			>
 
-			{#if data.user}
-				<form action="/logout" method="POST">
-					<button type="submit" class="smallMenuButton" style="padding: 10px;">Log Out</button>
-				</form>
+			{#if $isUserAuthenticated}
+			{#if !isLoggingOut}
+			<button type="submit" class="smallMenuButton" style='padding: 10px;' onclick={logout}>Log Out</button>
+		{:else}
+			<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+		{/if}
 				<!-- <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{stylesPanelState.set(true)}}'>Set theme</button> -->
 			{:else}
 				<!-- <a class="smallMenuButton" style="padding: 10px;" href="/register">Sign Up</a> -->
 				<button
-						class="smallMenuButton"
-						onclick={() => {
-                            mobileMenuDisplay = 'none'
-							$loginPanelState = true;
-						}}>Log In</button
-					>
+					class="smallMenuButton"
+					onclick={() => {
+						mobileMenuDisplay = 'none';
+						$loginPanelState = true;
+					}}>Log In</button
+				>
 			{/if}
 		</div>
 	{/if}
