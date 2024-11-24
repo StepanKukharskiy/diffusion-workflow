@@ -14,7 +14,8 @@
 		{ name: 'FF2D', description: 'Flow Field 2D' },
 		{ name: 'FF3D', description: 'Flow Field 3D' },
 		{ name: 'flock2D', description: 'Flock 2D' },
-		{ name: 'Voxel Editor', description: 'Voxel Editor' }
+		{ name: 'Voxel Editor', description: 'Voxel Editor' },
+		{ name: 'pixelart', description: 'Pixel Art Editor' }
 	];
 
 	async function getTemplate(name = '') {
