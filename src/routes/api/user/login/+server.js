@@ -17,7 +17,12 @@ try {
         await locals.pb.collection("users").update(locals.pb.authStore.model.id, { lastLogin: currentTime }); 
         response = { 
             message: 'Success',
-            //user: locals.user
+            user: {
+                email: locals.pb.authStore.model.email,
+                id: locals.pb.authStore.model.id,
+                credits: locals.pb.authStore.model.requests,
+                verified: locals.pb.authStore.model.verified
+            }
         }               
     }else{
         locals.pb.authStore.clear()

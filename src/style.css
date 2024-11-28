@@ -109,7 +109,7 @@ video {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: hsl(155, 70%, 55%, 100%);
+    background: hsl(0, 0%, 0%);
 }
 
 

@@ -8,7 +8,8 @@
 		height,
 		tutorialsPanelState,
 		loginPanelState,
-		isUserAuthenticated
+		isUserAuthenticated,
+		user
 	} from './store';
 	import { page } from '$app/stores';
 	import LogInPanel from './LogInPanel.svelte';

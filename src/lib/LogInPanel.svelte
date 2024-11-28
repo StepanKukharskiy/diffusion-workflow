@@ -1,27 +1,29 @@
 <script lang="ts">
-	import { textColor, bgColor, loginPanelState, isUserAuthenticated } from './store';
+	import { textColor, bgColor, loginPanelState, isUserAuthenticated, user } from './store';
 	import { slide } from 'svelte/transition';
 
 	let email = '',
 		password = '',
 		isLoggingIn = false,
+		signUp = false,
 		errorMessage = '';
 
 	async function loginUser(email = '', password = '') {
-        errorMessage = ''
+		errorMessage = '';
 		isLoggingIn = true;
 		const formData = new FormData();
 		formData.append('email', email);
 		formData.append('password', password);
 		const response = await fetch('/api/user/login', { method: 'POST', body: formData });
 		const responseObject = await response.json();
+		$user = responseObject.user;
 		console.log(responseObject);
 		if (responseObject.message === 'Success') {
 			isLoggingIn = false;
 			$loginPanelState = false;
 			$isUserAuthenticated = true;
 		} else {
-            isLoggingIn = false;
+			isLoggingIn = false;
 			errorMessage = responseObject.message;
 		}
 	}
@@ -29,7 +31,6 @@
 
 <div class="loginContainer">
 	<h2>Log In</h2>
-	
 
 	<div class="inputContainer">
 		<label for="email" class="formLabel">
@@ -79,9 +80,17 @@
 		<p>{errorMessage}</p>
 	{/if}
 
-	<p style="margin: 10px 0 0 0;">
-		Don't have an account? <a href="/register" style="color: hsl({$textColor});">Sign Up</a>
-	</p>
+	<div style="display: flex">
+		<p style="margin: 10px 0 0 0;">Don't have an account?</p>
+		<button
+			type="button"
+			style='text-decoration: underline;'
+			class="smallMenuButton"
+			onclick={() => {
+				signUp = true;
+			}}>Sign Up</button
+		>
+	</div>
 
 	<!-- {#if form?.notVerified}
         <div class='alertContainer'>

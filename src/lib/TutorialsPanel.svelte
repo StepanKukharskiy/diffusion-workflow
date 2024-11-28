@@ -130,7 +130,7 @@
 		z-index: 10;
 	}
 	.tutorialsDataContainer {
-		height: calc(100% - 80px);
+		height: calc(100% - 50px);
 		padding-right: 10px;
 		overflow-y: scroll;
 	}
@@ -148,6 +148,6 @@
 		background: #f9f9f9;
 	}
 	.tutorialButton:hover {
-		background: linear-gradient(45deg, #f9f9f9, #f9f9f990);
+		background: #1a1a1a10;
 	}
 </style>
