@@ -21,7 +21,7 @@
 		formData.append('password', password);
 		const response = await fetch('/api/user/login', { method: 'POST', body: formData });
 		const responseObject = await response.json();
-		if (responseObject.user.isVerified) {
+		if (responseObject.user.verified) {
 			$user = responseObject.user;
 			console.log(responseObject);
 			if (responseObject.message === 'Success') {

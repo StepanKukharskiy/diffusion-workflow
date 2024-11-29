@@ -16,8 +16,6 @@
 
 	// console.log($page)
 
-	export let data;
-
 	// function changeTheme(){
 	//     if($theme === 'dark'){
 	//         $theme = 'light';
@@ -49,6 +47,7 @@
 		const responseObject = await response.json();
 		if (responseObject.message === 'Logged out') {
 			$isUserAuthenticated = false;
+			$user = undefined
 			isLoggingOut = false;
 		}
 	}
@@ -65,7 +64,7 @@
 
 			<div class="desktopMenu">
 				<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
-				{#if $isUserAuthenticated}
+				{#if $user}
 					{#if !isLoggingOut}
 						<button type="submit" class="smallMenuButton" onclick={logout}>Log Out</button>
 					{:else}
@@ -125,12 +124,14 @@
 				}}>Resources</button
 			>
 
-			{#if $isUserAuthenticated}
-			{#if !isLoggingOut}
-			<button type="submit" class="smallMenuButton" style='padding: 10px;' onclick={logout}>Log Out</button>
-		{:else}
-			<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-		{/if}
+			{#if $user}
+				{#if !isLoggingOut}
+					<button type="submit" class="smallMenuButton" style="padding: 10px;" onclick={logout}
+						>Log Out</button
+					>
+				{:else}
+					<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+				{/if}
 				<!-- <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{stylesPanelState.set(true)}}'>Set theme</button> -->
 			{:else}
 				<!-- <a class="smallMenuButton" style="padding: 10px;" href="/register">Sign Up</a> -->

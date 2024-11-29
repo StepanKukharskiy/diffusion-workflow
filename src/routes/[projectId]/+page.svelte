@@ -5,7 +5,8 @@
 		elements,
 		filesLocalCopy,
 		tutorialsPanelState,
-		width
+		width,
+		user
 	} from '$lib/store';
 	import { generateUUID, initialCodeFiles } from '$lib/utils';
 	import { page } from '$app/stores';
@@ -43,6 +44,13 @@
 	// 	})
 	// }
 	// test('flux_schnell_vFph2bakxl.webp')
+
+	let { data } = $props()
+	if( data != undefined ) {
+		$user = data.user
+	}
+	console.log(data)
+
 
 	function addElement(elements: any = [], type = 'text') {
 		if (type === 'code') {
@@ -82,7 +90,7 @@
 	});
 </script>
 
-<NavPanel data={''} />
+<NavPanel />
 
 
 
