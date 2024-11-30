@@ -25,6 +25,42 @@ h4 {
     font-family: 'Montserrat', sans-serif;
 }
 
+.primaryHeading {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    color: hsl(0, 0%, 10%);
+}
+.secondaryHeading {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    color: hsl(0, 0%, 10%);
+}
+.tertiaryHeading {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.0rem;
+    color: hsl(0, 0%, 10%);
+    width: fit-content;
+}
+
+.tertiaryButton{
+    background: none;
+    border: none;
+    color: inherit;
+    font-family: Roboto, sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+.tertiaryButton:hover{
+    text-decoration: underline;
+}
+
 details {
     width: 100%;
     font-family: 'Roboto', sans-serif;

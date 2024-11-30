@@ -2,13 +2,19 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import CodeSnippetMonaco from './CodeSnippetMonaco.svelte';
-	import { textColor, tutorialsPanelState, width } from '$lib/store';
+	import { textColor, tutorialsPanelState, width, elements } from '$lib/store';
+	import { generateUUID } from './utils';
 
 	let tutorialsList: any,
 		tutorialsListData: any = $state(''),
 		tutorialState = $state(false),
 		selectedTutorial = $state(''),
-		tutorialData: any = $state([]);
+		tutorialData: any = $state([]),
+		projectsList: any,
+		projectsListData: any = $state(''),
+		isLoadingProject: any = $state(false),
+		tutorials: any = $state(true),
+		projects: any = $state(false);
 
 	async function getTutorialsList() {
 		tutorialsList = await fetch('api/get-tutorials-list');
@@ -16,8 +22,28 @@
 		//tutorialsNames = tutorialsListData.tutorials.name;
 		console.log(tutorialsListData);
 	}
+
+	async function getProjectsList() {
+		projectsList = await fetch('api/projects/get');
+		projectsListData = await projectsList.json();
+		//tutorialsNames = tutorialsListData.tutorials.name;
+		console.log(projectsListData);
+	}
+
+	async function getProjectFiles(id = '') {
+		isLoadingProject = true;
+		const formData = new FormData();
+		formData.append('id', id);
+		const projectFiles = await fetch('/api/projects/get-files', { method: 'POST', body: formData });
+		const projectFilesData = await projectFiles.json();
+		console.log(projectFilesData)
+		isLoadingProject = false;
+		return projectFilesData.files;
+	}
+
 	onMount(() => {
 		getTutorialsList();
+		getProjectsList();
 	});
 
 	function displayTutorial(name = '') {
@@ -29,11 +55,21 @@
 			}
 		}
 	}
+
+	function addElement(elements: any, type = 'code', files = '') {
+		elements.push({
+			uuid: generateUUID(),
+			type: type,
+			files: files,
+			run: true
+		});
+		console.log(elements);
+	}
 </script>
 
-<div class="tutorialsContainer" style='width: {$width < 700 ? 'calc(100% - 20px)' : '400px'}'>
+<div class="tutorialsContainer" style="width: {$width < 700 ? 'calc(100% - 20px)' : '400px'}">
 	<div class="topBar">
-		<h2>Resources</h2>
+		<h2 class="primaryHeading">Resources</h2>
 		<button
 			class="smallMenuButton"
 			onclick={() => {
@@ -41,61 +77,112 @@
 			}}>close</button
 		>
 	</div>
-	{#if selectedTutorial != ''}
-		<div class="topBar">
-			<h4>{selectedTutorial}</h4>
-			<button
-				class="smallMenuButton"
-				onclick={() => {
-					selectedTutorial = '';
-					tutorialState = false;
-				}}>back</button
-			>
-		</div>
-	{/if}
-
-	<div class="tutorialsDataContainer">
-		{#if tutorialsListData === ''}
-			<div style="display: flex; align-items: center;" transition:slide>
-				<span class="warning"></span>
-				<p>Loading resources</p>
-				<div
-					class="loader"
-					style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
-				></div>
+	<div class="menu">
+		<button
+			class="tertiaryButton"
+			style="text-decoration: {tutorials ? 'underline' : 'none'}; padding-left: 0;"
+			onclick={() => {
+				tutorials = true;
+				projects = false;
+			}}>Tutorials</button
+		>
+		<button
+			class="tertiaryButton"
+			style="text-decoration: {projects ? 'underline' : 'none'};"
+			onclick={() => {
+				tutorials = false;
+				projects = true;
+			}}>Projects</button
+		>
+	</div>
+	{#if tutorials}
+		{#if selectedTutorial != ''}
+			<div class="topBar">
+				<h4 class="tertiaryHeading">{selectedTutorial}</h4>
+				<button
+					class="smallMenuButton"
+					onclick={() => {
+						selectedTutorial = '';
+						tutorialState = false;
+					}}>back</button
+				>
 			</div>
-		{:else if tutorialState}
-			{#each tutorialData as step, i}
-				<h4 style="margin-top: 20px;">{i}. {step.step}</h4>
-				<!-- {#if step.imageUrl}
+		{/if}
+
+		<div
+			class="tutorialsDataContainer"
+			style="height: {selectedTutorial === '' ? 'calc(100% - 80px)' : 'calc(100% - 120px)'};"
+		>
+			{#if tutorialsListData === ''}
+				<div style="display: flex; align-items: center;" transition:slide>
+					<span class="warning"></span>
+					<p>Loading resources</p>
+					<div
+						class="loader"
+						style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
+					></div>
+				</div>
+			{:else if tutorialState}
+				{#each tutorialData as step, i}
+					<h4 style="margin-top: 20px;">{i}. {step.step}</h4>
+					<!-- {#if step.imageUrl}
 				<div class="stepImageContainer">
 					<img src={step.imageUrl} alt={step.imageText} class="stepImage" />
 				</div>
 			{/if} -->
-				<p>{@html step.text}</p>
-				{#if step.link ? step.link : step.linkUrl}
-					<a
-						href={step.link ? step.link : step.linkUrl}
-						target="_blank"
-						class="link"
-						style="margin-bottom: 10px; color: hsl({$textColor});">{step.linkText}</a
-					>
-				{/if}
+					<p>{@html step.text}</p>
+					{#if step.link ? step.link : step.linkUrl}
+						<a
+							href={step.link ? step.link : step.linkUrl}
+							target="_blank"
+							class="link"
+							style="margin-bottom: 10px; color: hsl({$textColor});">{step.linkText}</a
+						>
+					{/if}
 
-				{#if step.code != 'false'}
-					<CodeSnippetMonaco fileName={step.mode.replace('.', '')} code={step.code} />
-				{/if}
-			{/each}
-		{:else}
-			<div class="tutorialsNamesContainer">
-				{#each tutorialsListData.tutorials as tutorial}
-					<button class="tutorialButton" onclick={() => displayTutorial(tutorial.name)}
-						>{tutorial.name}</button
-					>
+					{#if step.code != 'false'}
+						<CodeSnippetMonaco fileName={step.mode.replace('.', '')} code={step.code} />
+					{/if}
+				{/each}
+			{:else}
+				<div class="tutorialsNamesContainer">
+					{#each tutorialsListData.tutorials as tutorial}
+						<button class="tutorialButton" onclick={() => displayTutorial(tutorial.name)}
+							>{tutorial.name}</button
+						>
+					{/each}
+				</div>
+			{/if}
+		</div>
+	{:else if projects}
+		<div class="tutorialsDataContainer">
+			<div class="tutorialsNamesContainer" style="padding-top: 0;">
+				{#each projectsListData.projects as project}
+					<div class="projectNameContainer">
+						<h4 class="tertiaryHeading">{project.name}</h4>
+						<div>
+							{#if isLoadingProject}
+								<div
+									class="loader"
+									style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
+								></div>
+							{:else}
+								<button
+									class="tertiaryButton"
+									onclick={async () => {
+										const files = await getProjectFiles(project.id);
+										console.log(files)
+										addElement($elements, 'code', files);
+										$elements = $elements
+									}}>Edit</button
+								>
+							{/if}
+						</div>
+					</div>
 				{/each}
 			</div>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -105,6 +192,9 @@
 		width: 100%;
 		justify-content: space-between;
 		align-items: center;
+	}
+	.menu {
+		display: flex;
 	}
 	.tutorialsContainer {
 		position: fixed;
@@ -130,7 +220,7 @@
 		z-index: 10;
 	}
 	.tutorialsDataContainer {
-		height: calc(100% - 50px);
+		height: calc(100% - 80px);
 		padding-right: 10px;
 		overflow-y: scroll;
 	}
@@ -149,5 +239,11 @@
 	}
 	.tutorialButton:hover {
 		background: #1a1a1a10;
+	}
+	.projectNameContainer {
+		padding: 0px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 	}
 </style>
