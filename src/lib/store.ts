@@ -74,6 +74,7 @@ export let chatPanelMode = writable('chat')
 export let loginPanelState = writable(false)
 export let isUserAuthenticated = writable(false)
 export let user = writable()
+export let projectsList:any = writable([])
 // export let canvasScale = writable(1.0);
 // export let canvasNodesMenuState = writable(false);
 // export let selectedNode = writable('');

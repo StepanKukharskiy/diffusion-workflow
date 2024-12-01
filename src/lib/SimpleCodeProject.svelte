@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { width, height, textColor, bgColor, elements, referenceImageUrl, chatPanelMode } from './store';
+	import {
+		width,
+		height,
+		textColor,
+		bgColor,
+		elements,
+		referenceImageUrl,
+		chatPanelMode,
+		projectsList
+	} from './store';
 	import FilesPanel from './FilesPanel.svelte';
 	import ProjectPanel from './ProjectPanel.svelte';
 	import { page } from '$app/stores';
@@ -8,7 +17,7 @@
 	import { slide } from 'svelte/transition';
 	import bg_image from '$lib/images/bg.webp';
 
-	let { files = '', uuid = '' } = $props();
+	let { files = '', uuid = '', name = '', id = '' } = $props();
 
 	console.log(files);
 
@@ -25,10 +34,11 @@
 	let isTakingScreenshot = $state(false);
 	let controlsMenu: any = $state();
 	let controlsMenuHeight = $state(100);
+	let isSavingProject = $state(false);
 
 	onMount(() => {
 		controlsMenuHeight = controlsMenu.offsetHeight;
-        for (let element of $elements) {
+		for (let element of $elements) {
 			if (element.uuid === uuid) {
 				element.files = files;
 				isThereCanvasInIframe = files.some(
@@ -38,6 +48,10 @@
 						file.fileData.includes('THREE')
 				);
 			}
+		}
+
+		if (name === '') {
+			name = createProjectName();
 		}
 	});
 
@@ -238,6 +252,61 @@
 			console.error(`No iframe found with ID: ${iframeId}`);
 		}
 	}
+
+	function createProjectName() {
+		const adjectives = ['Brave', 'Marvellous', 'Awesome', 'Golden', 'Happy', 'Icy'];
+		const nouns = [
+			'Salt',
+			'Leopard',
+			'Lemur',
+			'Dragon',
+			'Rabbit',
+			'Fox',
+			'Automata',
+			'Noise',
+			'Randomness'
+		];
+
+		const projectName =
+			adjectives[Math.floor(Math.random() * adjectives.length)] +
+			' ' +
+			nouns[Math.floor(Math.random() * nouns.length)];
+
+		return projectName;
+	}
+
+	async function saveProject() {
+		isSavingProject = true;
+		const formData = new FormData();
+		const files: any = [];
+		for (let element of $elements) {
+			if (element.type === 'code' && element.uuid === uuid) {
+				for (let file of element.files) {
+					console.log(file);
+					files.push({
+						name: file.fileName,
+						data: file.fileData
+					});
+				}
+			}
+		}
+		formData.append('name', name);
+		formData.append('id', id);
+		files.forEach((file: any) => {
+			formData.append(`files`, new Blob([file.data], { type: 'text/plain' }), file.name);
+		});
+		// formData.append('files', files)
+		const project = await fetch('api/projects/save', { method: 'POST', body: formData });
+		const projectData = await project.json();
+		id = projectData.id;
+		isSavingProject = false;
+	}
+
+	async function getProjectsList() {
+		const projectsListData = await fetch('api/projects/get');
+		console.log(projectsListData)
+		$projectsList = await projectsListData.json();
+	}
 </script>
 
 <svelte:window
@@ -255,6 +324,10 @@
 		controlsMenuHeight = controlsMenu.offsetHeight;
 	}}
 />
+
+<div class="nameContainer">
+	<input bind:value={name} />
+</div>
 
 <div class="container" bind:this={container}>
 	<div
@@ -355,24 +428,30 @@
 			<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 		</div>
 	{/if}
-	<details bind:this={controlsMenu}>
-		<summary>Options</summary>
-		<ul>
+	{#if isSavingProject}
+		<div style="display: flex; align-items: center;" transition:slide>
+			<span class="warning"></span>
+			<p style="margin-right: 10px;">Saving project</p>
+			<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+		</div>
+	{/if}
+
+		<!-- <ul>
 			<li>
-		<button class="settingsButton" onclick={toggleFullScreen}> Full Screen </button>
-		</li>
-		<li>
-		<button
-			class="settingsButton"
-			onclick={() => {
-				duplicate($elements);
-			}}
-		>
-			Duplicate Project
-		</button>
-	</li>
-	<li>
-		<!-- <button
+				<button class="tertiaryButton" onclick={toggleFullScreen}> Full Screen </button>
+			</li>
+			<li>
+				<button
+					class="tertiaryButton"
+					onclick={() => {
+						duplicate($elements);
+					}}
+				>
+					Duplicate Project
+				</button>
+			</li>
+			<li>
+				<button
 					class="optionsButton"
 					onclick={async () => {
 						addElement($elements, 'text', '', uuid);
@@ -380,33 +459,101 @@
 					}}
 				>
 					Discuss
-				</button> -->
-		<button
-			class="settingsButton"
-			disabled={!isThereCanvasInIframe}
-			onclick={async () => {
-				$referenceImageUrl = ''
-				const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
-				$referenceImageUrl = screenshotUrl
-				$chatPanelMode = 'image'
-				// addElement($elements, 'image', screenshotUrl);
-				$elements = $elements;
-			}}
-		>
-			Create Image
-		</button>
-		</li>
-		<li>
+				</button>
+				<button
+					class="tertiaryButton"
+					disabled={!isThereCanvasInIframe}
+					onclick={async () => {
+						$referenceImageUrl = '';
+						const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
+						$referenceImageUrl = screenshotUrl;
+						$chatPanelMode = 'image';
+						// addElement($elements, 'image', screenshotUrl);
+						$elements = $elements;
+					}}
+				>
+					Create Image
+				</button>
+			</li>
+			<li>
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						deleteBlock($elements, uuid);
+						$elements = $elements;
+					}}>Delete</button
+				>
+			</li>
+			<li>
+				<button
+					class="tertiaryButton"
+					disabled={isSavingProject}
+					onclick={async () => {
+						saveProject();
+						$elements = $elements
+					}}>Save Project</button
+				>
+			</li>
+		</ul> -->
+
+		<div style='display: flex; flex-wrap: wrap;'>
 			<button
-				class="settingsButton"
+				class="tertiaryButton"
+				disabled={isSavingProject}
 				onclick={async () => {
-					deleteBlock($elements, uuid)
+					await saveProject();
+					await getProjectsList();
+					$projectsList = $projectsList;
+					console.log($projectsList)
+					$elements = $elements;
+				}}>Save Project</button
+			>
+
+			<button class="tertiaryButton" onclick={toggleFullScreen}> Full Screen </button>
+
+			<button
+				class="tertiaryButton"
+				onclick={() => {
+					duplicate($elements);
+				}}
+			>
+				Duplicate Project
+			</button>
+
+			<button
+				class="tertiaryButton"
+				disabled={!isThereCanvasInIframe}
+				onclick={async () => {
+					$referenceImageUrl = '';
+					const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
+					$referenceImageUrl = screenshotUrl;
+					$chatPanelMode = 'image';
+					// addElement($elements, 'image', screenshotUrl);
+					$elements = $elements;
+				}}
+			>
+				Create Image
+			</button>
+
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					addElement($elements, 'text', '', uuid);
+					$elements = $elements;
+				}}
+			>
+				Discuss Image
+			</button>
+
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					deleteBlock($elements, uuid);
 					$elements = $elements;
 				}}>Delete</button
 			>
-		</li>
-		</ul>
-	</details>
+		</div>
+
 </div>
 
 <style>
@@ -459,13 +606,25 @@
 
 		cursor: pointer;
 	}
-    details {
+	details {
 		border-bottom: 1px solid #1a1a1a20;
 	}
-
-	/* @media (max-width: 400px) {
-		.projectContainer{
-			display: block;
-		}
-	} */
+	.nameContainer {
+		width: 100%;
+		max-width: 800px;
+		padding: 0 10px;
+		box-sizing: border-box;
+	}
+	input {
+		width: fit-content;
+		min-width: 200px;
+		padding: 10px;
+		box-sizing: border-box;
+		border: 1px solid hsl(0, 0%, 90%);
+		border-radius: 10px;
+		background-color: hsl(0, 0%, 90%);
+		font-family: 'Source Code Pro', sans-serif;
+		font-size: 1rem;
+		font-weight: 300;
+	}
 </style>

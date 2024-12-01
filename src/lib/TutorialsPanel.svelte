@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import CodeSnippetMonaco from './CodeSnippetMonaco.svelte';
-	import { textColor, tutorialsPanelState, width, elements } from '$lib/store';
+	import { textColor, tutorialsPanelState, width, elements, projectsList } from '$lib/store';
 	import { generateUUID } from './utils';
 	import SimpleProjectCard from './SimpleProjectCard.svelte';
 
@@ -12,8 +12,7 @@
 		tutorialState = $state(false),
 		selectedTutorial = $state(''),
 		tutorialData: any = $state([]),
-		projectsList: any,
-		projectsListData: { projects: any[] } = $state({ projects: []}),
+		projectsListData: any = $state(),
 		tutorials: any = $state(true),
 		projects: any = $state(false);
 
@@ -26,10 +25,10 @@
 	}
 
 	async function getProjectsList() {
-		projectsList = await fetch('api/projects/get');
-		projectsListData = await projectsList.json();
+		projectsListData = await fetch('api/projects/get');
+		$projectsList = await projectsListData.json();
 		//tutorialsNames = tutorialsListData.tutorials.name;
-		console.log(projectsListData);
+		//console.log(projectsListData);
 	}
 
 	onMount(() => {
@@ -139,8 +138,8 @@
 	{:else if projects}
 		<div class="tutorialsDataContainer">
 			<div class="tutorialsNamesContainer" style="padding-top: 0;">
-				{#each projectsListData.projects as project}
-					<SimpleProjectCard {project} />
+				{#each $projectsList.projects as project}
+					<SimpleProjectCard {project} action={getProjectsList}/>
 				{/each}
 			</div>
 		</div>

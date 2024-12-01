@@ -129,7 +129,7 @@
 						<!-- <SketchTest shapes={element.shapes} uuid={element.uuid} /> -->
 					{:else if element.type === 'code'}
 						<!-- <CodeProject files={element.files} uuid={element.uuid} /> -->
-						<SimpleCodeProject files={element.files} uuid={element.uuid} />
+						<SimpleCodeProject files={element.files} uuid={element.uuid} name={element.name} id={element.id}/>
 					{:else if element.type === '3dViewer'}
 						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} />
 					{/if}
