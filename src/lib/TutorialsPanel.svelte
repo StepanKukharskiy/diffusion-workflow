@@ -4,17 +4,19 @@
 	import CodeSnippetMonaco from './CodeSnippetMonaco.svelte';
 	import { textColor, tutorialsPanelState, width, elements } from '$lib/store';
 	import { generateUUID } from './utils';
+	import SimpleProjectCard from './SimpleProjectCard.svelte';
 
+	
 	let tutorialsList: any,
 		tutorialsListData: any = $state(''),
 		tutorialState = $state(false),
 		selectedTutorial = $state(''),
 		tutorialData: any = $state([]),
 		projectsList: any,
-		projectsListData: any = $state(''),
-		isLoadingProject: any = $state(false),
+		projectsListData: { projects: any[] } = $state({ projects: []}),
 		tutorials: any = $state(true),
 		projects: any = $state(false);
+
 
 	async function getTutorialsList() {
 		tutorialsList = await fetch('api/get-tutorials-list');
@@ -28,17 +30,6 @@
 		projectsListData = await projectsList.json();
 		//tutorialsNames = tutorialsListData.tutorials.name;
 		console.log(projectsListData);
-	}
-
-	async function getProjectFiles(id = '') {
-		isLoadingProject = true;
-		const formData = new FormData();
-		formData.append('id', id);
-		const projectFiles = await fetch('/api/projects/get-files', { method: 'POST', body: formData });
-		const projectFilesData = await projectFiles.json();
-		console.log(projectFilesData)
-		isLoadingProject = false;
-		return projectFilesData.files;
 	}
 
 	onMount(() => {
@@ -56,15 +47,6 @@
 		}
 	}
 
-	function addElement(elements: any, type = 'code', files = '') {
-		elements.push({
-			uuid: generateUUID(),
-			type: type,
-			files: files,
-			run: true
-		});
-		console.log(elements);
-	}
 </script>
 
 <div class="tutorialsContainer" style="width: {$width < 700 ? 'calc(100% - 20px)' : '400px'}">
@@ -158,27 +140,7 @@
 		<div class="tutorialsDataContainer">
 			<div class="tutorialsNamesContainer" style="padding-top: 0;">
 				{#each projectsListData.projects as project}
-					<div class="projectNameContainer">
-						<h4 class="tertiaryHeading">{project.name}</h4>
-						<div>
-							{#if isLoadingProject}
-								<div
-									class="loader"
-									style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
-								></div>
-							{:else}
-								<button
-									class="tertiaryButton"
-									onclick={async () => {
-										const files = await getProjectFiles(project.id);
-										console.log(files)
-										addElement($elements, 'code', files);
-										$elements = $elements
-									}}>Edit</button
-								>
-							{/if}
-						</div>
-					</div>
+					<SimpleProjectCard {project} />
 				{/each}
 			</div>
 		</div>
@@ -240,10 +202,10 @@
 	.tutorialButton:hover {
 		background: #1a1a1a10;
 	}
-	.projectNameContainer {
+	/* .projectNameContainer {
 		padding: 0px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-	}
+	} */
 </style>
