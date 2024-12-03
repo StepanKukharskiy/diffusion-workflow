@@ -4,7 +4,7 @@ export async function GET({ request, locals, params }) {
 
         // console.log(query)
 
-        const url = `${locals.pb.baseUrl}api/files/nodeEditorProjects/${params.projectId}/${params.fileName}`
+        const url = `${locals.pb.baseUrl}/api/files/nodeEditorProjects/${params.projectId}/${params.fileName}`
         console.log(url)
 
         const response = await fetch(url)
