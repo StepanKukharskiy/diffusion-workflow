@@ -306,10 +306,10 @@
 <style>
 	.loginContainer {
 		position: absolute;
-		top: 60px;
-		left: 10px;
-		width: calc(100% - 20px);
-		height: calc(100% - 70px);
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
 		padding: 20px;
 		background: #f9f9f9;
 		border: 1px solid #1a1a1a20;

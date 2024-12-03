@@ -30,19 +30,19 @@ p {
 .primaryHeading {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: hsl(0, 0%, 10%);
 }
 .secondaryHeading {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: hsl(0, 0%, 10%);
 }
 .tertiaryHeading {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.0rem;
     color: hsl(0, 0%, 10%);
     width: fit-content;
 }

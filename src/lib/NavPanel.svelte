@@ -49,6 +49,7 @@
 			$isUserAuthenticated = false;
 			$user = undefined
 			isLoggingOut = false;
+			$loginPanelState = true;
 		}
 	}
 
@@ -63,6 +64,10 @@
 			</a>
 
 			<div class="desktopMenu">
+				<div class='requestsWrapper'>
+					<h4 class='tertiaryHeading'>{$user.requests}</h4>
+				</div>
+				<button class="smallMenuButton" onclick={()=>{window.open('/', '_self')}}>Threads</button>
 				<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
 				{#if $user}
 					{#if !isLoggingOut}
@@ -89,6 +94,7 @@
 				<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
 			</a>
 
+			
 			<button
 				class="menuButton"
 				onclick={() => {
@@ -115,6 +121,12 @@
 			<!-- {#if $page.route.id == '/projects/[projectUrl]/edit'}
                 <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{$filesPanelDisplay = 'block'; mobileMenuDisplay = 'none'}}'>Files</button>
             {/if} -->
+
+			<div class='requestsWrapper'>
+				<h4 style='margin: 10px 10px 0 10px;' class='tertiaryHeading'>{$user.requests}</h4>
+			</div>
+
+			<button class="smallMenuButton" onclick={()=>{window.open('/', '_self')}}>Threads</button>
 
 			<button
 				class="smallMenuButton"
@@ -171,7 +183,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		z-index: 25;
+		z-index: 9;
 	}
 
 	.desktopMenu {
