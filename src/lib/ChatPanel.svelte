@@ -122,37 +122,37 @@
 
 		<div class="modeOptions">
 			<button
-				class="{$chatPanelMode === 'chat' ? 'primaryButton' : 'tertiaryButton'}"
+				class="{$chatPanelMode === 'chat' ? 'secondaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'chat';
 				}}>Chat</button
 			>
 			<button
-				class="{$chatPanelMode === 'image' ? 'primaryButton' : 'tertiaryButton'}"
+				class="{$chatPanelMode === 'image' ? 'secondaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'image';
 				}}>Image</button
 			>
 			<button
-				class="{$chatPanelMode === 'video' ? 'primaryButton' : 'tertiaryButton'}"
+				class="{$chatPanelMode === 'video' ? 'secondaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'video';
 				}}>Video</button
 			>
 			<button
-				class="{$chatPanelMode === 'file' ? 'primaryButton' : 'tertiaryButton'}"
+				class="{$chatPanelMode === 'file' ? 'secondaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'file';
 				}}>File</button
 			>
 			<button
-				class="{$chatPanelMode === 'sketch' ? 'primaryButton' : 'tertiaryButton'}"
+				class="{$chatPanelMode === 'sketch' ? 'secondaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'sketch';
 				}}>Sketch</button
 			>
 			<button
-				class="{$chatPanelMode === 'code' ? 'primaryButton' : 'tertiaryButton'}"
+				class="{$chatPanelMode === 'code' ? 'secondaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'code';
 				}}>Code</button

@@ -114,7 +114,7 @@
 		console.log(messageObject);
 		isGeneratingText = false;
 		// answers.push(generatedText.generatedText);
-		//console.log(answers);
+		// console.log(answers);
 		isFirstGeneration = false;
 		queryTextarea.value = '';
 

@@ -4,6 +4,7 @@
 	import paper from 'paper';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
 	import * as THREE from 'three';
 	import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -92,8 +93,8 @@
 			renderer.toneMappingExposure = 1;
 			renderer.outputEncoding = THREE.sRGBEncoding;
 			// object.rotation.x = -Math.PI/2
-			object.children[0].children[0].material.metalness = 0
-			object.scale.set(1, 1, -1)
+			object.children[0].children[0].material.metalness = 0;
+			object.scale.set(1, 1, -1);
 			console.log(object);
 			scene.add(object);
 			camera.position.z = 1;
@@ -142,32 +143,26 @@
 		id="{uuid}-canvas"
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
-	<details>
-		<summary>Options</summary>
-			<label for="prompt-{uuid}">File url</label>
-			<textarea id="prompt-{uuid}">{`api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</textarea>
-		<ul>
-			<li>
-				<a
-					href={modelUrl}
-					download="model.glb"
-					target="_blank"
-					class="settingsButton"
-					style="padding: 2px 10px; color: #1a1a1a; text-decoration: none; display: block;"
-					>Download</a
-				>
-			</li>
-			<li>
-				<button
-					class="settingsButton"
-					onclick={async () => {
-						deleteBlock($elements, uuid);
-						$elements = $elements;
-					}}>Delete</button
-				>
-			</li>
-		</ul>
-	</details>
+	<div style="display: flex; flex-wrap: wrap;">
+		<label for="prompt-{uuid}">File url</label>
+		<textarea id="prompt-{uuid}"
+			>{`api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</textarea
+		>
+
+		<button
+			onclick={()=>{goto(modelUrl)}}
+			class="tertiaryButton"
+			>Download</button
+		>
+
+		<button
+			class="tertiaryButton"
+			onclick={async () => {
+				deleteBlock($elements, uuid);
+				$elements = $elements;
+			}}>Delete</button
+		>
+	</div>
 </div>
 
 <style>

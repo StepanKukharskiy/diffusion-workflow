@@ -54,30 +54,23 @@
 	<h4 class="query">{query}</h4>
 	<StyledModelAnswer htmlContent={answer} />
 	{#if !isGeneratingImage}
-		<details>
-			<summary>Options</summary>
-			<ul>
-				<li>
+	<div style='display: flex; flex-wrap: wrap;'>
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						onclick={async () => {
 							const url = await generateImage();
 							addElement($elements, 'image', answer, url);
 							$elements = $elements;
 						}}>Create an image with this text</button
 					>
-				</li>
-				<li>
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						onclick={async () => {
 							deleteBlock($elements, uuid)
 							$elements = $elements;
 						}}>Delete</button
 					>
-				</li>
-			</ul>
-		</details>
+					</div>
 	{:else}
 		<div style="display: flex; align-items: center;">
 			<span class="warning"></span>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { elements, referenceImageUrl, textColor, chatPanelMode } from './store';
 	import { generateUUID, generateVideo, deleteBlock, generateModel } from './utils';
 	let { imageUrl = '', query = '', uuid = '' } = $props();
@@ -85,19 +86,16 @@
 <div class="imageContainer">
 	<img src={imageUrl} alt="generated file" />
 	{#if !isGenerating}
-		<details>
-			<summary>Options</summary>
+	<div style='display: flex; flex-wrap: wrap;'>
 			{#if query != 'uploaded file'}
 				<label for="prompt-{uuid}">Description</label>
 				<textarea id="prompt-{uuid}">{query}</textarea>
 				<label for="prompt-{uuid}">File url</label>
 				<textarea id="prompt-{uuid}">{`api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`}</textarea>
 			{/if}
-			<ul>
 				{#if query != 'uploaded file'}
-					<li>
 						<button
-							class="settingsButton"
+							class="tertiaryButton"
 							onclick={async () => {
 								const url = await generateImage();
 								imageUrl = url;
@@ -109,29 +107,23 @@
 								// addElement($elements, 'image', query, url)
 							}}>Retry generation</button
 						>
-					</li>
 				{/if}
-				<li>
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						onclick={async () => {
 							$referenceImageUrl = imageUrl;
 							$chatPanelMode = 'chat';
 						}}>Discuss</button
 					>
-				</li>
-				<li>
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						onclick={async () => {
 							$referenceImageUrl = imageUrl;
 							$chatPanelMode = 'image';
 						}}>Create new image</button
 					>
-				</li>
-				<li>
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						onclick={async () => {
 							isGenerating = true;
 							const url = await generateVideo({
@@ -144,10 +136,8 @@
 							$elements = $elements;
 						}}>Turn to video</button
 					>
-				</li>
-				<li>
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						onclick={async () => {
 							isGenerating = true;
 							const url = await generateModel({
@@ -160,28 +150,19 @@
 							$elements = $elements;
 						}}>Turn to 3D</button
 					>
-				</li>
-				<li>
-					<a
-						href={imageUrl}
-						download="image.png"
-						target="_blank"
-						class="settingsButton"
-						style="padding: 2px 10px; color: #1a1a1a; text-decoration: none; display: block;"
-						>Download</a
+					<button 
+						onclick={()=>{goto(imageUrl)}}
+						class="tertiaryButton"
+						>Download</button
 					>
-				</li>
-				<li>
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						onclick={async () => {
 							deleteBlock($elements, uuid);
 							$elements = $elements;
 						}}>Delete</button
 					>
-				</li>
-			</ul>
-		</details>
+		</div>
 	{:else}
 		<div style="display: flex; align-items: center;">
 			<span class="warning"></span>
