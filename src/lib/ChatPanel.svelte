@@ -39,7 +39,7 @@
 	// 		console.log(elements);
 	// 	}
 
-	let color = $state('');
+	let color = $state('#A1C9F290');
 
 	$effect(() => {
 		// #A1C9F290 - text
@@ -105,7 +105,7 @@
 </script>
 
 {#if panelState}
-	<div class="chatContainer" style="border: 1px solid {color}; box-shadow: 0 0 20px {color};">
+	<div class="chatContainer">
 		{#if $chatPanelMode === 'chat'}
 			<SimpleTextGeneration />
 		{:else if $chatPanelMode === 'image'}
@@ -122,43 +122,37 @@
 
 		<div class="modeOptions">
 			<button
-				class="settingsButton"
-				style="background: {$chatPanelMode === 'chat' ? color : 'none'};"
+				class="{$chatPanelMode === 'chat' ? 'primaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'chat';
 				}}>Chat</button
 			>
 			<button
-				class="settingsButton"
-				style="background: {$chatPanelMode === 'image' ? color : 'none'};"
+				class="{$chatPanelMode === 'image' ? 'primaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'image';
 				}}>Image</button
 			>
 			<button
-				class="settingsButton"
-				style="background: {$chatPanelMode === 'video' ? color : 'none'};"
+				class="{$chatPanelMode === 'video' ? 'primaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'video';
 				}}>Video</button
 			>
 			<button
-				class="settingsButton"
-				style="background: {$chatPanelMode === 'file' ? color : 'none'};"
+				class="{$chatPanelMode === 'file' ? 'primaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'file';
 				}}>File</button
 			>
 			<button
-				class="settingsButton"
-				style="background: {$chatPanelMode === 'sketch' ? color : 'none'};"
+				class="{$chatPanelMode === 'sketch' ? 'primaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'sketch';
 				}}>Sketch</button
 			>
 			<button
-				class="settingsButton"
-				style="background: {$chatPanelMode === 'code' ? color : 'none'};"
+				class="{$chatPanelMode === 'code' ? 'primaryButton' : 'tertiaryButton'}"
 				onclick={() => {
 					$chatPanelMode = 'code';
 				}}>Code</button
@@ -217,7 +211,7 @@
 		padding: 10px;
 		margin: 10px;
 		box-sizing: border-box;
-		box-shadow: 0 0 10px rgba(152, 152, 152, 0.3);
+		box-shadow: 0 0 10px hsl(0, 0%, 80%);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;

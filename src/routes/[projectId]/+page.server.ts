@@ -1,6 +1,12 @@
-export async function load ({ locals }) {
+export async function load({ locals, params }) {
 
-    return {
-        user: locals.user
-      }
+  const id = params.projectId
+  const project = await locals.pb.collection('nodeEditorProjects').getOne(id);
+  console.log(project)
+  return {
+    name: project.name,
+    id: project.id,
+    data: project.data,
+    user: locals.user
+  }
 }

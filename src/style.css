@@ -63,6 +63,10 @@ p {
 .primaryButton:hover{
     background: hsl(0,0%,30%);
 }
+.primaryButton:disabled{
+    background: hsl(0,0%,50%);
+    cursor: default;
+}
 
 .tertiaryButton{
     background: none;

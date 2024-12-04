@@ -12,6 +12,7 @@
 		user
 	} from './store';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import LogInPanel from './LogInPanel.svelte';
 
 	// console.log($page)
@@ -67,7 +68,7 @@
 				<div class='requestsWrapper'>
 					<h4 class='tertiaryHeading'>{$user.requests}</h4>
 				</div>
-				<button class="smallMenuButton" onclick={()=>{window.open('/', '_self')}}>Threads</button>
+				<button class="smallMenuButton" onclick={()=>{goto('/')}}>Threads</button>
 				<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
 				{#if $user}
 					{#if !isLoggingOut}
@@ -126,7 +127,7 @@
 				<h4 style='margin: 10px 10px 0 10px;' class='tertiaryHeading'>{$user.requests}</h4>
 			</div>
 
-			<button class="smallMenuButton" onclick={()=>{window.open('/', '_self')}}>Threads</button>
+			<button class="smallMenuButton" onclick={()=>{goto('/')}}>Threads</button>
 
 			<button
 				class="smallMenuButton"

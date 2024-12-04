@@ -45,12 +45,16 @@
 	// }
 	// test('flux_schnell_vFph2bakxl.webp')
 
-	let { data } = $props()
-	if( data.user != undefined ) {
-		$user = data.user
+	let { data } = $props();
+	let name: string = $state(data.name);
+	let id: string = $state(data.id);
+	if (data.user != undefined) {
+		$user = data.user;
 	}
-	console.log(data)
-
+	if(data.data != ''){
+		$elements = data.data
+	}
+	console.log(data);
 
 	function addElement(elements: any = [], type = 'text') {
 		if (type === 'code') {
@@ -79,29 +83,48 @@
 		console.log(layout);
 	}
 
+	async function saveThread(elements: any) {
+		console.log(elements);
+		const formData = new FormData();
+		formData.append('name', name);
+		formData.append('id', id);
+		formData.append('data', JSON.stringify(elements));
+		console.log(`updated form: ${formData}`);
+		const response = await fetch('/api/threads/save', { method: 'POST', body: formData });
+		const responseData = await response.json();
+		console.log(responseData);
+	}
+
 	let discussionWidth = $state('400px');
-	$effect(() => {
+	$effect(async () => {
 		if ($tutorialsPanelState && $width > 700) {
 			discussionWidth = 'calc(100% - 400px)';
 		} else {
 			discussionWidth = '100%';
 		}
-		console.log($elements);
+		console.log(`updated elements: ${$elements}`);
+
+		await saveThread($elements);
 	});
 </script>
 
 <NavPanel />
 
-
-
-{#if $width > 0}
+{#if $width > 0 && data}
 	<div class="conversationAndTutorialsContainer">
 		<div class="container" style="width: {discussionWidth}">
-			<h1 style="margin-top: 50px;">This is the start of this thread</h1>
+			<h1 style="margin-top: 50px;">{name}</h1>
 
 			<!-- <Simple3dViewer modelUrl={'https://kodiia-db.pockethost.io/api/files/u2gxg2hnw25d8mw/0xjag4dn7c30f4d/model_w68J61XGn4.glb'} uuid={''} /> -->
 			<!-- <CodeProject /> -->
 			<!-- <button onclick={setLayout}>display grid</button> -->
+			<!-- {#if data.data != ''}
+				{#each data.data as element}
+					{#if element.type === 'text'}
+						<SimpleText query={element.query} answer={element.answer} uuid={element.uuid} />
+					{/if}
+				{/each}
+			{/if} -->
 
 			<div class={layout}>
 				<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
@@ -129,7 +152,12 @@
 						<!-- <SketchTest shapes={element.shapes} uuid={element.uuid} /> -->
 					{:else if element.type === 'code'}
 						<!-- <CodeProject files={element.files} uuid={element.uuid} /> -->
-						<SimpleCodeProject files={element.files} uuid={element.uuid} name={element.name} id={element.id}/>
+						<SimpleCodeProject
+							files={element.files}
+							uuid={element.uuid}
+							name={element.name}
+							id={element.id}
+						/>
 					{:else if element.type === '3dViewer'}
 						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} />
 					{/if}

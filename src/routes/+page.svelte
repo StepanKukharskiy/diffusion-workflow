@@ -4,6 +4,7 @@
 	import { user, loginPanelState } from '$lib/store';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
+	import { goto } from '$app/navigation';
 
 	let { data } = $props();
 	let threadsList: any = $state({}),
@@ -82,25 +83,22 @@
 						</div>
 					{:else}
 						<input bind:value={name} placeholder="What would you like to create?" />
-						{#if name === ''}
-							<div style="display: flex; align-items: center;" transition:slide>
-								<span class="warning"></span>
-								<p style="margin-right: 10px;">Please, describe your thread</p>
-							</div>
-						{:else}
-							<div class="createThreadMenuContainer">
-								<button
-									class="primaryButton"
-									onclick={() => {
-										createThread();
-									}}>Create</button
-								>
-							</div>
-						{/if}
+
+						<div style="display: flex; align-items: center;" transition:slide>
+							<span class="warning"></span>
+							<p style="margin-right: 10px;">Please, enter a thread name to create one</p>
+						</div>
+						<button
+							class="primaryButton"
+							disabled={name === '' ? true : false}
+							onclick={() => {
+								createThread();
+							}}>Create</button
+						>
 					{/if}
 				</div>
 
-				<h4 class='tertiaryHeading'>Your threads:</h4>
+				<h4 class="tertiaryHeading" style="margin-top: 20px;">Your threads:</h4>
 				<ul>
 					{#each threadsList as thread}
 						<li>
@@ -109,7 +107,7 @@
 									class="tertiaryButton"
 									style="padding-left: 0;"
 									onclick={() => {
-										window.open(`/${thread.id}`, '_self');
+										goto(`/${thread.id}`);
 									}}>{thread.name}</button
 								>
 								<!-- <p>{thread.updated}</p> -->

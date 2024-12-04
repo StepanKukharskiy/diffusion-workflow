@@ -15,10 +15,9 @@
 		answers: any = $state([]),
 		queries: any = $state([]);
 
-
 	function addElement(elements: any, type = 'text', query = '', answer = '') {
 		elements.push({
-            uuid: generateUUID(),
+			uuid: generateUUID(),
 			type: type,
 			query: query,
 			answer: answer
@@ -42,13 +41,14 @@
 				context.push(element.answer);
 			}
 			if (element.type === 'code') {
-				for(let file of element.files){
-					context.push(JSON.stringify({
-						name: file.fileName,
-						data: file.fileData
-					}));
+				for (let file of element.files) {
+					context.push(
+						JSON.stringify({
+							name: file.fileName,
+							data: file.fileData
+						})
+					);
 				}
-				
 			}
 		}
 		return context;
@@ -61,7 +61,7 @@
 		console.log(codeProjectUuid);
 		let message;
 		if ($referenceImageUrl != '') {
-			console.log('using vision model')
+			console.log('using vision model');
 			message = await fetch(`/api/image-vision`, {
 				method: 'POST',
 				headers: {
@@ -124,18 +124,19 @@
 	let imageUrl = '',
 		codeProjectUuid = '';
 </script>
+
 <!-- <div class='colorLine' style='background: #A1C9F290;'></div> -->
 <textarea
 	bind:this={queryTextarea}
 	oninput={(e) => {
 		query = e.target.value;
-		updateTextareaHeight(queryTextarea);
+		if (queryTextarea) {
+			updateTextareaHeight(queryTextarea);
+		}
 	}}
 	id="query"
 	style="border: 1px solid hsla({$textColor}, 20%); background: hsla({$textColor}, 10%); color: hsl({$textColor}); margin-top: 0; margin-bottom: 5px;"
-	placeholder={isFirstGeneration
-		? 'Add a question or a task here'
-		: 'Ask a follow-up question'}
+	placeholder={isFirstGeneration ? 'Add a question or a task here' : 'Ask a follow-up question'}
 ></textarea>
 {#if !isGeneratingText}
 	{#if query === ''}
@@ -144,27 +145,32 @@
 			<p>Please, provide a task or a question to continue</p>
 		</div>
 	{/if}
-	<div class='generationSetupsContainer'>
+	<div class="generationSetupsContainer">
 		{#if $referenceImageUrl != ''}
-		<button  onclick="{()=>{$referenceImageUrl = ''}}" style='background: none;'>
-			<img src={$referenceImageUrl} alt="composition reference" height='40'/>
-		</button>
+			<button
+				onclick={() => {
+					$referenceImageUrl = '';
+				}}
+				style="background: none;"
+			>
+				<img src={$referenceImageUrl} alt="composition reference" height="40" />
+			</button>
 		{/if}
-	<button
-		class="generationControlsButton"
-        disabled = {query === '' ? true : false}
-		onclick={async () => {
-			isGeneratingText = true;
-			const response = await generateText({
-				model: modelOption,
-				systemPrompt: systemPrompt,
-				query: query
-			});
-			addElement($elements, 'text', query, response.generatedText);
-			$elements = $elements;
-			updateTextareaHeight(queryTextarea);
-		}}>Send</button
-	>
+		<button
+			class="generationControlsButton"
+			disabled={query === '' ? true : false}
+			onclick={async () => {
+				isGeneratingText = true;
+				const response = await generateText({
+					model: modelOption,
+					systemPrompt: systemPrompt,
+					query: query
+				});
+				addElement($elements, 'text', query, response.generatedText);
+				$elements = $elements;
+				updateTextareaHeight(queryTextarea);
+			}}>Send</button
+		>
 	</div>
 {:else}
 	<div style="display: flex; align-items: center;">
@@ -175,13 +181,13 @@
 {/if}
 
 <style>
-	.generationSetupsContainer{
+	.generationSetupsContainer {
 		display: flex;
 		align-items: center;
 		height: 40px;
 		margin-top: 5px;
 	}
-	.generationSetupsContainer button{
+	.generationSetupsContainer button {
 		height: 40px;
 		border: none;
 		margin-right: 10px;

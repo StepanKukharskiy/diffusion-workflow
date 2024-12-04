@@ -66,7 +66,7 @@
 				class="tertiaryButton"
 				onclick={async () => {
 					window.open(`/projects/${project.id}`);
-				}}>Share</button
+				}}>Preview</button
 			>
 			<button
 				class="tertiaryButton"
