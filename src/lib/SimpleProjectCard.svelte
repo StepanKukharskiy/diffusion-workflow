@@ -2,7 +2,7 @@
 	import { elements, textColor, projectsList } from './store';
 	import { generateUUID } from './utils';
 	type Project = { name: string; id: string };
-	let { project = { name: '', id: '' }, action } = $props() as { project: Project, action: any };
+	let { project = { name: '', id: '' }, action } = $props() as { project: Project; action: any };
 	let isLoadingProject: any = $state(false),
 		deleteProject: any = $state(false),
 		isDeletingProject: any = $state(false);
@@ -85,7 +85,10 @@
 				style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
 			></div>
 		{:else}
-			<p>Are you sure? This action cann't be undone.</p>
+			<div style="display: flex;">
+				<span class="warning"></span>
+				<p>Are you sure? This action can't be undone.</p>
+			</div>
 			<div style="display: flex;">
 				<button
 					class="tertiaryButton"
