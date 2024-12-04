@@ -51,8 +51,10 @@
 	if (data.user != undefined) {
 		$user = data.user;
 	}
-	if(data.data != ''){
+	if(data.data != null){
 		$elements = data.data
+	} else {
+		$elements = []
 	}
 	console.log(data);
 
