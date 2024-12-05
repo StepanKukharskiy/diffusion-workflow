@@ -125,11 +125,13 @@
 		width: 100%;
 		padding: 10px;
 		box-sizing: border-box;
+		overflow-y: scroll;
 	}
 	.threadsDataContainer {
 		margin: auto;
 		margin-top: 60px;
 		max-width: 300px;
+		overflow-y: auto;
 	}
 	.threadContainer {
 		width: 100%;

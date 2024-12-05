@@ -1,7 +1,7 @@
 
 export async function POST({ request, locals, fetch }) {
     const formData = await request.formData();
-    console.log(formData)
+    // console.log(formData)
     const files = formData.getAll('files');
     const name = formData.get('name')
     const id = formData.get('id')

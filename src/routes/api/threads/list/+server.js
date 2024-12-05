@@ -15,7 +15,7 @@ export async function GET({ request, locals, fetch }) {
 
 
         const threadsList = serializeNonPOJOs(threads)
-        console.log(threads)
+        // console.log(threads)
         const threadsData = []
         for (let thread of threadsList) {
             threadsData.push({

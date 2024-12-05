@@ -6,7 +6,8 @@
 		filesLocalCopy,
 		tutorialsPanelState,
 		width,
-		user
+		user,
+		isSavingThread
 	} from '$lib/store';
 	import { generateUUID, initialCodeFiles } from '$lib/utils';
 	import { page } from '$app/stores';
@@ -51,10 +52,10 @@
 	if (data.user != undefined) {
 		$user = data.user;
 	}
-	if(data.data != null){
-		$elements = data.data
+	if (data.data != null) {
+		$elements = data.data;
 	} else {
-		$elements = []
+		$elements = [];
 	}
 	console.log(data);
 
@@ -86,27 +87,38 @@
 	}
 
 	async function saveThread(elements: any) {
-		console.log(elements);
-		const formData = new FormData();
-		formData.append('name', name);
-		formData.append('id', id);
-		formData.append('data', JSON.stringify(elements));
-		console.log(`updated form: ${formData}`);
-		const response = await fetch('/api/threads/save', { method: 'POST', body: formData });
-		const responseData = await response.json();
-		console.log(responseData);
+		try {
+			$isSavingThread = true;
+			const formData = new FormData();
+			formData.append('name', name);
+			formData.append('id', id);
+			formData.append('data', JSON.stringify(elements));
+			console.log(`saving: ${formData}`);
+			const response = await fetch('/api/threads/save', { method: 'POST', body: formData });
+			const responseData = await response.json();
+			$isSavingThread = false;
+			// console.log(responseData);
+		} catch (err) {
+			console.log(err);
+		}
 	}
 
-	let discussionWidth = $state('400px');
-	$effect(async () => {
+	let discussionWidth: any = $state('400px');
+	let saveTimeout: any = $state();
+
+	elements.subscribe(() => {
+		clearTimeout(saveTimeout);
+		saveTimeout = setTimeout(async () => {
+			await saveThread($elements);
+		}, 10000);
+	});
+
+	$effect(() => {
 		if ($tutorialsPanelState && $width > 700) {
 			discussionWidth = 'calc(100% - 400px)';
 		} else {
 			discussionWidth = '100%';
 		}
-		console.log(`updated elements: ${$elements}`);
-
-		await saveThread($elements);
 	});
 </script>
 

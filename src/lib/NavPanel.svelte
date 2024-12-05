@@ -1,6 +1,7 @@
 <script>
 	// import kodiia_logo_bw from '$lib/logos/kodiia_logo_bw.svg'
 	import kodiia_small from '$lib/logos/kodiia_small.svg';
+	import { slide } from 'svelte/transition';
 	import {
 		bgColor,
 		textColor,
@@ -9,7 +10,8 @@
 		tutorialsPanelState,
 		loginPanelState,
 		isUserAuthenticated,
-		user
+		user,
+		isSavingThread
 	} from './store';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
@@ -48,7 +50,7 @@
 		const responseObject = await response.json();
 		if (responseObject.message === 'Logged out') {
 			$isUserAuthenticated = false;
-			$user = undefined
+			$user = undefined;
 			isLoggingOut = false;
 			$loginPanelState = true;
 		}
@@ -64,11 +66,25 @@
 				<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
 			</a>
 
-			<div class="desktopMenu">
-				<div class='requestsWrapper'>
-					<h4 class='tertiaryHeading'>{$user.requests}</h4>
+			{#if $isSavingThread}
+				<div style="display: flex; align-items: center">
+					<span class="warning"></span>
+					<p style="margin: 0">Saving...</p>
+					<div class="loader"></div>
 				</div>
-				<button class="smallMenuButton" onclick={()=>{goto('/')}}>Threads</button>
+			{:else}
+				<div class="requestsWrapper">
+					<h4 class="tertiaryHeading">{$user.requests}</h4>
+				</div>
+			{/if}
+
+			<div class="desktopMenu">
+				<button
+					class="smallMenuButton"
+					onclick={() => {
+						goto('/');
+					}}>Threads</button
+				>
 				<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
 				{#if $user}
 					{#if !isLoggingOut}
@@ -95,7 +111,6 @@
 				<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
 			</a>
 
-			
 			<button
 				class="menuButton"
 				onclick={() => {
@@ -123,11 +138,16 @@
                 <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{$filesPanelDisplay = 'block'; mobileMenuDisplay = 'none'}}'>Files</button>
             {/if} -->
 
-			<div class='requestsWrapper'>
-				<h4 style='margin: 10px 10px 0 10px;' class='tertiaryHeading'>{$user.requests}</h4>
+			<div class="requestsWrapper">
+				<h4 style="margin: 10px 10px 0 10px;" class="tertiaryHeading">{$user.requests}</h4>
 			</div>
 
-			<button class="smallMenuButton" onclick={()=>{goto('/')}}>Threads</button>
+			<button
+				class="smallMenuButton"
+				onclick={() => {
+					goto('/');
+				}}>Threads</button
+			>
 
 			<button
 				class="smallMenuButton"

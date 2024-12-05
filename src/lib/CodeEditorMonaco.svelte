@@ -14,12 +14,7 @@
 	import parserCSS from 'prettier/plugins/postcss';
 	import parserMarkdown from 'prettier/plugins/markdown';
 
-	import {
-		consolePanelState,
-		bgColor,
-		textColor,
-		elements
-	} from '$lib/store';
+	import { consolePanelState, bgColor, textColor, elements } from '$lib/store';
 	import { getFileLogoURL } from '$lib/utils';
 
 	let editorContainer: any;
@@ -40,7 +35,7 @@
 
 	// console.log(fileName);
 
-	console.log(`uuid from CodeEditorPanel - ${uuid}`)
+	console.log(`uuid from CodeEditorPanel - ${uuid}`);
 
 	let logoPath = getFileLogoURL(fileName.split('.')[1]);
 
@@ -55,7 +50,6 @@
 		}
 	}
 
-
 	async function formatText(text = '') {
 		if (mode === 'md' || mode === 'ino' || mode === 'svg') {
 			mode = 'text';
@@ -68,8 +62,8 @@
 			parserMode = mode; // Ensure mode is a valid parser name
 		}
 
-		console.log('Mode:', mode);
-		console.log('Parser Mode:', parserMode);
+		// console.log('Mode:', mode);
+		// console.log('Parser Mode:', parserMode);
 
 		formatOptions = {
 			parser: parserMode,
@@ -112,7 +106,7 @@
 		let editorTheme = 'vs-light';
 		// $theme === 'dark' ? editorTheme = 'vs-dark' : editorTheme = 'vs-light'
 
-		console.log('initial mode: ' + mode)
+		// console.log('initial mode: ' + mode)
 		if (mode === 'md' || mode === 'ino' || mode === 'svg') {
 			mode = 'text';
 		}
@@ -138,13 +132,14 @@
 		});
 		editorCreated = true;
 
+		let saveTimeout: any = $state();
 		editor.onDidChangeModelContent(async function () {
 			// $runCode = false;
 
 			if (mode === 'md' || mode === 'ino' || mode === 'svg') {
 				mode = 'text';
 			}
-			console.log(mode);
+			// console.log(mode);
 			if (mode === 'js' || mode === 'javascript') {
 				mode = 'javascript'; // This may not be necessary
 				parserMode = 'babel'; // Ensure this is correct
@@ -152,8 +147,8 @@
 				parserMode = mode; // Ensure mode is a valid parser name
 			}
 
-			console.log(mode);
-			console.log(parserMode);
+			// console.log(mode);
+			// console.log(parserMode);
 
 			formatOptions = {
 				parser: parserMode,
@@ -161,11 +156,15 @@
 			};
 
 			const formattedCode = await prettier.format(editor.getValue(), formatOptions);
-			updateFileData(formattedCode);
-			console.log(formattedCode)
-			console.log($elements);
+			// updateFileData(formattedCode);
+			clearTimeout(saveTimeout);
+			saveTimeout = setTimeout(async () => {
+				updateFileData(formattedCode);
+			}, 1000);
+			$elements = $elements
+			// console.log(formattedCode)
+			// console.log($elements);
 		});
-
 
 		formatText(editorText).then((result) => {
 			editor.setValue(result);
@@ -192,7 +191,7 @@
 	let button;
 
 	function updateFileData(value = '') {
-		console.log(`updating files for this ${uuid}`)
+		console.log(`updating files for this ${uuid}`);
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
 				for (let file of element.files) {
