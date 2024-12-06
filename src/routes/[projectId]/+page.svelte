@@ -11,6 +11,7 @@
 	} from '$lib/store';
 	import { generateUUID, initialCodeFiles } from '$lib/utils';
 	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 
 	import TextInput from '$lib/TextInput.svelte';
 	import FileInput from '$lib/FileInput.svelte';
@@ -109,7 +110,9 @@
 	elements.subscribe(() => {
 		clearTimeout(saveTimeout);
 		saveTimeout = setTimeout(async () => {
+			if(browser){
 			await saveThread($elements);
+			}
 		}, 10000);
 	});
 

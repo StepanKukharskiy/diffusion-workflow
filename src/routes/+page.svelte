@@ -65,14 +65,7 @@
 
 	<div class="threadsListContainer">
 		<div class="threadsDataContainer">
-			{#if isLoadingThreads}
-				<div style="display: flex; align-items: center;" transition:slide>
-					<span class="warning"></span>
-					<p style="margin-right: 10px;">Loading threads</p>
-					<div class="loader"></div>
-				</div>
-			{:else if $user && threadsList != undefined && threadsList.length > 0}
-				<h2 class="secondaryHeading">Threads</h2>
+			<h2 class="secondaryHeading">Threads</h2>
 
 				<div class="createThreadFormContainer">
 					{#if isCreatingNewThread}
@@ -97,6 +90,14 @@
 						>
 					{/if}
 				</div>
+			{#if isLoadingThreads}
+				<div style="display: flex; align-items: center;" transition:slide>
+					<span class="warning"></span>
+					<p style="margin-right: 10px;">Loading threads</p>
+					<div class="loader"></div>
+				</div>
+			{:else if threadsList != undefined && threadsList.length > 0}
+				
 
 				<h4 class="tertiaryHeading" style="margin-top: 20px;">Your threads:</h4>
 				<ul>
