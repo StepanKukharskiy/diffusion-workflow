@@ -345,12 +345,9 @@
 	</div>
 
 	{#if !isMakingScreenshot}
-		<details>
-			<summary>Options</summary>
-			<ul>
-				<li>
+	<div style='display: flex; flex-wrap: wrap;'>
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						disabled={isEmptySketch === true ? true : false}
 						onclick={async () => {
 							sketchUrl = await getScreenshotUrl();
@@ -358,10 +355,9 @@
 							$chatPanelMode = 'chat';
 						}}>Discuss</button
 					>
-				</li>
-				<li>
+
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						disabled={isEmptySketch === true ? true : false}
 						onclick={async () => {
 							sketchUrl = await getScreenshotUrl();
@@ -369,18 +365,16 @@
 							$chatPanelMode = 'image';
 						}}>Create new image with this sketch</button
 					>
-				</li>
-				<li>
+
 					<button
-						class="settingsButton"
+						class="tertiaryButton"
 						onclick={async () => {
 							deleteBlock($elements, uuid);
 							$elements = $elements;
 						}}>Delete</button
 					>
-				</li>
-			</ul>
-		</details>
+</div>
+
 	{:else}
 		<div style="display: flex; align-items: center;">
 			<span class="warning"></span>
