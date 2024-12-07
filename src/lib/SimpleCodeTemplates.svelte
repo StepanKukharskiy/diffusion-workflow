@@ -16,7 +16,8 @@
 		{ name: 'flock2D', description: 'Flock 2D' },
 		{ name: 'Voxel Editor', description: 'Voxel Editor' },
 		{ name: 'pixelart', description: 'Pixel Art Editor' },
-		{ name: 'truchet', description: 'Truchet tiles' }
+		{ name: 'truchet', description: 'Truchet tiles' },
+		{ name: 'CAdiffusion3d', description: 'Diffusion Cellular Automata 3D' }
 	];
 
 	async function getTemplate(name = '') {

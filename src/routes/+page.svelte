@@ -124,6 +124,7 @@
 <style>
 	.threadsListContainer {
 		width: 100%;
+		height: 100vh;
 		padding: 10px;
 		box-sizing: border-box;
 		overflow-y: scroll;
