@@ -208,7 +208,7 @@
 					<p><span class="warning"></span>Passwords do not match</p>
 				{/if}
 			</div>
-			<!-- <a href='/reset-password' style='color: hsl({$textColor});'>I forgot my password</a> -->
+			
 			{#if !isRegistering}
 				<div class="inputContainer">
 					<button
@@ -232,6 +232,7 @@
 			{#if errorMessage != ''}
 				<p>{errorMessage}</p>
 			{/if}
+			<p>We'll send you an email. Please click <b>Verify</b>. Don't forget to check the Spam folder.</p>
 
 			<div style="display: flex">
 				<p style="margin: 10px 0 0 0;">Already have an account?</p>
