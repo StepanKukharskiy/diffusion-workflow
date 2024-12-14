@@ -45,7 +45,7 @@
 </script>
 
 {#if data}
-	<div style="width: 100%; height: 100%;">
+	<div style="width: 100%; height: 100%; min-height: 100vh;">
 		<iframe
 			srcDoc={userSRCDoc}
 			style="width: 100%; height: 100%; border: none;"

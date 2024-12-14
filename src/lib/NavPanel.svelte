@@ -46,7 +46,7 @@
 	async function logout() {
 		isLoggingOut = true;
 		const formData = new FormData();
-		const response = await fetch('/api/user/logout', { method: 'POST', body: formData });
+		const response = await fetch(`${$page.url.origin}/api/user/logout`, { method: 'POST', body: formData });
 		const responseObject = await response.json();
 		if (responseObject.message === 'Logged out') {
 			$isUserAuthenticated = false;
