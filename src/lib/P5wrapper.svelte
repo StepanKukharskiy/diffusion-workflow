@@ -14,12 +14,11 @@
 <div bind:this={appCanvas} class="canvasContainer"></div>
 
 <style>
-   :global(canvas){
+   /* :global(canvas){
     border-radius: 10px;
 	box-sizing: border-box;
-   }
+   } */
    .canvasContainer {
-    /* margin-left: 10px; */
 	height: 400px;
    }
 </style>

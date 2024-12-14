@@ -82,7 +82,7 @@
 				<button
 					class="smallMenuButton"
 					onclick={() => {
-						goto('/');
+						goto('/threads');
 					}}>Threads</button
 				>
 				<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
@@ -145,7 +145,7 @@
 			<button
 				class="smallMenuButton"
 				onclick={() => {
-					goto('/');
+					goto('/threads');
 				}}>Threads</button
 			>
 
