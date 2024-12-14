@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { textColor, elements, referenceImageUrl } from '$lib/store';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { slide } from 'svelte/transition';
 	import { generateUUID } from './utils';
 
@@ -60,7 +61,7 @@
 		console.log(codeProjectUuid);
 		let message;
 
-		message = await fetch(`/api/sketch-generation`, {
+		message = await fetch(`${$page.url.origin}/api/sketch-generation`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

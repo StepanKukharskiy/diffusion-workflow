@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { elements } from './store';
 	import { deleteBlock } from './utils';
+	import { page } from '$app/stores';
 	let { videoUrl = '', uuid = '' } = $props();
 </script>
 

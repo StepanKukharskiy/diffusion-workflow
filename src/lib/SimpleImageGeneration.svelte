@@ -43,7 +43,7 @@
 		if ($referenceImageUrl != '') {
 			modelOption = 'sdxl-controlnet-canny';
 		}
-		const message = await fetch(`/api/image-generation`, {
+		const message = await fetch(`${$page.url.origin}/api/image-generation`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

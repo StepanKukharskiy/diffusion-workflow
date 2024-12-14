@@ -179,7 +179,7 @@
 	}
 
 	async function getTemplate(name = '') {
-		const message = await fetch(`/api/code-templates`, {
+		const message = await fetch(`${$page.url.origin}/api/code-templates`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -246,7 +246,7 @@
 				console.log($page.params.projectId);
 				console.log(formData);
 
-				const response = await fetch('/api/save-image', {
+				const response = await fetch(`${$page.url.origin}/api/save-image`, {
 					method: 'POST',
 					body: formData
 				});
@@ -313,14 +313,14 @@
 			formData.append(`files`, new Blob([file.data], { type: 'text/plain' }), file.name);
 		});
 		// formData.append('files', files)
-		const project = await fetch('api/projects/save', { method: 'POST', body: formData });
+		const project = await fetch(`${$page.url.origin}/api/projects/save`, { method: 'POST', body: formData });
 		const projectData = await project.json();
 		id = projectData.id;
 		isSavingProject = false;
 	}
 
 	async function getProjectsList() {
-		const projectsListData = await fetch('api/projects/get');
+		const projectsListData = await fetch(`${$page.url.origin}/api/projects/get`);
 		console.log(projectsListData);
 		$projectsList = await projectsListData.json();
 	}

@@ -61,7 +61,7 @@
 			modelOption = 'sdxl-controlnet-canny';
 		}
 		console.log('query: ' + query);
-		const message = await fetch(`/api/image-generation`, {
+		const message = await fetch(`${$page.url.origin}/api/image-generation`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -91,7 +91,7 @@
 				<label for="prompt-{uuid}">Description</label>
 				<textarea id="prompt-{uuid}">{query}</textarea>
 				<label for="prompt-{uuid}">File url</label>
-				<textarea id="prompt-{uuid}">{`api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`}</textarea>
+				<textarea id="prompt-{uuid}">{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`}</textarea>
 			{/if}
 				{#if query != 'uploaded file'}
 						<button

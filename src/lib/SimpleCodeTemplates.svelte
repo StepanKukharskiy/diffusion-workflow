@@ -2,6 +2,7 @@
 	import { elements, textColor } from './store';
 	import { generateUUID } from './utils';
 	import { slide } from 'svelte/transition';
+	import { page } from '$app/stores';
 	let isLoadingTemplate = $state(false);
 	let isTemplateSelected = $state(false);
 	let templatesList = [
@@ -21,7 +22,7 @@
 	];
 
 	async function getTemplate(name = '') {
-		const message = await fetch(`/api/code-templates`, {
+		const message = await fetch(`${$page.url.origin}/api/code-templates`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

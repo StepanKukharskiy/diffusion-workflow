@@ -146,7 +146,7 @@
 	<div style="display: flex; flex-wrap: wrap;">
 		<label for="prompt-{uuid}">File url</label>
 		<textarea id="prompt-{uuid}"
-			>{`api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</textarea
+			>{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</textarea
 		>
 
 		<button

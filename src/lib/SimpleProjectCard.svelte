@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { elements, textColor, projectsList } from './store';
+	import { page } from '$app/stores';
 	import { generateUUID } from './utils';
 	type Project = { name: string; id: string };
 	let { project = { name: '', id: '' }, action } = $props() as { project: Project; action: any };
@@ -11,7 +12,7 @@
 		isLoadingProject = true;
 		const formData = new FormData();
 		formData.append('id', id);
-		const projectFiles = await fetch('/api/projects/get-files', { method: 'POST', body: formData });
+		const projectFiles = await fetch(`${$page.url.origin}/api/projects/get-files`, { method: 'POST', body: formData });
 		const projectFilesData = await projectFiles.json();
 		console.log(projectFilesData);
 		isLoadingProject = false;
@@ -34,12 +35,12 @@
 		isDeletingProject = true;
 		const formData = new FormData();
 		formData.append('id', id);
-		await fetch('/api/projects/delete', { method: 'POST', body: formData });
+		await fetch(`${$page.url.origin}/api/projects/delete`, { method: 'POST', body: formData });
 		isDeletingProject = false;
 	}
 
 	async function getProjectsList() {
-		const projectsListData = await fetch('api/projects/get');
+		const projectsListData = await fetch(`${$page.url.origin}/api/projects/get`);
 		$projectsList = await projectsListData.json();
 	}
 </script>

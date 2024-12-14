@@ -5,6 +5,7 @@
 	import { textColor, tutorialsPanelState, width, elements, projectsList } from '$lib/store';
 	import { generateUUID } from './utils';
 	import SimpleProjectCard from './SimpleProjectCard.svelte';
+	import { page } from '$app/stores';
 
 	
 	let tutorialsList: any,
@@ -18,17 +19,15 @@
 
 
 	async function getTutorialsList() {
-		tutorialsList = await fetch('api/get-tutorials-list');
+		console.log($page.url.origin)
+		tutorialsList = await fetch(`${$page.url.origin}/api/get-tutorials-list`);
 		tutorialsListData = await tutorialsList.json();
-		//tutorialsNames = tutorialsListData.tutorials.name;
 		console.log(tutorialsListData);
 	}
 
 	async function getProjectsList() {
-		projectsListData = await fetch('api/projects/get');
+		projectsListData = await fetch(`${$page.url.origin}/api/projects/get`);
 		$projectsList = await projectsListData.json();
-		//tutorialsNames = tutorialsListData.tutorials.name;
-		//console.log(projectsListData);
 	}
 
 	onMount(() => {

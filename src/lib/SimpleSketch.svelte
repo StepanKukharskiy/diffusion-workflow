@@ -250,7 +250,7 @@
 		formData.append('projectId', $page.params.projectId);
 		console.log($page.params.projectId);
 		console.log(formData);
-		const response = await fetch('/api/save-image', { method: 'POST', body: formData });
+		const response = await fetch(`${$page.url.origin}/api/save-image`, { method: 'POST', body: formData });
 		if (!response.ok) {
 			isMakingScreenshot = false;
 			console.error('Upload failed:', response.statusText);

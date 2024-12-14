@@ -45,7 +45,7 @@
 		formData.append('projectId', $page.params.projectId);
 
 		try {
-			const response = await fetch('/api/save-image', {
+			const response = await fetch(`${$page.url.origin}/api/save-image`, {
 				method: 'POST',
 				body: formData
 			});

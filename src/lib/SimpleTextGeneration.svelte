@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { textColor, elements, referenceImageUrl } from '$lib/store';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { slide } from 'svelte/transition';
 	import { generateUUID } from './utils';
 
@@ -62,7 +63,7 @@
 		let message;
 		if ($referenceImageUrl != '') {
 			console.log('using vision model');
-			message = await fetch(`/api/image-vision`, {
+			message = await fetch(`${$page.url.origin}/api/image-vision`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -79,7 +80,7 @@
 			console.log(message);
 		} else if (codeProjectUuid != '') {
 			console.log(`this is code uuid: ${codeProjectUuid}`);
-			message = await fetch(`/api/text-generation`, {
+			message = await fetch(`${$page.url.origin}/api/text-generation`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -95,7 +96,7 @@
 
 			console.log(message);
 		} else {
-			message = await fetch(`/api/text-generation`, {
+			message = await fetch(`${$page.url.origin}/api/text-generation`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
