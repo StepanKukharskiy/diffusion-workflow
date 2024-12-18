@@ -50,7 +50,7 @@
 					const value = p.map(grid[i][j], minVal, maxVal, 0.1, 1);
 					p.fill(value * 255);
 					p.noStroke();
-					p.rect(i * cellSize, j * cellSize, cellSize, cellSize, value * 1);
+					p.rect(i * cellSize, j * cellSize, cellSize, cellSize);
 				}
 			}
 			// Calculate next generation
