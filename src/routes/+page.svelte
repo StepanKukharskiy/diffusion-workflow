@@ -6,16 +6,14 @@
 	// Define your sketch function
 	function sketch(p: any, appCanvas: any) {
 		let grid: any;
-		let cellSize = 15;
+		let cellSize = 20;
 		let gridSizeX = Math.round($width / cellSize);
 		let gridSizeY = Math.round($height / cellSize);
-
+		let iteration = 0; // Counter variable
+		let maxIterations = 10; // Maximum number of iterations
 		p.setup = function () {
-			cellSize = 15;
-			gridSizeX = Math.round($width / cellSize);
-			gridSizeY = Math.round($height / cellSize);
-			p.createCanvas(window.innerWidth, window.innerHeight);
-			p.frameRate(10);
+			p.createCanvas(gridSizeX * cellSize, gridSizeY * cellSize);
+			p.frameRate(20);
 			grid = new Array(gridSizeX).fill(0).map(() => new Array(gridSizeY).fill(0));
 			// Initialize grid with random values
 			for (let i = 0; i < gridSizeX; i++) {
@@ -24,22 +22,35 @@
 				}
 			}
 			// Randomly select 10 cells to have a value of 1
-			for (let i = 0; i < 10; i++) {
+			for (let i = 0; i < 50; i++) {
 				const x = p.floor(p.random(gridSizeX));
-				const y = p.floor(p.random(gridSizeY));
+				const y = p.floor(p.random(-5, 5) + gridSizeY / 2);
+				// const y = gridSizeY / 2
 				grid[x][y] = 1;
 			}
 		};
 		p.draw = function () {
 			p.background(0);
 			// Draw grid
+			let minVal = Infinity;
+			let maxVal = -Infinity;
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
 					const value = grid[i][j];
-					// const valueMap = p.map(value, 0, 0.5, 0, 255)
+					if (value < minVal) {
+						minVal = value;
+					}
+					if (value > maxVal) {
+						maxVal = value;
+					}
+				}
+			}
+			for (let i = 0; i < gridSizeX; i++) {
+				for (let j = 0; j < gridSizeY; j++) {
+					const value = p.map(grid[i][j], minVal, maxVal, 0.1, 1);
 					p.fill(value * 255);
 					p.noStroke();
-					p.rect(i * cellSize, j * cellSize, cellSize, cellSize);
+					p.rect(i * cellSize, j * cellSize, cellSize, cellSize, value * 1);
 				}
 			}
 			// Calculate next generation
@@ -68,11 +79,26 @@
 			}
 			// Update grid
 			grid = newGrid;
+			iteration++; // Increment counter
+			if (iteration >= maxIterations) {
+				p.noLoop(); // Stop the simulation
+			}
+		};
+		p.mousePressed = function () {
+			const x = p.floor(p.mouseX / cellSize);
+			const y = p.floor(p.mouseY / cellSize);
+			if (x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY) {
+				grid[x][y] = 1;
+				iteration = 0; // Reset counter
+				maxIterations = 10; // Reset max iterations
+				p.loop(); // Restart the simulation
+			}
 		};
 
 		p.windowResized = function () {
 			p.resizeCanvas(window.innerWidth, window.innerHeight);
 			p.setup();
+			p.loop();
 		};
 	}
 </script>
@@ -98,9 +124,9 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-    padding: 10px;
-    box-sizing: border-box;
-    text-align: center;
+		padding: 10px;
+		box-sizing: border-box;
+		text-align: center;
 	}
 	.container {
 		width: 100%;
@@ -110,7 +136,7 @@
 		justify-content: center;
 		align-items: center;
 	}
-  button{
-    margin-top: 20px;
-  }
+	button {
+		margin-top: 20px;
+	}
 </style>
