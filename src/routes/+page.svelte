@@ -57,7 +57,7 @@
 			const newGrid = new Array(gridSizeX).fill(0).map(() => new Array(gridSizeY).fill(0));
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
-					if (grid[i][j] === 1) {
+					if (grid[i][j] === 10) {
 						// If the cell's value is 1, keep it as 1
 						newGrid[i][j] = 1;
 					} else {
@@ -84,7 +84,7 @@
 				p.noLoop(); // Stop the simulation
 			}
 		};
-		p.mousePressed = function () {
+		p.mouseMoved = function () {
 			const x = p.floor(p.mouseX / cellSize);
 			const y = p.floor(p.mouseY / cellSize);
 			if (x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY) {

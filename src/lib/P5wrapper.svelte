@@ -19,6 +19,6 @@
 	box-sizing: border-box;
    } */
    .canvasContainer {
-	height: 400px;
+	min-height: 400px;
    }
 </style>
