@@ -27,6 +27,7 @@ const replicate = new Replicate({
 export async function POST({ request, locals, params }) {
 
     try {
+        
         const query = await request.json()
         console.log(query)
 
@@ -37,7 +38,7 @@ export async function POST({ request, locals, params }) {
             // export_texmap: true
             do_remove_background: true
         };
-
+        if(locals.pb.authStore.model.requests > 0){
         output = await replicate.run("camenduru/tripo-sr:e0d3fe8abce3ba86497ea3530d9eae59af7b2231b6c82bedfc32b0732d35ec3a", { input });
 
         const modelUrl = output.url().href;
@@ -63,7 +64,7 @@ export async function POST({ request, locals, params }) {
                 modelUrl: generatedModelFileUrl
             }
 
-
+        }
 
 
         const finalResponse = new Response(JSON.stringify(response), {

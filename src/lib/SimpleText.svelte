@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { elements, textColor } from './store';
+	import { elements, textColor, user } from './store';
 	import StyledModelAnswer from './StyledModelAnswer.svelte';
-	import { deleteBlock, generateUUID } from './utils';
+	import { deleteBlock, generateUUID, updateCredits } from './utils';
 
 	let { query = '', answer = '', uuid = '' } = $props();
 	console.log(query);
@@ -61,6 +61,7 @@
 							const url = await generateImage();
 							addElement($elements, 'image', answer, url);
 							$elements = $elements;
+							$user.requests = await updateCredits('image', `${$page.url.origin}/api/user/update-credits`)
 						}}>Create an image with this text</button
 					>
 					<button

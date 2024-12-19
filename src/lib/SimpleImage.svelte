@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { elements, referenceImageUrl, textColor, chatPanelMode } from './store';
-	import { generateUUID, generateVideo, deleteBlock, generateModel } from './utils';
+	import { elements, referenceImageUrl, textColor, chatPanelMode, user } from './store';
+	import { generateUUID, generateVideo, deleteBlock, generateModel, updateCredits } from './utils';
 	let { imageUrl = '', query = '', uuid = '' } = $props();
 
 	console.log($elements);
@@ -104,6 +104,7 @@
 										element.imageUrl = url;
 									}
 								}
+								$user.requests = await updateCredits('image', `${$page.url.origin}/api/user/update-credits`)
 								// addElement($elements, 'image', query, url)
 							}}>Retry generation</button
 						>
@@ -134,6 +135,7 @@
 							isGenerating = false;
 							addElement($elements, 'video', query, imageUrl, url);
 							$elements = $elements;
+							$user.requests = await updateCredits('video', `${$page.url.origin}/api/user/update-credits`)
 						}}>Turn to video</button
 					>
 					<button
@@ -148,10 +150,11 @@
 							console.log(url);
 							addElement($elements, '3dViewer', query, imageUrl, '', url);
 							$elements = $elements;
+							$user.requests = await updateCredits('3Dmodel', `${$page.url.origin}/api/user/update-credits`)
 						}}>Turn to 3D</button
 					>
 					<button 
-						onclick={()=>{goto(imageUrl)}}
+						onclick={()=>{window.open(`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`, '_blank')}}
 						class="tertiaryButton"
 						>Download</button
 					>

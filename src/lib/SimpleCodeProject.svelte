@@ -7,13 +7,14 @@
 		elements,
 		referenceImageUrl,
 		chatPanelMode,
-		projectsList
+		projectsList,
+		user
 	} from './store';
 	import FilesPanel from './FilesPanel.svelte';
 	import ProjectPanel from './ProjectPanel.svelte';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { generateUUID, deleteBlock } from './utils';
+	import { generateUUID, deleteBlock, updateCredits } from './utils';
 	import { slide } from 'svelte/transition';
 	import bg_image from '$lib/images/bg.webp';
 

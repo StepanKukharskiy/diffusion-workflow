@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { textColor, elements, referenceImageUrl } from '$lib/store';
+	import { textColor, elements, referenceImageUrl, user } from '$lib/store';
 	import { slide } from 'svelte/transition';
-	import { generateUUID } from './utils';
+	import { generateUUID, updateCredits} from './utils';
 
 	let isGeneratingImage = $state(false),
 		refImageUrl = '',
@@ -64,6 +64,7 @@
 		// $referenceImageUrl = '';
 		return generatedImageUrl;
 	}
+
 </script>
 
 <textarea
@@ -105,6 +106,7 @@
 				addElement($elements, 'image', query, generatedImageUrl);
 				$elements = $elements;
 				updateTextareaHeight(queryTextarea);
+				$user.requests = await updateCredits('image', `${$page.url.origin}/api/user/update-credits`)
 			}}>Generate</button
 		>
 	</div>

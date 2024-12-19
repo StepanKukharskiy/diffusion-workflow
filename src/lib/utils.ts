@@ -405,3 +405,18 @@ export function generateUUID() {
       }
     }
   }
+
+  export async function updateCredits(type = '', url = ''){
+		const message = await fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					type: type
+				})
+			});
+		
+		const messageObject = await message.json()
+		return messageObject.credits
+	}

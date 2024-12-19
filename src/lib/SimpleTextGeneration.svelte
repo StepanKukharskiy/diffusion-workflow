@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { textColor, elements, referenceImageUrl } from '$lib/store';
+	import { textColor, elements, referenceImageUrl, user } from '$lib/store';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { slide } from 'svelte/transition';
-	import { generateUUID } from './utils';
+	import { generateUUID, updateCredits } from './utils';
 
 	let isGeneratingText = $state(false),
 		isFirstGeneration = $state(true),
@@ -122,6 +122,8 @@
 		return generatedText;
 	}
 
+	
+
 	let imageUrl = '',
 		codeProjectUuid = '';
 </script>
@@ -170,6 +172,7 @@
 				addElement($elements, 'text', query, response.generatedText);
 				$elements = $elements;
 				updateTextareaHeight(queryTextarea);
+				$user.requests = await updateCredits('text', `${$page.url.origin}/api/user/update-credits`)
 			}}>Send</button
 		>
 	</div>

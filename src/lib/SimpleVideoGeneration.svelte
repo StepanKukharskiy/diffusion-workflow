@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { textColor, bgColor, elements } from './store';
+	import { textColor, bgColor, elements, user } from './store';
 	import { page } from '$app/stores';
 	import { slide } from 'svelte/transition';
-	import { generateUUID, generateVideo } from './utils';
+	import { generateUUID, generateVideo, updateCredits } from './utils';
 
 	const { uuid = '' } = $props();
 	let imageFile: any;
@@ -110,8 +110,9 @@
 	aria-label="Image upload area"
 	ondrop={handleDrop}
 	ondragover={handleDragOver}
-	onclick={() => {
+	onclick={async () => {
 		fileInput.click();
+		$user.requests = await updateCredits('video', `${$page.url.origin}/api/user/update-credits`)
 	}}
 >
 	<!-- {#if loadingImage}
