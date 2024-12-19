@@ -18,7 +18,8 @@
 		{ name: 'Voxel Editor', description: 'Voxel Editor' },
 		{ name: 'pixelart', description: 'Pixel Art Editor' },
 		{ name: 'truchet', description: 'Truchet tiles' },
-		{ name: 'CAdiffusion3d', description: 'Diffusion Cellular Automata 3D' }
+		{ name: 'CAdiffusion3d', description: 'Diffusion Cellular Automata 3D' },
+		{ name: 'ca diffusion game', description: 'Diffusion Cellular Automata Game' }
 	];
 
 	async function getTemplate(name = '') {
