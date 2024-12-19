@@ -18,7 +18,7 @@
 			// Initialize grid with random values
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
-					grid[i][j] = p.random(1);
+					grid[i][j] = p.random(0,1);
 				}
 			}
 			// Randomly select 10 cells to have a value of 1
@@ -28,6 +28,7 @@
 				// const y = gridSizeY / 2
 				grid[x][y] = 1;
 			}
+			// grid[gridSizeX/2][gridSizeY/2] = 1;
 		};
 		p.draw = function () {
 			p.background(0);
@@ -48,7 +49,7 @@
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
 					const value = p.map(grid[i][j], minVal, maxVal, 0.1, 1);
-					p.fill(value * 255);
+					p.fill(`hsl(${Math.round(value * 360)}, 60%, 70%)`);
 					p.noStroke();
 					p.rect(i * cellSize, j * cellSize, cellSize, cellSize);
 				}
