@@ -3,6 +3,8 @@
 	import P5wrapper from '$lib/P5wrapper.svelte';
 	import { width, height } from '$lib/store';
 
+	let hueRotation = $state(0)
+
 	// Define your sketch function
 	function sketch(p: any, appCanvas: any) {
 		let grid: any;
@@ -12,13 +14,18 @@
 		let iteration = 0; // Counter variable
 		let maxIterations = 10; // Maximum number of iterations
 		p.setup = function () {
+			cellSize = 20;
+		 	gridSizeX = Math.round($width / cellSize);
+		 	gridSizeY = Math.round($height / cellSize);
+			iteration = 0; // Counter variable
+			maxIterations = 10; // Maximum number of iterations
 			p.createCanvas(gridSizeX * cellSize, gridSizeY * cellSize);
 			p.frameRate(20);
 			grid = new Array(gridSizeX).fill(0).map(() => new Array(gridSizeY).fill(0));
 			// Initialize grid with random values
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
-					grid[i][j] = p.random(0,1);
+					grid[i][j] = p.random(0, 1);
 				}
 			}
 			// Randomly select 10 cells to have a value of 1
@@ -106,17 +113,22 @@
 
 <div class="container">
 	<div class="wrapper">
-		<h1 class="primaryHeading">The easiest way to use AI in creative projects</h1>
+		<h1 class="primaryHeading">The AI-powered Workspace for Your Creative Projects</h1>
 		<button
 			class="primaryButton"
+			onpointerover={()=>{hueRotation = 180}}
+			onpointerleave={()=>{hueRotation = 0}}
 			onclick={() => {
 				goto('/threads');
-			}}>Get Started</button
+			}}>Get Started - It's Free</button
 		>
 	</div>
 </div>
-<!-- Use the P5wrapper component and pass the sketch function -->
-<P5wrapper {sketch} />
+
+<div class="sketchWrapper" style='filter: blur(20px) hue-rotate({hueRotation}deg)'>
+	<!-- Use the P5wrapper component and pass the sketch function -->
+	<P5wrapper {sketch} />
+</div>
 
 <style>
 	.wrapper {
@@ -136,8 +148,13 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		z-index: 2;
 	}
 	button {
 		margin-top: 20px;
+	}
+	.sketchWrapper{
+		filter: blur(20px);
+
 	}
 </style>
