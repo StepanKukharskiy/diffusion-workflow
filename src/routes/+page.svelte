@@ -55,9 +55,17 @@
 			}
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
+					grid[i][j] -= 0.005;
+					if(grid[i][j] < 0){
+						grid[i][j] = 0;
+					}
+				}
+			}
+			for (let i = 0; i < gridSizeX; i++) {
+				for (let j = 0; j < gridSizeY; j++) {
 					// const value = p.map(grid[i][j], minVal, maxVal, 0.1, 1);
 					const value = grid[i][j]
-					p.fill(`hsl(${Math.round(value * 180 + 150)}, 60%, 70%)`);
+					p.fill(`hsl(${Math.round(value * 180 + 150)}, 70%, 70%)`);
 					p.noStroke();
 					p.rect(i * cellSize, j * cellSize, cellSize, cellSize);
 				}
@@ -126,7 +134,7 @@
 	</div>
 </div>
 
-<div class="sketchWrapper" style='filter: blur(5px) hue-rotate({hueRotation}deg)'>
+<div class="sketchWrapper" style='filter: blur(10px) hue-rotate({hueRotation}deg)'>
 	<!-- Use the P5wrapper component and pass the sketch function -->
 	<P5wrapper {sketch} />
 </div>
@@ -155,6 +163,6 @@
 		margin-top: 20px;
 	}
 	.sketchWrapper{
-		filter: blur(5px);
+		filter: blur(10px);
 	}
 </style>
