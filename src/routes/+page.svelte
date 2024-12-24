@@ -55,8 +55,9 @@
 			}
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
-					const value = p.map(grid[i][j], minVal, maxVal, 0.1, 1);
-					p.fill(`hsl(${Math.round(value * 360)}, 60%, 70%)`);
+					// const value = p.map(grid[i][j], minVal, maxVal, 0.1, 1);
+					const value = grid[i][j]
+					p.fill(`hsl(${Math.round(value * 180 + 150)}, 60%, 70%)`);
 					p.noStroke();
 					p.rect(i * cellSize, j * cellSize, cellSize, cellSize);
 				}
@@ -67,7 +68,7 @@
 				for (let j = 0; j < gridSizeY; j++) {
 					if (grid[i][j] === 10) {
 						// If the cell's value is 1, keep it as 1
-						newGrid[i][j] = 1;
+						//newGrid[i][j] = 1;
 					} else {
 						let sum = 0;
 						let count = 0;
@@ -96,7 +97,7 @@
 			const x = p.floor(p.mouseX / cellSize);
 			const y = p.floor(p.mouseY / cellSize);
 			if (x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY) {
-				grid[x][y] = 1;
+				grid[x][y] = 2;
 				iteration = 0; // Reset counter
 				maxIterations = 10; // Reset max iterations
 				p.loop(); // Restart the simulation
@@ -116,7 +117,7 @@
 		<h1 class="primaryHeading">The AI-powered Workspace for Your Creative Projects</h1>
 		<button
 			class="primaryButton"
-			onpointerover={()=>{hueRotation = 180}}
+			onpointerover={()=>{hueRotation = -90; console.log(hueRotation)}}
 			onpointerleave={()=>{hueRotation = 0}}
 			onclick={() => {
 				goto('/threads');
@@ -125,7 +126,7 @@
 	</div>
 </div>
 
-<div class="sketchWrapper" style='filter: blur(20px) hue-rotate({hueRotation}deg)'>
+<div class="sketchWrapper" style='filter: blur(5px) hue-rotate({hueRotation}deg)'>
 	<!-- Use the P5wrapper component and pass the sketch function -->
 	<P5wrapper {sketch} />
 </div>
@@ -154,7 +155,6 @@
 		margin-top: 20px;
 	}
 	.sketchWrapper{
-		filter: blur(20px);
-
+		filter: blur(5px);
 	}
 </style>
