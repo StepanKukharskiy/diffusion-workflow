@@ -74,7 +74,7 @@
 				</div>
 			{:else}
 				<div class="requestsWrapper">
-					<h4 class="tertiaryHeading">{$user.requests}</h4>
+					<p>{$user.requests}</p>
 				</div>
 			{/if}
 

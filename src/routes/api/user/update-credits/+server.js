@@ -14,7 +14,7 @@ export async function POST({ request, locals }) {
             let updatedCredits = 0
             switch (type) {
                 case 'text':
-                    updatedCredits = currentCredits - 0.1;
+                    updatedCredits = Math.round((currentCredits - 0.1) * 10) / 10;
                     break;
                 case 'image':
                     updatedCredits = currentCredits - 1;
@@ -26,7 +26,7 @@ export async function POST({ request, locals }) {
                     updatedCredits = currentCredits - 20;
                     break
                 default:
-                    updatedCredits = currentCredits - 0.1
+                    updatedCredits = Math.round((currentCredits - 0.1) * 10) / 10;
                     break
             }
             await locals.pb.collection("users").update(locals.pb.authStore.model.id, { requests: updatedCredits });
