@@ -25,7 +25,7 @@
 			// Initialize grid with random values
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
-					grid[i][j] = p.random(0, 1);
+					grid[i][j] = 0.5;
 				}
 			}
 			// Randomly select 10 cells to have a value of 1
@@ -33,7 +33,7 @@
 				const x = p.floor(p.random(gridSizeX));
 				const y = p.floor(p.random(-5, 5) + gridSizeY / 2);
 				// const y = gridSizeY / 2
-				grid[x][y] = 1;
+				grid[x][y] = 0;
 			}
 			// grid[gridSizeX/2][gridSizeY/2] = 1;
 		};
@@ -105,7 +105,7 @@
 			const x = p.floor(p.mouseX / cellSize);
 			const y = p.floor(p.mouseY / cellSize);
 			if (x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY) {
-				grid[x][y] = 2;
+				grid[x][y] = 3;
 				iteration = 0; // Reset counter
 				maxIterations = 10; // Reset max iterations
 				p.loop(); // Restart the simulation
@@ -134,7 +134,7 @@
 	</div>
 </div>
 
-<div class="sketchWrapper" style='filter: blur(10px) hue-rotate({hueRotation}deg)'>
+<div class="sketchWrapper" style='filter: blur(10px) hue-rotate({hueRotation}deg);'>
 	<!-- Use the P5wrapper component and pass the sketch function -->
 	<P5wrapper {sketch} />
 </div>
@@ -164,5 +164,7 @@
 	}
 	.sketchWrapper{
 		filter: blur(10px);
+		-webkit-filter: blur(10px);
+		transition: all 2s;
 	}
 </style>

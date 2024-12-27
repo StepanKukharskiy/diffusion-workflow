@@ -17,13 +17,13 @@ export async function POST({ request, locals }) {
                     updatedCredits = Math.round((currentCredits - 0.1) * 10) / 10;
                     break;
                 case 'image':
-                    updatedCredits = currentCredits - 1;
+                    updatedCredits = Math.round((currentCredits - 1) * 10) / 10;
                     break
                 case '3Dmodel':
-                    updatedCredits = currentCredits - 10;
+                    updatedCredits = Math.round((currentCredits - 10) * 10) / 10;
                     break
                 case 'video':
-                    updatedCredits = currentCredits - 20;
+                    updatedCredits = Math.round((currentCredits - 20) * 10) / 10;
                     break
                 default:
                     updatedCredits = Math.round((currentCredits - 0.1) * 10) / 10;

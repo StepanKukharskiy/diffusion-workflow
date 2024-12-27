@@ -15,6 +15,9 @@ export async function POST({ request, locals }) {
             case 'llama3.1-70b':
                 selectedModel = 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo'
                 break;
+            case 'llama3.3-70b':
+                selectedModel = 'meta-llama/Llama-3.3-70B-Instruct-Turbo'
+                break;
             case 'llama3.1-405b':
                 selectedModel = 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo'
                 break;
