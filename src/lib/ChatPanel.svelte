@@ -106,19 +106,7 @@
 
 {#if panelState}
 	<div class="chatContainer">
-		{#if $chatPanelMode === 'chat'}
-			<SimpleTextGeneration />
-		{:else if $chatPanelMode === 'image'}
-			<SimpleImageGeneration />
-		{:else if $chatPanelMode === 'file'}
-			<SimpleFileInput />
-		{:else if $chatPanelMode === 'code'}
-			<SimpleCodeTemplates />
-		{:else if $chatPanelMode === 'video'}
-			<SimpleVideoGeneration />
-		{:else if $chatPanelMode === 'sketch'}
-			<SimpleSketchGeneration />
-		{/if}
+		
 
 		<div class="modeOptions">
 			<button
@@ -157,9 +145,10 @@
 					$chatPanelMode = 'code';
 				}}>Code</button
 			>
-		</div>
-		<button
+
+			<button
 			class="panelStateButton"
+			style='position: absolute; right:10px; top: -25px;'
 			onclick={() => {
 				panelState = !panelState;
 			}}
@@ -176,24 +165,32 @@
 				<line x1="50" y1="80" x2="80" y2="20" stroke="#1a1a1a" stroke-width="10" />
 			</svg></button
 		>
+		</div>
+
+		{#if $chatPanelMode === 'chat'}
+			<SimpleTextGeneration />
+		{:else if $chatPanelMode === 'image'}
+			<SimpleImageGeneration />
+		{:else if $chatPanelMode === 'file'}
+			<SimpleFileInput />
+		{:else if $chatPanelMode === 'code'}
+			<SimpleCodeTemplates />
+		{:else if $chatPanelMode === 'video'}
+			<SimpleVideoGeneration />
+		{:else if $chatPanelMode === 'sketch'}
+			<SimpleSketchGeneration />
+		{/if}
+		
 	</div>
 {:else}
 	<button
-		class="panelStateHiddenButton"
+		class="primaryButton"
+		style='width: 40px; height: 40px; border-radius: 50%; margin-bottom: 30px; padding: 0; font-size: 1.5rem; display: flex; justify-content:center;'
 		onclick={() => {
 			panelState = !panelState;
 		}}
-		>controls<svg
-		style='margin-left: 5px'
-			width="10"
-			height="10"
-			viewBox="0 0 100 100"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
 		>
-			<line x1="20" y1="80" x2="50" y2="20" stroke="#1a1a1a" stroke-width="10" />
-			<line x1="50" y1="20" x2="80" y2="80" stroke="#1a1a1a" stroke-width="10" />
-		</svg></button
+		+</button
 	>
 {/if}
 
@@ -203,11 +200,11 @@
 		width: calc(100% - 20px);
 		max-width: 800px;
 		box-sizing: border-box;
-		border-radius: 20px;
+		border-radius: 10px;
 		background: #fff;
 		/* background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25)); */
-		backdrop-filter: blur(25px);
-		-webkit-backdrop-filter: blur(25px);
+		/* backdrop-filter: blur(25px); */
+		/* -webkit-backdrop-filter: blur(25px); */
 		padding: 10px;
 		margin: 10px;
 		box-sizing: border-box;
@@ -218,11 +215,12 @@
 		align-items: center;
 		z-index: 25;
 		transition: all 0.25s;
+		position: relative;
 	}
 	.modeOptions {
 		display: flex;
 		flex-wrap: wrap;
-		margin-top: 10px;
+		margin-bottom: 10px;
 	}
 	.panelStateButton {
 		/* position: absolute; */
@@ -230,8 +228,11 @@
 		left: 20px; */
 		margin: 0;
 		height: 25px;
-		border: none;
-		background: none;
+		border: 1px solid  hsl(0, 0%, 70%);
+		border-bottom: none;
+		background: #f9f9f920;
+		backdrop-filter: blur(40px);
+		-webkit-backdrop-filter: blur(40px);
 		border-radius: 10px 10px 0 0;
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
@@ -245,12 +246,16 @@
 		/* top: -25px;
 		left: 20px; */
 		margin: 0;
-		height: 25px;
-		border: 1px solid #1a1a1a30;
-		background: #f9f9f9;
-		border-radius: 10px 10px 0 0;
+		margin-bottom: 20px;
+		width: 40px;
+		height: 40px;
+		border: none;
+		background: hsl(0, 0%, 0%);
+		backdrop-filter: blur(40px);
+		-webkit-backdrop-filter: blur(40px);
+		border-radius: 50%;
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
-		color: #1a1a1a;
+		color: hsl(0, 0%, 98%);
 	}
 </style>

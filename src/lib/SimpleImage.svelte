@@ -58,7 +58,8 @@
 			modelOption = 'flux-dev-inpaint';
 		}
 		if ($referenceImageUrl != '') {
-			modelOption = 'sdxl-controlnet-canny';
+			// modelOption = 'sdxl-controlnet-canny';
+			modelOption = 'flux-dev-controlnet-depth';
 		}
 		console.log('query: ' + query);
 		const message = await fetch(`${$page.url.origin}/api/image-generation`, {
