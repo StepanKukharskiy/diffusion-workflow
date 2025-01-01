@@ -18,23 +18,23 @@
 		 	gridSizeX = Math.round($width / cellSize);
 		 	gridSizeY = Math.round($height / cellSize);
 			iteration = 0; // Counter variable
-			maxIterations = 10; // Maximum number of iterations
+			maxIterations = 20; // Maximum number of iterations
 			p.createCanvas(gridSizeX * cellSize, gridSizeY * cellSize);
 			p.frameRate(20);
 			grid = new Array(gridSizeX).fill(0).map(() => new Array(gridSizeY).fill(0));
 			// Initialize grid with random values
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
-					grid[i][j] = 0.5;
+					grid[i][j] = 0;
 				}
 			}
 			// Randomly select 10 cells to have a value of 1
-			for (let i = 0; i < 50; i++) {
-				const x = p.floor(p.random(gridSizeX));
-				const y = p.floor(p.random(-5, 5) + gridSizeY / 2);
-				// const y = gridSizeY / 2
-				grid[x][y] = 0;
-			}
+			// for (let i = 0; i < 50; i++) {
+			// 	const x = p.floor(p.random(gridSizeX));
+			// 	const y = p.floor(p.random(-5, 5) + gridSizeY / 2);
+			// 	// const y = gridSizeY / 2
+			// 	grid[x][y] = 0;
+			// }
 			// grid[gridSizeX/2][gridSizeY/2] = 1;
 		};
 		p.draw = function () {
@@ -65,7 +65,9 @@
 				for (let j = 0; j < gridSizeY; j++) {
 					// const value = p.map(grid[i][j], minVal, maxVal, 0.1, 1);
 					const value = grid[i][j]
-					p.fill(`hsl(${Math.round(value * 180 + 150)}, 70%, 70%)`);
+					let saturation = value > 0.1 ? 90 : 0
+					let lightness = value > 0.1 ? 75 : 98
+					p.fill(`hsl(${Math.round(value * 180 + 150)}, ${saturation}%, ${lightness}%)`);
 					p.noStroke();
 					p.rect(i * cellSize, j * cellSize, cellSize, cellSize);
 				}
@@ -105,9 +107,9 @@
 			const x = p.floor(p.mouseX / cellSize);
 			const y = p.floor(p.mouseY / cellSize);
 			if (x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY) {
-				grid[x][y] = 3;
+				grid[x][y] = 5;
 				iteration = 0; // Reset counter
-				maxIterations = 10; // Reset max iterations
+				maxIterations = 20; // Reset max iterations
 				p.loop(); // Restart the simulation
 			}
 		};
@@ -134,7 +136,7 @@
 	</div>
 </div>
 
-<div class="sketchWrapper" style='filter: blur(10px) hue-rotate({hueRotation}deg);'>
+<div class="sketchWrapper" style='filter: blur(20px) hue-rotate({hueRotation}deg);'>
 	<!-- Use the P5wrapper component and pass the sketch function -->
 	<P5wrapper {sketch} />
 </div>
