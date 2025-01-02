@@ -65,13 +65,13 @@
 
 	<div class="threadsListContainer">
 		<div class="threadsDataContainer">
-			<h2 class="secondaryHeading">Threads</h2>
+			<h2 class="secondaryHeading">Projects</h2>
 
 				<div class="createThreadFormContainer">
 					{#if isCreatingNewThread}
 						<div style="display: flex; align-items: center;" transition:slide>
 							<span class="warning"></span>
-							<p style="margin-right: 10px;">Creating thread</p>
+							<p style="margin-right: 10px;">Creating a project</p>
 							<div class="loader"></div>
 						</div>
 					{:else}
@@ -79,7 +79,7 @@
 
 						<div style="display: flex; align-items: center;" transition:slide>
 							<span class="warning"></span>
-							<p style="margin-right: 10px;">Please, enter a thread name to create one</p>
+							<p style="margin-right: 10px;">Please, enter a project name to create one</p>
 						</div>
 						<button
 							class="primaryButton"
@@ -93,13 +93,13 @@
 			{#if isLoadingThreads}
 				<div style="display: flex; align-items: center;" transition:slide>
 					<span class="warning"></span>
-					<p style="margin-right: 10px;">Loading threads</p>
+					<p style="margin-right: 10px;">Loading projects</p>
 					<div class="loader"></div>
 				</div>
 			{:else if threadsList != undefined && threadsList.length > 0}
 				
 
-				<h4 class="tertiaryHeading" style="margin-top: 20px;">Your threads:</h4>
+				<h4 class="tertiaryHeading" style="margin-top: 20px;">Your projects:</h4>
 				<ul>
 					{#each threadsList as thread}
 						<li>

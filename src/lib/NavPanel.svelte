@@ -83,7 +83,7 @@
 					class="smallMenuButton"
 					onclick={() => {
 						goto('/threads');
-					}}>Threads</button
+					}}>Projects</button
 				>
 				<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
 				{#if $user}
@@ -146,7 +146,7 @@
 				class="smallMenuButton"
 				onclick={() => {
 					goto('/threads');
-				}}>Threads</button
+				}}>Projects</button
 			>
 
 			<button
