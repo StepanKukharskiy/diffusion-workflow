@@ -17,9 +17,9 @@ export async function POST({ request, locals, fetch }) {
         pbFormData.append('data', data)
 
 
-        await locals.pb.collection('nodeEditorProjects').update(id, {
-            'files': null,
-        });
+        // await locals.pb.collection('nodeEditorProjects').update(id, {
+        //     'files': null,
+        // });
 
         record = await locals.pb.collection('nodeEditorProjects').update(id, pbFormData)
 
