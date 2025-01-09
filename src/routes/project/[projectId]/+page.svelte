@@ -94,11 +94,11 @@
 			formData.append('name', name);
 			formData.append('id', id);
 			formData.append('data', JSON.stringify(elements));
-			console.log(`saving: ${formData}`);
+			console.log(`saving: name - ${name}, id - ${id}`);
 			const response = await fetch('/api/threads/save', { method: 'POST', body: formData });
 			const responseData = await response.json();
+			console.log(responseData);
 			$isSavingThread = false;
-			// console.log(responseData);
 		} catch (err) {
 			console.log(err);
 		}

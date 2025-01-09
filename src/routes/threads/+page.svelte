@@ -108,7 +108,7 @@
 									class="tertiaryButton"
 									style="padding-left: 0;"
 									onclick={() => {
-										goto(`/threads/${thread.id}`);
+										goto(`/project/${thread.id}`);
 									}}>{thread.name}</button
 								>
 								<!-- <p>{thread.updated}</p> -->
