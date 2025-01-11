@@ -129,7 +129,7 @@
 	.projectNameContainer {
 		border: none;
 		border-radius: 10px;
-		background: hsla(0, 0%, 0%, 0.025);
+		background: hsl(0, 0%, 95%);
 		color: #1a1a1a;
 		padding: 10px;
 		margin: 0 0 5px 0;
@@ -138,6 +138,9 @@
 		display: flex;
 		flex-direction: column;
 		box-sizing: border-box;
+	}
+	.projectNameContainer:hover{
+		background: hsl(0, 0%, 93%);
 	}
 	.optionsContainer {
 		display: flex;

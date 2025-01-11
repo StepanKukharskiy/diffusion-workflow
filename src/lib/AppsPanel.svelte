@@ -92,9 +92,9 @@
 			}}>close</button
 		>
 	</div>
-	<div style="height: 40px; display: flex;">
-		<button class="tertiaryButton" style='padding-left: 0;' onclick={toggleTemplates}>Templates</button>
-		<button class="tertiaryButton" onclick={toggleCreatedByUser}>Created by you</button>
+	<div style="height: 40px; display: flex; margin-bottom: 10px;">
+		<button class="tertiaryButton" style='background: {templates ? 'hsl(0, 0%, 93%)' : 'none'}' onclick={toggleTemplates}>Templates</button>
+		<button class="tertiaryButton" style='background: {createdByUser ? 'hsl(0, 0%, 93%)' : 'none'}' onclick={toggleCreatedByUser}>Created by you</button>
 	</div>
 
 	<div class="tutorialsDataContainer">
@@ -117,7 +117,7 @@
 			{/if}
 		{:else if templates}
 			{#if !isLoadingTemplate}
-				<p style="margin-right: 10px;">Frontend app templates for your projects</p>
+				<p style="margin-right: 10px;">Frontend app templates for your projects. Click on a template to import it.</p>
 				<div>
 					{#each templatesList as template}
 						<button
@@ -161,6 +161,7 @@
 		box-sizing: border-box;
 		width: 400px;
 		/* min-width: 400px; */
+		height: calc(100vh - 70px);
 		height: calc(100svh - 70px);
 		padding: 10px;
 		padding-right: 0;
@@ -178,7 +179,7 @@
 		z-index: 10;
 	}
 	.tutorialsDataContainer {
-		height: calc(100% - 80px);
+		height: calc(100% - 90px);
 		padding-right: 10px;
 		overflow-y: scroll;
 	}
@@ -188,7 +189,7 @@
 	.templatesButton {
 		border: none;
 		border-radius: 10px;
-		background: hsla(0, 0%, 0%, 0.025);
+		background: hsl(0, 0%, 95%);
 		color: #1a1a1a;
 		padding: 10px;
 		margin: 0 5px 5px 0;
