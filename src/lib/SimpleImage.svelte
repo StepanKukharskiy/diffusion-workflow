@@ -89,12 +89,12 @@
 	{#if !isGenerating}
 	<div style='display: flex; flex-wrap: wrap;'>
 			{#if query != 'uploaded file'}
-				<label for="prompt-{uuid}">Description</label>
+				<label for="prompt-{uuid}" style='margin-top: 10px;'>Description</label>
 				<textarea id="prompt-{uuid}">{query}</textarea>
 				<label for="prompt-{uuid}">File url</label>
 				<textarea id="prompt-{uuid}">{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`}</textarea>
 			{/if}
-				{#if query != 'uploaded file'}
+				<!-- {#if query != 'uploaded file'}
 						<button
 							class="tertiaryButton"
 							onclick={async () => {
@@ -106,16 +106,15 @@
 									}
 								}
 								$user.requests = await updateCredits('image', `${$page.url.origin}/api/user/update-credits`)
-								// addElement($elements, 'image', query, url)
 							}}>Retry generation</button
 						>
-				{/if}
+				{/if} -->
 					<button
 						class="tertiaryButton"
 						onclick={async () => {
 							$referenceImageUrl = imageUrl;
 							$chatPanelMode = 'chat';
-						}}>Discuss</button
+						}}>Ask a question</button
 					>
 					<button
 						class="tertiaryButton"
@@ -188,10 +187,5 @@
 		max-width: 600px;
 		margin: auto;
 	}
-	details {
-		border-bottom: 1px solid #1a1a1a20;
-	}
-	li {
-		height: fit-content;
-	}
+
 </style>
