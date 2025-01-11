@@ -2,6 +2,7 @@
 	import { elements, textColor, projectsList } from './store';
 	import { page } from '$app/stores';
 	import { generateUUID } from './utils';
+	import { slide } from 'svelte/transition';
 	type Project = { name: string; id: string };
 	let { project = { name: '', id: '' }, action } = $props() as { project: Project; action: any };
 	let isLoadingProject: any = $state(false),
@@ -12,7 +13,10 @@
 		isLoadingProject = true;
 		const formData = new FormData();
 		formData.append('id', id);
-		const projectFiles = await fetch(`${$page.url.origin}/api/projects/get-files`, { method: 'POST', body: formData });
+		const projectFiles = await fetch(`${$page.url.origin}/api/projects/get-files`, {
+			method: 'POST',
+			body: formData
+		});
 		const projectFilesData = await projectFiles.json();
 		console.log(projectFilesData);
 		isLoadingProject = false;
@@ -45,78 +49,95 @@
 	}
 </script>
 
-<div class="projectNameContainer">
-	<h4 class="tertiaryHeading">{project.name}</h4>
-	<div class="optionsContainer">
-		{#if isLoadingProject}
-			<div
-				class="loader"
-				style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
-			></div>
-		{:else}
-			<button
-				class="tertiaryButton"
-				onclick={async () => {
-					const files = await getProjectFiles(project.id);
-					console.log(files);
-					addElement($elements, 'code', files, project.name, project.id);
-					$elements = $elements;
-				}}>Edit</button
-			>
-			<button
-				class="tertiaryButton"
-				onclick={async () => {
-					window.open(`/app/${project.id}`);
-				}}>Preview</button
-			>
-			<button
-				class="tertiaryButton"
-				onclick={() => {
-					deleteProject = true;
-				}}>Delete</button
-			>
+<div>
+	<div class="projectNameContainer">
+		<div style='display: flex; justify-content: space-between;'>
+			<h4 class="tertiaryHeading">{project.name}</h4>
+			<div class="optionsContainer">
+				{#if isLoadingProject}
+					<div
+						class="loader"
+						style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
+					></div>
+				{:else}
+					<button
+						class="tertiaryButton"
+						onclick={async () => {
+							const files = await getProjectFiles(project.id);
+							console.log(files);
+							addElement($elements, 'code', files, project.name, project.id);
+							$elements = $elements;
+						}}>Edit</button
+					>
+					<button
+						class="tertiaryButton"
+						onclick={async () => {
+							window.open(`/app/${project.id}`);
+						}}>Preview</button
+					>
+					<button
+						class="tertiaryButton"
+						onclick={() => {
+							deleteProject = true;
+						}}>Delete</button
+					>
+				{/if}
+			</div>
+		</div>
+
+		{#if deleteProject}
+			<div>
+				<div style="background: hsla(0, 0%, 0%, 0.03); padding: 10px; border-radius: 10px; margin-top: 10px;">
+					<div style="display: flex; align-items: center; justify-content: center;">
+						<span class="warning"></span>
+						<p style="margin: 0;">Are you sure? This action can't be undone.</p>
+					</div>
+
+					{#if isDeletingProject}
+						<div style="display: flex; justify-content: center; margin-top: 10px;">
+							<div
+								class="loader"
+								style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
+							></div>
+						</div>
+					{:else}
+						<div style="display: flex; justify-content: center; margin-top: 10px;">
+							<button
+								class="tertiaryButton"
+								onclick={() => {
+									deleteProject = false;
+								}}>Cancel</button
+							>
+							<button
+								class="primaryButton"
+								onclick={async () => {
+									await deleteProjectFiles(project.id);
+									deleteProject = false;
+									await getProjectsList();
+									$projectsList = $projectsList;
+								}}>Delete</button
+							>
+						</div>
+					{/if}
+				</div>
+			</div>
 		{/if}
 	</div>
 </div>
-{#if deleteProject}
-	<div>
-		{#if isDeletingProject}
-			<div
-				class="loader"
-				style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
-			></div>
-		{:else}
-			<div style="display: flex;">
-				<span class="warning"></span>
-				<p>Are you sure? This action can't be undone.</p>
-			</div>
-			<div style="display: flex;">
-				<button
-					class="tertiaryButton"
-					onclick={() => {
-						deleteProject = false;
-					}}>Cancel</button
-				>
-				<button
-					class="primaryButton"
-					onclick={async () => {
-						await deleteProjectFiles(project.id);
-						deleteProject = false;
-						await getProjectsList();
-						$projectsList = $projectsList;
-					}}>Delete</button
-				>
-			</div>
-		{/if}
-	</div>
-{/if}
 
 <style>
 	.projectNameContainer {
-		padding: 0px;
+		border: none;
+		border-radius: 10px;
+		background: hsla(0, 0%, 0%, 0.025);
+		color: #1a1a1a;
+		padding: 10px;
+		margin: 0 0 5px 0;
+		font-weight: 300;
+		font-family: 'Robot', sans-serif;
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		flex-direction: column;
+		box-sizing: border-box;
 	}
 	.optionsContainer {
 		display: flex;

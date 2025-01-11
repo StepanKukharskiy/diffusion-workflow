@@ -8,6 +8,7 @@
 		width,
 		height,
 		tutorialsPanelState,
+		appsPanelState,
 		loginPanelState,
 		isUserAuthenticated,
 		user,
@@ -41,6 +42,11 @@
 
 	function toggleTutorials() {
 		$tutorialsPanelState = !$tutorialsPanelState;
+		$appsPanelState = false;
+	}
+	function toggleApps() {
+		$tutorialsPanelState = false;
+		$appsPanelState = !$appsPanelState;
 	}
 
 	async function logout() {
@@ -74,7 +80,7 @@
 				</div>
 			{:else}
 				<div class="requestsWrapper">
-					<p>{$user.requests}</p>
+					<p style="margin: 0">{$user.requests}</p>
 				</div>
 			{/if}
 
@@ -86,6 +92,7 @@
 					}}>Projects</button
 				>
 				<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
+				<button class="smallMenuButton" onclick={toggleApps}>Apps</button>
 				{#if $user}
 					{#if !isLoggingOut}
 						<button type="submit" class="smallMenuButton" onclick={logout}>Log Out</button>
@@ -157,6 +164,14 @@
 				}}>Resources</button
 			>
 
+			<button
+				class="smallMenuButton"
+				onclick={() => {
+					toggleApps();
+					mobileMenuDisplay = 'none';
+				}}>Apps</button
+			>
+
 			{#if $user}
 				{#if !isLoggingOut}
 					<button type="submit" class="smallMenuButton" style="padding: 10px;" onclick={logout}
@@ -204,7 +219,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		z-index: 9;
+		z-index: 99;
 	}
 
 	.desktopMenu {

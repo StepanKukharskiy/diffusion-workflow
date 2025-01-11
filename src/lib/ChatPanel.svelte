@@ -139,12 +139,6 @@
 					$chatPanelMode = 'sketch';
 				}}>Sketch</button
 			>
-			<button
-				class="{$chatPanelMode === 'code' ? 'secondaryButton' : 'tertiaryButton'}"
-				onclick={() => {
-					$chatPanelMode = 'code';
-				}}>Code</button
-			>
 
 			<button
 			class="panelStateButton"
@@ -173,8 +167,6 @@
 			<SimpleImageGeneration />
 		{:else if $chatPanelMode === 'file'}
 			<SimpleFileInput />
-		{:else if $chatPanelMode === 'code'}
-			<SimpleCodeTemplates />
 		{:else if $chatPanelMode === 'video'}
 			<SimpleVideoGeneration />
 		{:else if $chatPanelMode === 'sketch'}
@@ -199,16 +191,15 @@
 		min-height: 40px;
 		width: calc(100% - 20px);
 		max-width: 800px;
-		box-sizing: border-box;
 		border-radius: 10px;
 		background: #fff;
-		/* background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25)); */
-		/* backdrop-filter: blur(25px); */
-		/* -webkit-backdrop-filter: blur(25px); */
+		background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25)); 
+		backdrop-filter: blur(40px);
+		-webkit-backdrop-filter: blur(25px);
 		padding: 10px;
 		margin: 10px;
 		box-sizing: border-box;
-		box-shadow: 0 0 10px hsl(0, 0%, 80%);
+		box-shadow: 0 0 10px hsla(0, 0%, 0%, 0.1);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -230,10 +221,11 @@
 		height: 25px;
 		border: 1px solid  hsl(0, 0%, 70%);
 		border-bottom: none;
+		border-radius: 10px 10px 0 0;
 		background: #f9f9f920;
 		backdrop-filter: blur(40px);
 		-webkit-backdrop-filter: blur(40px);
-		border-radius: 10px 10px 0 0;
+		
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
 		color: #1a1a1a;
@@ -241,10 +233,7 @@
 	.panelStateButton:hover {
 		text-decoration: underline;
 	}
-	.panelStateHiddenButton {
-		/* position: absolute; */
-		/* top: -25px;
-		left: 20px; */
+	/* .panelStateHiddenButton {
 		margin: 0;
 		margin-bottom: 20px;
 		width: 40px;
@@ -256,6 +245,6 @@
 		border-radius: 50%;
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
-		color: hsl(0, 0%, 98%);
-	}
+		color: hsl(0, 0%, 98%); 
+	}*/
 </style>

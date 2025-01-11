@@ -3,8 +3,6 @@
 	import { slide } from 'svelte/transition';
 	import CodeSnippetMonaco from './CodeSnippetMonaco.svelte';
 	import { textColor, tutorialsPanelState, width, elements, projectsList } from '$lib/store';
-	import { generateUUID } from './utils';
-	import SimpleProjectCard from './SimpleProjectCard.svelte';
 	import { page } from '$app/stores';
 
 	
@@ -19,20 +17,12 @@
 
 
 	async function getTutorialsList() {
-		console.log($page.url.origin)
 		tutorialsList = await fetch(`${$page.url.origin}/api/get-tutorials-list`);
 		tutorialsListData = await tutorialsList.json();
-		console.log(tutorialsListData);
-	}
-
-	async function getProjectsList() {
-		projectsListData = await fetch(`${$page.url.origin}/api/projects/get`);
-		$projectsList = await projectsListData.json();
 	}
 
 	onMount(() => {
 		getTutorialsList();
-		getProjectsList();
 	});
 
 	function displayTutorial(name = '') {
@@ -57,24 +47,6 @@
 			}}>close</button
 		>
 	</div>
-	<div class="menu">
-		<button
-			class="tertiaryButton"
-			style="text-decoration: {tutorials ? 'underline' : 'none'}; padding-left: 0;"
-			onclick={() => {
-				tutorials = true;
-				projects = false;
-			}}>Tutorials</button
-		>
-		<button
-			class="tertiaryButton"
-			style="text-decoration: {projects ? 'underline' : 'none'};"
-			onclick={() => {
-				tutorials = false;
-				projects = true;
-			}}>Projects</button
-		>
-	</div>
 	{#if tutorials}
 		{#if selectedTutorial != ''}
 			<div class="topBar">
@@ -91,7 +63,7 @@
 
 		<div
 			class="tutorialsDataContainer"
-			style="height: {selectedTutorial === '' ? 'calc(100% - 80px)' : 'calc(100% - 120px)'};"
+			style="height: {selectedTutorial === '' ? 'calc(100% - 40px)' : 'calc(100% - 80px)'};"
 		>
 			{#if tutorialsListData === ''}
 				<div style="display: flex; align-items: center;" transition:slide>
@@ -103,13 +75,9 @@
 					></div>
 				</div>
 			{:else if tutorialState}
+			
 				{#each tutorialData as step, i}
 					<h4 style="margin-top: 20px;">{i}. {step.step}</h4>
-					<!-- {#if step.imageUrl}
-				<div class="stepImageContainer">
-					<img src={step.imageUrl} alt={step.imageText} class="stepImage" />
-				</div>
-			{/if} -->
 					<p>{@html step.text}</p>
 					{#if step.link ? step.link : step.linkUrl}
 						<a
@@ -126,6 +94,7 @@
 				{/each}
 			{:else}
 				<div class="tutorialsNamesContainer">
+					<h3 class='secondaryHeading' style='margin-top: 0; margin-bottom: 10px;'>Tutorials</h3>
 					{#each tutorialsListData.tutorials as tutorial}
 						<button class="tutorialButton" onclick={() => displayTutorial(tutorial.name)}
 							>{tutorial.name}</button
@@ -134,16 +103,9 @@
 				</div>
 			{/if}
 		</div>
-	{:else if projects}
-		<div class="tutorialsDataContainer">
-			<div class="tutorialsNamesContainer" style="padding-top: 0;">
-				{#each $projectsList.projects as project}
-					<SimpleProjectCard {project} action={getProjectsList}/>
-				{/each}
-			</div>
-		</div>
 	{/if}
 </div>
+
 
 <style>
 	.topBar {
@@ -152,9 +114,6 @@
 		width: 100%;
 		justify-content: space-between;
 		align-items: center;
-	}
-	.menu {
-		display: flex;
 	}
 	.tutorialsContainer {
 		position: fixed;

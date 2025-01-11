@@ -5,6 +5,7 @@
 		elements,
 		filesLocalCopy,
 		tutorialsPanelState,
+		appsPanelState,
 		width,
 		user,
 		isSavingThread
@@ -28,6 +29,7 @@
 	import SimpleCodeProject from '$lib/SimpleCodeProject.svelte';
 	import SimpleSketch from '$lib/SimpleSketch.svelte';
 	import Simple3dViewer from '$lib/Simple3dViewer.svelte';
+	import AppsPanel from '$lib/AppsPanel.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -104,23 +106,25 @@
 		}
 	}
 
-	let discussionWidth: any = $state('400px');
+	let discussionWidth: any = $state('100%');
 	let saveTimeout: any = $state();
 
 	elements.subscribe(() => {
 		clearTimeout(saveTimeout);
 		saveTimeout = setTimeout(async () => {
-			if(browser){
-			await saveThread($elements);
+			if (browser) {
+				await saveThread($elements);
 			}
 		}, 10000);
 	});
 
 	$effect(() => {
-		if ($tutorialsPanelState && $width > 700) {
-			discussionWidth = 'calc(100% - 400px)';
-		} else {
-			discussionWidth = '100%';
+		if ($width > 700) {
+			if ($tutorialsPanelState || $appsPanelState) {
+				discussionWidth = 'calc(100% - 400px)';
+			} else {
+				discussionWidth = '100%';
+			}
 		}
 	});
 </script>
@@ -256,6 +260,12 @@
 		{#if $tutorialsPanelState}
 			<div>
 				<TutorialsPanel />
+			</div>
+		{/if}
+
+		{#if $appsPanelState}
+			<div>
+				<AppsPanel />
 			</div>
 		{/if}
 	</div>

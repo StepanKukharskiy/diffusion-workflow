@@ -68,6 +68,7 @@ export let filesPanelDisplay = writable('block')
 export let leftPanelWidthSetByUser = writable(0)
 
 export let tutorialsPanelState = writable(false)
+export let appsPanelState = writable(false)
 
 export let referenceImageUrl = writable('')
 export let chatPanelMode = writable('chat')
