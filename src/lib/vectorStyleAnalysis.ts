@@ -1,7 +1,7 @@
 import Together from "together-ai";
 import { TOGETHER_API_TOKEN } from '$env/static/private';
 
-export async function analyseRequest(query = '') {
+export async function analyseVectorStyle(query = '') {
 
     try {
 
@@ -14,18 +14,8 @@ export async function analyseRequest(query = '') {
                 {
                     role: "system",
                     content: `Analyze the following request. 
-                    If it contains a question respond 'chat'.
-
-                    If it starts with 'an image', 'I need an image', or similar words respond 'image'.
-                    If it describes an image respond 'image'.
-                    
-                    If it starts with 'a video', 'I need a video', or similar words respond 'video'.
-                    If it describes a video respond 'video'.
-
-                    If it starts with 'an icon', 'I need an icon', 'a vector illustration', 'I need a vector illustration', or similar words respond 'vector'.
-                    If it describes a vector illustration, a logo, or an icon respond 'vector'.
-                    
-                    Otherwise respond 'chat'.
+                    If it contains a request for an icon or a logo respond 'icon'.
+                    Otherwise respond 'vector_illustration'.
                     
                     Respond with just a single word without any exclamation marks and extra symbols.`
                 }, {

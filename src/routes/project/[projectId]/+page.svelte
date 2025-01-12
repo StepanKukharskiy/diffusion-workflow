@@ -189,8 +189,8 @@
 			<div
 				style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 10px; display: flex; justify-content: center; align-items: center; flex-direction: column;"
 			>
-				<ChatPanel />
-				<!-- <SimpleChatPanel /> -->
+				<!-- <ChatPanel /> -->
+				<SimpleChatPanel />
 			</div>
 		</div>
 

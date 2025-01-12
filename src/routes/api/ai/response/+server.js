@@ -4,6 +4,7 @@ import { analyseRequest } from "$lib/requestAnalysis";
 import { chatResponse } from "$lib/chat";
 import { imageResponse } from "$lib/image";
 import { videoResponse } from "$lib/video";
+import { vectorResponse } from "$lib/vector";
 
 const together = new Together({ apiKey: TOGETHER_API_TOKEN });
 
@@ -79,6 +80,35 @@ export async function POST({ request, locals }) {
             response = {
                 type: 'video',
                 url: generatedVideoFileUrl
+            }
+            console.log(response)
+        }
+
+        if (requestType?.trim() === 'vector'){
+            console.log('getting vector agent response')
+            const model = 'recraft-20b-svg'
+            const vectorResponseData = await vectorResponse(model, query.query)
+            const vectorResponseDataUrl = await vectorResponseData?.json()
+
+            const vectorForDb = await fetch(vectorResponseDataUrl.imageUrl);
+            const vectorBuffer = await vectorForDb.arrayBuffer();
+            console.log(vectorBuffer)
+            const vectorBlob = new Blob([vectorBuffer], { type: 'image/svg+xml' });
+
+            const formData = new FormData();
+            formData.append("generatedImages", vectorBlob, `${query.query}.svg`);
+            console.log(formData)
+            const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+            const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+            const generatedImageFileName = record.generatedImages[record.generatedImages.length - 1];
+            const generatedImageFileUrl = await locals.pb.files.getUrl(record, generatedImageFileName, {
+                //'thumb': '100x250'
+            });
+
+            response = {
+                type: 'image',
+                url: generatedImageFileUrl
             }
             console.log(response)
         }
