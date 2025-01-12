@@ -87,14 +87,44 @@
 <div class="imageContainer">
 	<img src={imageUrl} alt="generated file" />
 	{#if !isGenerating}
-	<div style='display: flex; flex-wrap: wrap;'>
-			{#if query != 'uploaded file'}
-				<label for="prompt-{uuid}" style='margin-top: 10px;'>Description</label>
-				<textarea id="prompt-{uuid}">{query}</textarea>
-				<label for="prompt-{uuid}">File url</label>
-				<textarea id="prompt-{uuid}">{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`}</textarea>
-			{/if}
-				<!-- {#if query != 'uploaded file'}
+		<div style="display: flex; flex-wrap: wrap;">
+			<div style="display: flex; flex-direction: column; width: 100%;">
+				<label for="prompt-{uuid}" style="margin-top: 10px;">Description</label>
+				<button
+					class="descriptionButton"
+					id="prompt-{uuid}"
+					onclick={(e: any) => {
+						// copy the textarea content to the clipboard
+						navigator.clipboard
+							.writeText(e.target.value)
+							.then(() => {
+								console.log('text copied to clipboard');
+							})
+							.catch((err: any) => {
+								console.error('could not copy text: ', err);
+							});
+					}}>{query}</button
+				>
+				<label for="prompt-{uuid}" style="margin-top: 10px;">File url</label>
+				<button
+					class="descriptionButton"
+					id="prompt-{uuid}"
+					onclick={(e: any) => {
+						// copy the textarea content to the clipboard
+						navigator.clipboard
+							.writeText(e.target.value)
+							.then(() => {
+								console.log('text copied to clipboard');
+							})
+							.catch((err: any) => {
+								console.error('could not copy text: ', err);
+							});
+					}}
+					>{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`}</button
+				>
+			</div>
+
+			<!-- {#if query != 'uploaded file'}
 						<button
 							class="tertiaryButton"
 							onclick={async () => {
@@ -109,62 +139,72 @@
 							}}>Retry generation</button
 						>
 				{/if} -->
-					<button
-						class="tertiaryButton"
-						onclick={async () => {
-							$referenceImageUrl = imageUrl;
-							$chatPanelMode = 'chat';
-						}}>Ask a question</button
-					>
-					<button
-						class="tertiaryButton"
-						onclick={async () => {
-							$referenceImageUrl = imageUrl;
-							$chatPanelMode = 'image';
-						}}>Create new image</button
-					>
-					<button
-						class="tertiaryButton"
-						onclick={async () => {
-							isGenerating = true;
-							const url = await generateVideo({
-								refImageUrl: imageUrl,
-								model: '25_frames_with_svd_xt',
-								projectId: $page.params.projectId
-							});
-							isGenerating = false;
-							addElement($elements, 'video', query, imageUrl, url);
-							$elements = $elements;
-							$user.requests = await updateCredits('video', `${$page.url.origin}/api/user/update-credits`)
-						}}>Turn to video</button
-					>
-					<button
-						class="tertiaryButton"
-						onclick={async () => {
-							isGenerating = true;
-							const url = await generateModel({
-								refImageUrl: imageUrl,
-								projectId: $page.params.projectId
-							});
-							isGenerating = false;
-							console.log(url);
-							addElement($elements, '3dViewer', query, imageUrl, '', url);
-							$elements = $elements;
-							$user.requests = await updateCredits('3Dmodel', `${$page.url.origin}/api/user/update-credits`)
-						}}>Turn to 3D</button
-					>
-					<button 
-						onclick={()=>{window.open(`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`, '_blank')}}
-						class="tertiaryButton"
-						>Download</button
-					>
-					<button
-						class="tertiaryButton"
-						onclick={async () => {
-							deleteBlock($elements, uuid);
-							$elements = $elements;
-						}}>Delete</button
-					>
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					$referenceImageUrl = imageUrl;
+					$chatPanelMode = 'chat';
+				}}>Ask a question</button
+			>
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					$referenceImageUrl = imageUrl;
+					$chatPanelMode = 'image';
+				}}>Create new image</button
+			>
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					isGenerating = true;
+					const url = await generateVideo({
+						refImageUrl: imageUrl,
+						model: '25_frames_with_svd_xt',
+						projectId: $page.params.projectId
+					});
+					isGenerating = false;
+					addElement($elements, 'video', query, imageUrl, url);
+					$elements = $elements;
+					$user.requests = await updateCredits(
+						'video',
+						`${$page.url.origin}/api/user/update-credits`
+					);
+				}}>Turn to video</button
+			>
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					isGenerating = true;
+					const url = await generateModel({
+						refImageUrl: imageUrl,
+						projectId: $page.params.projectId
+					});
+					isGenerating = false;
+					console.log(url);
+					addElement($elements, '3dViewer', query, imageUrl, '', url);
+					$elements = $elements;
+					$user.requests = await updateCredits(
+						'3Dmodel',
+						`${$page.url.origin}/api/user/update-credits`
+					);
+				}}>Turn to 3D</button
+			>
+			<button
+				onclick={() => {
+					window.open(
+						`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`,
+						'_blank'
+					);
+				}}
+				class="tertiaryButton">Download</button
+			>
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					deleteBlock($elements, uuid);
+					$elements = $elements;
+				}}>Delete</button
+			>
 		</div>
 	{:else}
 		<div style="display: flex; align-items: center;">
@@ -187,5 +227,15 @@
 		max-width: 600px;
 		margin: auto;
 	}
-
+	.descriptionButton {
+		margin-top: 10px;
+		border: none;
+		border-radius: 10px;
+		padding: 10px;
+		box-sizing: border-box;
+		text-align: left;
+		background: hsl(0, 0%, 95%);
+		font-family: 'Roboto', sans-serif;
+		font-weight: 300;
+	}
 </style>

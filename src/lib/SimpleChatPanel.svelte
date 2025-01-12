@@ -7,7 +7,9 @@
 		isGenerating = $state(false),
 		systemPrompt = $state('You are a helpful assistant'),
 		query = $state(''),
-		modelOption = $state('llama3.3-70b');
+		modelOption = $state('llama3.3-70b'),
+		fileInput: any = $state(),
+		uploadingFile = $state(false);
 
 	function updateTextareaHeight() {
 		textarea.style.height = `40px`;
@@ -61,7 +63,45 @@
 		return generatedText;
 	}
 
-	function addElement(elements: any, type = 'text', query = '', answer = '', imageUrl = '') {
+	async function uploadFile(file: any) {
+		uploadingFile = true;
+		const formData = new FormData();
+		formData.append('file', file, file.name);
+		formData.append('projectId', $page.params.projectId);
+
+		try {
+			const response = await fetch(`${$page.url.origin}/api/save-image`, {
+				method: 'POST',
+				body: formData
+			});
+
+			if (!response.ok) {
+				uploadingFile = false;
+				console.error('Upload failed:', response.statusText);
+			} else {
+				const result = await response.json();
+				const fileUrl = result.url;
+				uploadingFile = false;
+				return result.url;
+			}
+		} catch (error) {
+			uploadingFile = false;
+			console.error('Error during upload:', error);
+		}
+	}
+
+	// Handle file input change
+	async function handleFileInputChange(event: any) {
+		if (event.target.files.length > 0) {
+			const fileToUpload = event.target.files[0];
+			const fileUrl = await uploadFile(fileToUpload);
+			const query = 'uploaded file';
+			addElement($elements, 'image', query, '', fileUrl);
+			$elements = $elements;
+		}
+	}
+
+	function addElement(elements: any, type = 'text', query = '', answer = '', url = '') {
 		if (type === 'text') {
 			elements.push({
 				uuid: generateUUID(),
@@ -71,13 +111,21 @@
 			});
 			elements = elements;
 		}
-		if (type === 'image'){
+		if (type === 'image') {
 			elements.push({
-			uuid: generateUUID(),
-			type: type,
-			query: query,
-			imageUrl: imageUrl
-		});
+				uuid: generateUUID(),
+				type: type,
+				query: query,
+				imageUrl: url
+			});
+		}
+		if (type === 'video') {
+			elements.push({
+				uuid: generateUUID(),
+				type: type,
+				query: query,
+				videoUrl: url
+			});
 		}
 		console.log(elements);
 	}
@@ -92,9 +140,28 @@
 		}}
 		placeholder="Type questions or prompts for images, SVGs, videos, and 3d models."
 	></textarea>
-	{#if isGenerating}
+	{#if isGenerating || uploadingFile}
 		<div class="loader"></div>
 	{:else}
+		<button
+			class="tertiaryButton"
+			style='width: 40px; height: 40px; disply: flex; justify-content: center; align-items: center;'
+			aria-label="Upload File"
+			onclick={() => {
+				fileInput.click();
+			}}
+		>
+		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M21.44 11.05l-9.19 9.19a5.5 5.5 0 0 1-7.78-7.78l9.19-9.19a4 4 0 0 1 5.66 5.66l-8.48 8.48a2 2 0 0 1-2.83-2.83l7.78-7.78" />
+		  </svg>
+		</button>
+		<input
+			type="file"
+			accept="image/*"
+			bind:this={fileInput}
+			onchange={handleFileInputChange}
+			style="display: none;"
+		/>
 		<button
 			id="magicButton"
 			class="primaryButton"
@@ -105,10 +172,10 @@
 					systemPrompt: systemPrompt,
 					query: query
 				});
-				addElement($elements, response.type, query, response.generatedText, response.imageUrl);
+				addElement($elements, response.type, query, response.generatedText, response.url);
 				$elements = $elements;
 				updateTextareaHeight();
-				$user.requests = await updateCredits('text', `${$page.url.origin}/api/user/update-credits`);
+				$user.requests = await updateCredits(response.type, `${$page.url.origin}/api/user/update-credits`);
 			}}
 		>
 			Go
@@ -144,7 +211,6 @@
 		height: 40px;
 		padding: 10px;
 		margin: 0;
-		margin-right: 10px;
 		box-sizing: border-box;
 		width: 100%;
 	}

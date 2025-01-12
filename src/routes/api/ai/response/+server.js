@@ -3,6 +3,7 @@ import { TOGETHER_API_TOKEN } from '$env/static/private'
 import { analyseRequest } from "$lib/requestAnalysis";
 import { chatResponse } from "$lib/chat";
 import { imageResponse } from "$lib/image";
+import { videoResponse } from "$lib/video";
 
 const together = new Together({ apiKey: TOGETHER_API_TOKEN });
 
@@ -50,7 +51,34 @@ export async function POST({ request, locals }) {
 
             response = {
                 type: 'image',
-                imageUrl: generatedImageFileUrl
+                url: generatedImageFileUrl
+            }
+            console.log(response)
+        }
+
+        if (requestType?.trim() === 'video'){
+            console.log('getting video agent response')
+            const model = 'video-01'
+            const videoResponseData = await videoResponse(model, query.query, query.referenceImage)
+            const videoResponseDataUrl = await videoResponseData?.json()
+
+            console.log(videoResponseDataUrl)
+            const videoForDb = await fetch(videoResponseDataUrl.videoUrl);
+            const arrayBuffer = await videoForDb.arrayBuffer();
+            const videoBlob = new Blob([arrayBuffer], { type: 'video/mp4' });
+            const formData = new FormData();
+            formData.append("generatedVideos", videoBlob, `${query.model}.mp4`);
+            const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+            const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+            const generatedVideoFileName = record.generatedVideos[record.generatedVideos.length - 1];
+            const generatedVideoFileUrl = await locals.pb.files.getUrl(record, generatedVideoFileName, {
+                //'thumb': '100x250'
+            });
+
+            response = {
+                type: 'video',
+                url: generatedVideoFileUrl
             }
             console.log(response)
         }

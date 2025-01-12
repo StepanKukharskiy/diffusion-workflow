@@ -186,73 +186,8 @@
 				{/each}
 			</div>
 
-			<!-- {#if isCreateOptionsVisible}
-	<div class='optionsContainer'>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'text');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>chat</button
-		>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'imageGeneration');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>image</button
-		>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'file');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>file</button
-		>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'sketch');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>sketch</button
-		>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'code');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>code</button
-		>
-	</div>
-	{:else}
-		<button
-			bind:this={createButton}
-			style="background: hsl({$textColor}); color: hsl({$bgColor});"
-			class="createButton"
-			onclick={() => {
-				isCreateOptionsVisible = !isCreateOptionsVisible;
-				setTimeout(()=>{isCreateOptionsVisible = false;}, 10000)
-			}}>Add</button
-		>
-	{/if} -->
-
 			<div
-				style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 0px; display: flex; justify-content: center; align-items: center; flex-direction: column;"
+				style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 10px; display: flex; justify-content: center; align-items: center; flex-direction: column;"
 			>
 				<ChatPanel />
 				<!-- <SimpleChatPanel /> -->
