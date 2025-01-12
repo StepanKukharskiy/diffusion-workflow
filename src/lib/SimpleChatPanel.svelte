@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { elements, user } from './store';
+	import { elements, user, referenceImageUrl } from './store';
 	import { generateUUID, updateCredits } from './utils';
 
 	let textarea: any = $state(),
@@ -51,7 +51,8 @@
 				systemPrompt: data.systemPrompt,
 				query: data.query,
 				previousAnswers: getContext($elements),
-				projectId: $page.params.projectId
+				projectId: $page.params.projectId,
+				referenceImage: $referenceImageUrl
 			})
 		});
 		const messageObject = await message.json();
@@ -116,7 +117,8 @@
 				uuid: generateUUID(),
 				type: type,
 				query: query,
-				imageUrl: url
+				imageUrl: url,
+				referenceImageUrl: $referenceImageUrl
 			});
 		}
 		if (type === 'video') {
@@ -124,7 +126,15 @@
 				uuid: generateUUID(),
 				type: type,
 				query: query,
-				videoUrl: url
+				videoUrl: url,
+			});
+		}
+		if (type === 'model') {
+			elements.push({
+				uuid: generateUUID(),
+				type: type,
+				query: query,
+				modelUrl: url,
 			});
 		}
 		console.log(elements);
@@ -132,28 +142,56 @@
 </script>
 
 <div class="chatPanelContainer">
+	{#if $referenceImageUrl}
+		<button
+			onclick={() => {
+				$referenceImageUrl = '';
+			}}
+			style='border: none; padding: 0; margin: 0 10px 0 0; width: 40px; height: 40px; background: none;'
+		>
+			<img
+				src={$referenceImageUrl}
+				alt="reference"
+				style="width: 40px; height: 40px; border-radius: 10px; margin-right: 10px;"
+			/>
+		</button>
+	{/if}
 	<textarea
 		bind:this={textarea}
 		oninput={(e: any) => {
 			query = e.target.value;
 			updateTextareaHeight();
 		}}
-		placeholder="Type questions or prompts for images, SVGs, videos, and 3d models."
+		placeholder={$referenceImageUrl
+			? 'Type questions or prompts for images, videos, and 3d models using the reference image.'
+			: 'Type questions or prompts for images, SVGs, videos, and 3d models.'}
 	></textarea>
 	{#if isGenerating || uploadingFile}
 		<div class="loader"></div>
 	{:else}
 		<button
 			class="tertiaryButton"
-			style='width: 40px; height: 40px; disply: flex; justify-content: center; align-items: center;'
+			style="width: 40px; height: 40px; disply: flex; justify-content: center; align-items: center;"
 			aria-label="Upload File"
 			onclick={() => {
 				fileInput.click();
 			}}
 		>
-		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-			<path d="M21.44 11.05l-9.19 9.19a5.5 5.5 0 0 1-7.78-7.78l9.19-9.19a4 4 0 0 1 5.66 5.66l-8.48 8.48a2 2 0 0 1-2.83-2.83l7.78-7.78" />
-		  </svg>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path
+					d="M21.44 11.05l-9.19 9.19a5.5 5.5 0 0 1-7.78-7.78l9.19-9.19a4 4 0 0 1 5.66 5.66l-8.48 8.48a2 2 0 0 1-2.83-2.83l7.78-7.78"
+				/>
+			</svg>
 		</button>
 		<input
 			type="file"
@@ -170,12 +208,15 @@
 				const response = await getResponse({
 					model: modelOption,
 					systemPrompt: systemPrompt,
-					query: query
+					query: query,
 				});
 				addElement($elements, response.type, query, response.generatedText, response.url);
 				$elements = $elements;
 				updateTextareaHeight();
-				$user.requests = await updateCredits(response.type, `${$page.url.origin}/api/user/update-credits`);
+				$user.requests = await updateCredits(
+					response.type,
+					`${$page.url.origin}/api/user/update-credits`
+				);
 			}}
 		>
 			Go

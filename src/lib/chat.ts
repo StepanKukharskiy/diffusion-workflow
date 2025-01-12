@@ -1,7 +1,7 @@
 import Together from "together-ai";
 import { TOGETHER_API_TOKEN } from '$env/static/private';
 
-export async function chatResponse(model = '', query = '', systemPrompt = '', context = '') {
+export async function chatResponse(model = '', query = '', systemPrompt = '', context = '', image = '') {
     console.log(`chat: ${model}, ${query}, ${systemPrompt}`)
     try {
 
@@ -36,24 +36,62 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
                 selectedModel = 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo'
                 break;
         }
-        
 
-        const response = await together.chat.completions.create({
-            messages: [
-                {
-                    role: "system",
-                    content: `${systemPrompt} Here is the context: ${context}`
-                }, {
-                    role: "user",
-                    content: `${query}`
-                }
-            ],
-            model: selectedModel,
-            max_tokens: 4096,
-            temperature: 0.7
-        });
+        if (image != '') {
+            selectedModel = "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo"
 
-        return response.choices[0].message.content.toLowerCase()
+            const response = await together.chat.completions.create({
+                messages: [
+                    {
+                        "role": "system",
+                        "content": `${systemPrompt} Here is the context: ${context}`
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": query
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": image
+                                }
+                            }
+                        ]
+                    },
+                ],
+                model: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
+                max_tokens: 2048,
+                temperature: 0.7,
+                top_p: 0.7,
+                top_k: 50,
+                repetition_penalty: 1,
+                stop: ["<|eot_id|>", "<|eom_id|>"],
+                stream: false
+            });
+            console.log(image)
+
+            return response.choices[0].message.content
+        } else {
+            const response = await together.chat.completions.create({
+                messages: [
+                    {
+                        role: "system",
+                        content: `${systemPrompt} Here is the context: ${context}`
+                    }, {
+                        role: "user",
+                        content: `${query}`
+                    }
+                ],
+                model: selectedModel,
+                max_tokens: 4096,
+                temperature: 0.7
+            });
+
+            return response.choices[0].message.content.toLowerCase()
+        }
 
     } catch (err) {
         console.log(err)

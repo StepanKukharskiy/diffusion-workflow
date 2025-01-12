@@ -5,21 +5,23 @@ import { chatResponse } from "$lib/chat";
 import { imageResponse } from "$lib/image";
 import { videoResponse } from "$lib/video";
 import { vectorResponse } from "$lib/vector";
+import { modelResponse } from "$lib/model";
 
 const together = new Together({ apiKey: TOGETHER_API_TOKEN });
 
 export async function POST({ request, locals }) {
     const query = await request.json()
     console.log(query)
-    
+
     try {
         let response
         const requestType = await analyseRequest(query.query)
         console.log(requestType)
 
-        if (requestType?.trim() === 'chat'){
+        if (requestType?.trim() === 'chat') {
             console.log('getting chat agent response')
-            const chatResponseData = await chatResponse('llama3.3-70b', query.query, query.systemPrompt, query.previousAnswers)
+            const chatResponseData = await chatResponse('llama3.3-70b', query.query, query.systemPrompt, query.previousAnswers, query.referenceImage)
+            console.log(query.referenceImage)
             console.log(chatResponseData)
 
             response = {
@@ -28,7 +30,7 @@ export async function POST({ request, locals }) {
             }
         }
 
-        if (requestType?.trim() === 'image'){
+        if (requestType?.trim() === 'image') {
             console.log('getting image agent response')
             const model = 'flux-schnell'
             const imageResponseData = await imageResponse(model, query.query, query.referenceImage)
@@ -57,7 +59,7 @@ export async function POST({ request, locals }) {
             console.log(response)
         }
 
-        if (requestType?.trim() === 'video'){
+        if (requestType?.trim() === 'video') {
             console.log('getting video agent response')
             const model = 'video-01'
             const videoResponseData = await videoResponse(model, query.query, query.referenceImage)
@@ -84,7 +86,7 @@ export async function POST({ request, locals }) {
             console.log(response)
         }
 
-        if (requestType?.trim() === 'vector'){
+        if (requestType?.trim() === 'vector') {
             console.log('getting vector agent response')
             const model = 'recraft-20b-svg'
             const vectorResponseData = await vectorResponse(model, query.query)
@@ -112,7 +114,38 @@ export async function POST({ request, locals }) {
             }
             console.log(response)
         }
-        
+
+        if (requestType?.trim() === 'model') {
+            console.log('getting modelling agent response')
+            const model = 'trellis'
+            const images = [query.referenceImage]
+            const modelResponseData = await modelResponse(model, query.query, images)
+            const modelResponseDataUrl = await modelResponseData?.json()
+            const modelForDb = await fetch(modelResponseDataUrl);
+            const arrayBuffer = await modelForDb.arrayBuffer();
+            const modelBlob = new Blob([arrayBuffer], { type: 'model/gltf-binary' });
+            console.log(modelBlob)
+
+            const formData = new FormData();
+            formData.append("generatedModels", modelBlob, `model.glb`);
+            const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+            const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+            const generatedModelFileName = record.generatedModels[record.generatedModels.length - 1];
+            const generatedModelFileUrl = await locals.pb.files.getUrl(record, generatedModelFileName, {
+                //'thumb': '100x250'
+            });
+
+            console.log(generatedModelFileName)
+            console.log(generatedModelFileUrl)
+
+            response = {
+                type: 'model',
+                url: generatedModelFileUrl
+            }
+            console.log(response)
+        }
+
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: {

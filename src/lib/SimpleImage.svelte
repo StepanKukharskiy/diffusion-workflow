@@ -144,50 +144,7 @@
 				onclick={async () => {
 					$referenceImageUrl = imageUrl;
 					$chatPanelMode = 'chat';
-				}}>Ask a question</button
-			>
-			<button
-				class="tertiaryButton"
-				onclick={async () => {
-					$referenceImageUrl = imageUrl;
-					$chatPanelMode = 'image';
-				}}>Create new image</button
-			>
-			<button
-				class="tertiaryButton"
-				onclick={async () => {
-					isGenerating = true;
-					const url = await generateVideo({
-						refImageUrl: imageUrl,
-						model: '25_frames_with_svd_xt',
-						projectId: $page.params.projectId
-					});
-					isGenerating = false;
-					addElement($elements, 'video', query, imageUrl, url);
-					$elements = $elements;
-					$user.requests = await updateCredits(
-						'video',
-						`${$page.url.origin}/api/user/update-credits`
-					);
-				}}>Turn to video</button
-			>
-			<button
-				class="tertiaryButton"
-				onclick={async () => {
-					isGenerating = true;
-					const url = await generateModel({
-						refImageUrl: imageUrl,
-						projectId: $page.params.projectId
-					});
-					isGenerating = false;
-					console.log(url);
-					addElement($elements, '3dViewer', query, imageUrl, '', url);
-					$elements = $elements;
-					$user.requests = await updateCredits(
-						'3Dmodel',
-						`${$page.url.origin}/api/user/update-credits`
-					);
-				}}>Turn to 3D</button
+				}}>Use as a reference image</button
 			>
 			<button
 				onclick={() => {

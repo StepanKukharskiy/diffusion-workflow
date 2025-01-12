@@ -14,7 +14,7 @@ export async function analyseRequest(query = '') {
                 {
                     role: "system",
                     content: `Analyze the following request. 
-                    If it contains a question respond 'chat'.
+                    If it is a question respond 'chat'.
 
                     If it starts with 'an image', 'I need an image', or similar words respond 'image'.
                     If it describes an image respond 'image'.
@@ -24,6 +24,9 @@ export async function analyseRequest(query = '') {
 
                     If it starts with 'an icon', 'I need an icon', 'a vector illustration', 'I need a vector illustration', or similar words respond 'vector'.
                     If it describes a vector illustration, a logo, or an icon respond 'vector'.
+
+                    If it starts with 'a model', 'I need a 3d model', or similar words respond 'model'.
+                    If it describes a 3d model respond 'model'.
                     
                     Otherwise respond 'chat'.
                     
@@ -33,7 +36,7 @@ export async function analyseRequest(query = '') {
                     content: `${query}`
                 }
             ],
-            model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+            model: "meta-llama/Llama-3.3-70B-Instruct-Turbo",
             // model: "Qwen/Qwen1.5-7B-Chat",
             // model: "mistralai/Mistral-7B-Instruct-v0.3",
             max_tokens: 2048,
