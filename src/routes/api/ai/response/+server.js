@@ -121,13 +121,15 @@ export async function POST({ request, locals }) {
             const images = [query.referenceImage]
             const modelResponseData = await modelResponse(model, query.query, images)
             const modelResponseDataUrl = await modelResponseData?.json()
-            const modelForDb = await fetch(modelResponseDataUrl);
-            const arrayBuffer = await modelForDb.arrayBuffer();
-            const modelBlob = new Blob([arrayBuffer], { type: 'model/gltf-binary' });
-            console.log(modelBlob)
+
+            const modelForDb = await fetch(modelResponseDataUrl.modelUrl);
+            const modelBuffer = await modelForDb.arrayBuffer();
+            console.log(modelBuffer)
+            const modelBlob = new Blob([modelBuffer], { type: 'model/gltf-binary' });
 
             const formData = new FormData();
             formData.append("generatedModels", modelBlob, `model.glb`);
+            console.log(formData)
             const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
 
             const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
@@ -135,9 +137,6 @@ export async function POST({ request, locals }) {
             const generatedModelFileUrl = await locals.pb.files.getUrl(record, generatedModelFileName, {
                 //'thumb': '100x250'
             });
-
-            console.log(generatedModelFileName)
-            console.log(generatedModelFileUrl)
 
             response = {
                 type: 'model',

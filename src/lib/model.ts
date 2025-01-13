@@ -31,13 +31,9 @@ export async function modelResponse(model = '', query = '', imagesUrls = []) {
 
 
                 const output = await replicate.run("firtoz/trellis:4876f2a8da1c544772dffa32e8889da4a1bab3a1f5c1937bfcfccb99ae347251", { input });
-                console.log(output)
-                const fileUrl = URL.createObjectURL(new Blob([output.model_file]));
-                console.log(fileUrl);
-                const modelUrl = '';
-
+                console.log(output.model_file.url().href)
                 response = {
-                    modelUrl: modelUrl
+                    modelUrl: output.model_file.url().href
                 }
             }
 

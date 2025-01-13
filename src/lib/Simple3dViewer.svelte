@@ -20,11 +20,12 @@
 	let lights: THREE.AmbientLight;
 	let sun: THREE.DirectionalLight;
 	let is3DModel = $state(false);
+	console.log(modelUrl)
 
 	onMount(() => {
 		if (modelUrl) {
 			setTimeout(() => {
-				loadModel(modelUrl);
+				loadModel(`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`);
 			}, 1000);
 		}
 	});
@@ -145,12 +146,28 @@
 	></canvas>
 	<div style="display: flex; flex-wrap: wrap;">
 		<label for="prompt-{uuid}">File url</label>
-		<textarea id="prompt-{uuid}"
-			>{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</textarea
-		>
+		<button
+					class="descriptionButton"
+					id="prompt-{uuid}"
+					onclick={(e: any) => {
+						// copy the textarea content to the clipboard
+						navigator.clipboard
+							.writeText(e.target.innerText)
+							.then(() => {
+								console.log(e.target.innerText);
+							})
+							.catch((err: any) => {
+								console.error('could not copy text: ', err);
+							});
+					}}
+					>{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</button
+				>
 
 		<button
-			onclick={()=>{goto(modelUrl)}}
+			onclick={()=>{window.open(
+				`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`,
+				'_blank'
+			);}}
 			class="tertiaryButton"
 			>Download</button
 		>
@@ -176,10 +193,16 @@
 		border: 1px solid #1a1a1a30;
 		border-radius: 10px;
 	}
-	details {
-		border-bottom: 1px solid #1a1a1a20;
-	}
-	li {
-		height: fit-content;
+	.descriptionButton {
+		margin-top: 10px;
+		border: none;
+		border-radius: 10px;
+		padding: 10px;
+		box-sizing: border-box;
+		text-align: left;
+		background: hsl(0, 0%, 95%);
+		font-family: 'Roboto', sans-serif;
+		font-weight: 300;
+		color: hsl(0, 0%, 0%);
 	}
 </style>

@@ -44,7 +44,7 @@ export async function POST({ request, locals, params }) {
         const modelUrl = output.url().href;
         const modelResponse = await fetch(modelUrl);
         const arrayBuffer = await modelResponse.arrayBuffer();
-        const modelBlob = new Blob([arrayBuffer], { type: 'model/gltf-binary' });
+        const modelBlob = new Blob([arrayBuffer], { type: 'c' });
         console.log(modelBlob)
 
         const formData = new FormData();

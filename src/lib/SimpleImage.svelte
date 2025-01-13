@@ -96,7 +96,7 @@
 					onclick={(e: any) => {
 						// copy the textarea content to the clipboard
 						navigator.clipboard
-							.writeText(e.target.value)
+							.writeText(e.target.innerText)
 							.then(() => {
 								console.log('text copied to clipboard');
 							})
@@ -112,9 +112,9 @@
 					onclick={(e: any) => {
 						// copy the textarea content to the clipboard
 						navigator.clipboard
-							.writeText(e.target.value)
+							.writeText(e.target.innerText)
 							.then(() => {
-								console.log('text copied to clipboard');
+								console.log(e.target.innerText);
 							})
 							.catch((err: any) => {
 								console.error('could not copy text: ', err);
@@ -194,5 +194,6 @@
 		background: hsl(0, 0%, 95%);
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
+		color: hsl(0, 0%, 0%);
 	}
 </style>
