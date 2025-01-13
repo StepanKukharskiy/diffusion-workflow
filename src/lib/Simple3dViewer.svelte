@@ -20,18 +20,24 @@
 	let lights: THREE.AmbientLight;
 	let sun: THREE.DirectionalLight;
 	let is3DModel = $state(false);
-	console.log(modelUrl)
+	console.log(
+		`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
+	);
 
 	onMount(() => {
 		if (modelUrl) {
 			setTimeout(() => {
-				loadModel(`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`);
+				loadModel(
+					`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
+				);
 			}, 1000);
 		}
 	});
 
 	function loadModel(url: string) {
 		const extension = url.split('.').pop()?.toLowerCase(); // Get the file extension
+		console.log(extension);
+		console.log(url);
 		if (extension === 'glb' || extension === 'gltf') {
 			loadGLBFile(url); // Load GLB file
 		} else if (extension === 'obj') {
@@ -95,12 +101,11 @@
 			renderer.outputEncoding = THREE.sRGBEncoding;
 			// object.rotation.x = -Math.PI/2
 			object.children[0].children[0].material.metalness = 0;
-			object.scale.set(1, 1, -1);
 			console.log(object);
 			scene.add(object);
 			camera.position.z = 1;
 
-			lights = new THREE.HemisphereLight('white', 'grey', 2);
+			lights = new THREE.HemisphereLight('white', 'grey', 10);
 			sun = new THREE.DirectionalLight('white', 1);
 			sun.position.set(5, 5, 5);
 			sun.castShadow = true;
@@ -145,31 +150,34 @@
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
 	<div style="display: flex; flex-wrap: wrap;">
-		<label for="prompt-{uuid}">File url</label>
-		<button
-					class="descriptionButton"
-					id="prompt-{uuid}"
-					onclick={(e: any) => {
-						// copy the textarea content to the clipboard
-						navigator.clipboard
-							.writeText(e.target.innerText)
-							.then(() => {
-								console.log(e.target.innerText);
-							})
-							.catch((err: any) => {
-								console.error('could not copy text: ', err);
-							});
-					}}
-					>{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</button
-				>
+		<div style="display: flex; flex-direction: column; width: 100%;">
+			<label for="prompt-{uuid}">File url</label>
+			<button
+				class="descriptionButton"
+				id="prompt-{uuid}"
+				onclick={(e: any) => {
+					// copy the textarea content to the clipboard
+					navigator.clipboard
+						.writeText(e.target.innerText)
+						.then(() => {
+							console.log(e.target.innerText);
+						})
+						.catch((err: any) => {
+							console.error('could not copy text: ', err);
+						});
+				}}
+				>{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</button
+			>
+		</div>
 
 		<button
-			onclick={()=>{window.open(
-				`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`,
-				'_blank'
-			);}}
-			class="tertiaryButton"
-			>Download</button
+			onclick={() => {
+				window.open(
+					`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`,
+					'_blank'
+				);
+			}}
+			class="tertiaryButton">Download</button
 		>
 
 		<button
