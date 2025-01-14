@@ -27,6 +27,7 @@
 	onMount(() => {
 		if (modelUrl) {
 			setTimeout(() => {
+				console.log(appCanvas)
 				loadModel(
 					`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 				);
@@ -83,57 +84,57 @@
 		scene = new THREE.Scene();
 		scene.background = null;
 
-		// Ensure appCanvas is defined before accessing its properties
-		if (appCanvas) {
-			camera = new THREE.PerspectiveCamera(
-				75,
-				appCanvas.clientWidth / appCanvas.clientHeight,
-				0.1,
-				1000
-			);
-			renderer = new THREE.WebGLRenderer({ canvas: appCanvas, antialias: true, alpha: true });
-			renderer.setSize(appCanvas.clientWidth, appCanvas.clientHeight);
-			renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-			// renderer.shadowMap.enabled = true;
-			// renderer.outputEncoding = THREE.sRGBEncoding;
-			renderer.toneMapping = THREE.LinearToneMapping;
-			renderer.toneMappingExposure = 1;
-			renderer.outputEncoding = THREE.sRGBEncoding;
-			// object.rotation.x = -Math.PI/2
-			object.children[0].children[0].material.metalness = 0;
-			console.log(object);
-			scene.add(object);
-			camera.position.z = 1;
+		// // Ensure appCanvas is defined before accessing its properties
+		// if (appCanvas) {
+		camera = new THREE.PerspectiveCamera(
+			75,
+			appCanvas.clientWidth / appCanvas.clientHeight,
+			0.1,
+			1000
+		);
+		renderer = new THREE.WebGLRenderer({ canvas: appCanvas, antialias: true, alpha: true });
+		renderer.setSize(appCanvas.clientWidth, appCanvas.clientHeight);
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+		// renderer.shadowMap.enabled = true;
+		// renderer.outputEncoding = THREE.sRGBEncoding;
+		renderer.toneMapping = THREE.LinearToneMapping;
+		renderer.toneMappingExposure = 1;
+		renderer.outputEncoding = THREE.sRGBEncoding;
+		// object.rotation.x = -Math.PI/2
+		object.children[0].children[0].material.metalness = 0;
+		console.log(object);
+		scene.add(object);
+		camera.position.z = 1;
 
-			lights = new THREE.HemisphereLight('white', 'grey', 10);
-			sun = new THREE.DirectionalLight('white', 1);
-			sun.position.set(5, 5, 5);
-			sun.castShadow = true;
+		lights = new THREE.HemisphereLight('white', 'grey', 10);
+		sun = new THREE.DirectionalLight('white', 1);
+		sun.position.set(5, 5, 5);
+		sun.castShadow = true;
 
-			// Set up shadow properties
-			sun.shadow.camera.near = 0.005;
-			sun.shadow.camera.far = 200;
-			sun.shadow.camera.left = -150;
-			sun.shadow.camera.right = 150;
-			sun.shadow.camera.top = 150;
-			sun.shadow.camera.bottom = -150;
-			sun.shadow.mapSize.width = 2048;
-			sun.shadow.mapSize.height = 2048;
+		// Set up shadow properties
+		sun.shadow.camera.near = 0.005;
+		sun.shadow.camera.far = 200;
+		sun.shadow.camera.left = -150;
+		sun.shadow.camera.right = 150;
+		sun.shadow.camera.top = 150;
+		sun.shadow.camera.bottom = -150;
+		sun.shadow.mapSize.width = 2048;
+		sun.shadow.mapSize.height = 2048;
 
-			sun.shadow.bias = -0.0025;
+		sun.shadow.bias = -0.0025;
 
-			// scene.add(lights, sun);
-			scene.add(lights);
+		// scene.add(lights, sun);
+		scene.add(lights);
 
-			controls = new OrbitControls(camera, renderer.domElement);
-			controls.enableDamping = true; // Enable damping (inertia)
-			controls.dampingFactor = 0.25; // Damping factor
-			controls.maxDistance = 100; // Maximum zoom-out distance
+		controls = new OrbitControls(camera, renderer.domElement);
+		controls.enableDamping = true; // Enable damping (inertia)
+		controls.dampingFactor = 0.25; // Damping factor
+		controls.maxDistance = 100; // Maximum zoom-out distance
 
-			animate();
-		} else {
-			console.error('Canvas element is not defined');
-		}
+		animate();
+		// } else {
+		// 	console.error('Canvas element is not defined');
+		// }
 	}
 
 	function animate() {
@@ -198,8 +199,9 @@
 	}
 	canvas {
 		z-index: 10;
-		border: 1px solid #1a1a1a30;
+		/* border: 1px solid #1a1a1a30; */
 		border-radius: 10px;
+		background-color: hsl(0, 0%, 95%);
 	}
 	.descriptionButton {
 		margin-top: 10px;
