@@ -15,7 +15,14 @@ export async function imageResponse(model = '', query = '', referenceComposition
             if (referenceCompositionImageUrl === '') {
                 if (model === 'flux-schnell') {
                     const input = {
-                        prompt: query
+                        prompt: query,
+                        go_fast: true,
+                        megapixels: "1",
+                        num_outputs: 1,
+                        aspect_ratio: "1:1",
+                        output_format: "webp",
+                        output_quality: 80,
+                        num_inference_steps: 4
                     };
 
                     const [output] = await replicate.run("black-forest-labs/flux-schnell", { input });
@@ -28,16 +35,15 @@ export async function imageResponse(model = '', query = '', referenceComposition
             } else {
                 console.log(referenceCompositionImageUrl)
                 const input = {
+                    steps: 50,
                     prompt: query,
+                    guidance: 45,
                     control_image: referenceCompositionImageUrl,
-                    control_type: 'depth',
-                    guidance_scale: 2.5,
-                    output_quality: 100,
-                    negative_prompt: "low quality, ugly, distorted, artefacts",
-                    control_strength: 0.5
-                };
-
-                const [output] = await replicate.run("xlabs-ai/flux-dev-controlnet:f2c31c31d81278a91b2447a304dae654c64a5d5a70340fba811bb1cbd41019a2", { input });
+                    output_format: "jpg",
+                    safety_tolerance: 2,
+                    prompt_upsampling: false
+                }
+                const output = await replicate.run("black-forest-labs/flux-canny-pro", { input });
                 const imageUrl = output.url().href;
                 response = {
                     imageUrl: imageUrl
