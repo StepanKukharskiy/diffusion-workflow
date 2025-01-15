@@ -39,6 +39,11 @@
 	// }
 
 	let isLoggingOut = false;
+	console.log($user);
+
+	if($user === undefined){
+		$loginPanelState = true
+	}
 
 	function toggleTutorials() {
 		$tutorialsPanelState = !$tutorialsPanelState;
@@ -52,7 +57,10 @@
 	async function logout() {
 		isLoggingOut = true;
 		const formData = new FormData();
-		const response = await fetch(`${$page.url.origin}/api/user/logout`, { method: 'POST', body: formData });
+		const response = await fetch(`${$page.url.origin}/api/user/logout`, {
+			method: 'POST',
+			body: formData
+		});
 		const responseObject = await response.json();
 		if (responseObject.message === 'Logged out') {
 			$isUserAuthenticated = false;
@@ -66,132 +74,137 @@
 </script>
 
 <nav style="color: {$textColor};">
-	{#if $width > 700}
-		<div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
-			<a href="https://kodiia.com">
-				<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
-			</a>
+	{#if $user != undefined}
+		{#if $width > 700}
+			<div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+				<a href="https://kodiia.com">
+					<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
+				</a>
 
-			{#if $isSavingThread}
-				<div style="display: flex; align-items: center">
-					<span class="warning"></span>
-					<p style="margin: 0">Saving...</p>
-					<div class="loader"></div>
+				{#if $isSavingThread}
+					<div style="display: flex; align-items: center">
+						<span class="warning"></span>
+						<p style="margin: 0">Saving...</p>
+						<div class="loader"></div>
+					</div>
+				{:else}
+					<div class="requestsWrapper">
+						<p style="margin: 0">{$user.requests}</p>
+					</div>
+				{/if}
+
+				<div class="desktopMenu">
+					<button
+						class="smallMenuButton"
+						onclick={() => {
+							goto('/threads');
+						}}>Projects</button
+					>
+					<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
+					<button class="smallMenuButton" onclick={toggleApps}>Apps</button>
+					{#if $user}
+						{#if !isLoggingOut}
+							<button type="submit" class="smallMenuButton" onclick={logout}>Log Out</button>
+						{:else}
+							<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+						{/if}
+						<!-- <button class="smallMenuButton" on:click='{()=>{stylesPanelState.set(true)}}'>Set theme</button> -->
+					{:else}
+						<!-- <a class="smallMenuButton" href="/register">Sign Up</a> -->
+						<button
+							class="smallMenuButton"
+							onclick={() => {
+								$loginPanelState = true;
+							}}>Log In</button
+						>
+					{/if}
+					<!-- <button class='smallMenuButton' on:click={changeTheme}>◑</button> -->
 				</div>
-			{:else}
+			</div>
+		{:else}
+			<div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+				<a href="https://kodiia.com">
+					<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
+				</a>
+
+				<button
+					class="menuButton"
+					onclick={() => {
+						mobileMenuDisplay === 'none'
+							? (mobileMenuDisplay = 'block')
+							: (mobileMenuDisplay = 'none');
+					}}
+				>
+					{#if mobileMenuDisplay === 'none'}
+						<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+							<line x1="10" y1="20" x2="40" y2="20" stroke="#1a1a1a" stroke-width="2" />
+							<line x1="10" y1="30" x2="40" y2="30" stroke="#1a1a1a" stroke-width="2" />
+						</svg>
+					{:else}
+						<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+							<line x1="15" y1="15" x2="35" y2="35" stroke="#1a1a1a" stroke-width="2" />
+							<line x1="15" y1="35" x2="35" y2="15" stroke="#1a1a1a" stroke-width="2" />
+						</svg>
+					{/if}
+				</button>
+			</div>
+			<hr style="display: {mobileMenuDisplay}; margin: 0; width: 100%;" />
+			<div
+				class="mobileMenu"
+				style="display: {mobileMenuDisplay}; height: calc({$height}px - 80px);"
+			>
+				<!-- {#if $page.route.id == '/projects/[projectUrl]/edit'}
+                <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{$filesPanelDisplay = 'block'; mobileMenuDisplay = 'none'}}'>Files</button>
+            {/if} -->
+
 				<div class="requestsWrapper">
-					<p style="margin: 0">{$user.requests}</p>
+					<h4 style="margin: 10px 10px 0 10px;" class="tertiaryHeading">{$user.requests}</h4>
 				</div>
-			{/if}
 
-			<div class="desktopMenu">
 				<button
 					class="smallMenuButton"
 					onclick={() => {
 						goto('/threads');
 					}}>Projects</button
 				>
-				<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
-				<button class="smallMenuButton" onclick={toggleApps}>Apps</button>
+
+				<button
+					class="smallMenuButton"
+					onclick={() => {
+						toggleTutorials();
+						mobileMenuDisplay = 'none';
+					}}>Resources</button
+				>
+
+				<button
+					class="smallMenuButton"
+					onclick={() => {
+						toggleApps();
+						mobileMenuDisplay = 'none';
+					}}>Apps</button
+				>
+
 				{#if $user}
 					{#if !isLoggingOut}
-						<button type="submit" class="smallMenuButton" onclick={logout}>Log Out</button>
+						<button type="submit" class="smallMenuButton" style="padding: 10px;" onclick={logout}
+							>Log Out</button
+						>
 					{:else}
 						<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 					{/if}
-					<!-- <button class="smallMenuButton" on:click='{()=>{stylesPanelState.set(true)}}'>Set theme</button> -->
+					<!-- <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{stylesPanelState.set(true)}}'>Set theme</button> -->
 				{:else}
-					<!-- <a class="smallMenuButton" href="/register">Sign Up</a> -->
+					<!-- <a class="smallMenuButton" style="padding: 10px;" href="/register">Sign Up</a> -->
 					<button
 						class="smallMenuButton"
 						onclick={() => {
+							mobileMenuDisplay = 'none';
 							$loginPanelState = true;
 						}}>Log In</button
 					>
 				{/if}
-				<!-- <button class='smallMenuButton' on:click={changeTheme}>◑</button> -->
 			</div>
-		</div>
-	{:else}
-		<div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
-			<a href="https://kodiia.com">
-				<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
-			</a>
-
-			<button
-				class="menuButton"
-				onclick={() => {
-					mobileMenuDisplay === 'none'
-						? (mobileMenuDisplay = 'block')
-						: (mobileMenuDisplay = 'none');
-				}}
-			>
-				{#if mobileMenuDisplay === 'none'}
-					<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-						<line x1="10" y1="20" x2="40" y2="20" stroke="#1a1a1a" stroke-width="2" />
-						<line x1="10" y1="30" x2="40" y2="30" stroke="#1a1a1a" stroke-width="2" />
-					</svg>
-				{:else}
-					<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-						<line x1="15" y1="15" x2="35" y2="35" stroke="#1a1a1a" stroke-width="2" />
-						<line x1="15" y1="35" x2="35" y2="15" stroke="#1a1a1a" stroke-width="2" />
-					</svg>
-				{/if}
-			</button>
-		</div>
-		<hr style="display: {mobileMenuDisplay}; margin: 0; width: 100%;" />
-		<div class="mobileMenu" style="display: {mobileMenuDisplay}; height: calc({$height}px - 80px);">
-			<!-- {#if $page.route.id == '/projects/[projectUrl]/edit'}
-                <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{$filesPanelDisplay = 'block'; mobileMenuDisplay = 'none'}}'>Files</button>
-            {/if} -->
-
-			<div class="requestsWrapper">
-				<h4 style="margin: 10px 10px 0 10px;" class="tertiaryHeading">{$user.requests}</h4>
-			</div>
-
-			<button
-				class="smallMenuButton"
-				onclick={() => {
-					goto('/threads');
-				}}>Projects</button
-			>
-
-			<button
-				class="smallMenuButton"
-				onclick={() => {
-					toggleTutorials();
-					mobileMenuDisplay = 'none';
-				}}>Resources</button
-			>
-
-			<button
-				class="smallMenuButton"
-				onclick={() => {
-					toggleApps();
-					mobileMenuDisplay = 'none';
-				}}>Apps</button
-			>
-
-			{#if $user}
-				{#if !isLoggingOut}
-					<button type="submit" class="smallMenuButton" style="padding: 10px;" onclick={logout}
-						>Log Out</button
-					>
-				{:else}
-					<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-				{/if}
-				<!-- <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{stylesPanelState.set(true)}}'>Set theme</button> -->
-			{:else}
-				<!-- <a class="smallMenuButton" style="padding: 10px;" href="/register">Sign Up</a> -->
-				<button
-					class="smallMenuButton"
-					onclick={() => {
-						mobileMenuDisplay = 'none';
-						$loginPanelState = true;
-					}}>Log In</button
-				>
-			{/if}
-		</div>
+		{/if}
 	{/if}
 </nav>
 

@@ -28,6 +28,7 @@
 				isLoggingIn = false;
 				$loginPanelState = false;
 				$isUserAuthenticated = true;
+				window.location.reload();
 			} else {
 				isLoggingIn = false;
 				errorMessage = responseObject.message;
@@ -323,7 +324,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center; */
-		z-index: 10;
+		z-index: 100;
 		overflow-y: auto;
 	}
 	.wrapper {

@@ -17,7 +17,7 @@
 	let camera: THREE.PerspectiveCamera;
 	let renderer: THREE.WebGLRenderer;
 	let controls: OrbitControls;
-	let lights: THREE.AmbientLight;
+	let lights: THREE.HemisphereLight;
 	let sun: THREE.DirectionalLight;
 	let is3DModel = $state(false);
 	console.log(
@@ -99,7 +99,7 @@
 		// renderer.outputEncoding = THREE.sRGBEncoding;
 		renderer.toneMapping = THREE.LinearToneMapping;
 		renderer.toneMappingExposure = 1;
-		renderer.outputEncoding = THREE.sRGBEncoding;
+		// renderer.outputEncoding = THREE.sRGBEncoding;
 		// object.rotation.x = -Math.PI/2
 		object.children[0].children[0].material.metalness = 0;
 		console.log(object);

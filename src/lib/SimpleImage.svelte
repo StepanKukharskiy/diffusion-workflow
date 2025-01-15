@@ -5,9 +5,6 @@
 	import { generateUUID, generateVideo, deleteBlock, generateModel, updateCredits } from './utils';
 	let { imageUrl = '', query = '', uuid = '' } = $props();
 
-	console.log($elements);
-	console.log('query: ' + query);
-
 	function addElement(
 		elements: any,
 		type = 'text',
@@ -40,7 +37,6 @@
 				modelUrl: generatedModelUrl
 			});
 		}
-		console.log(elements);
 	}
 
 	let isGenerating = $state(false),

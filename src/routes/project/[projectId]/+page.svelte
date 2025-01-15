@@ -36,21 +36,8 @@
 	let createButton: any;
 	let layout = $state('container-block');
 
-	// async function test(fileName = ''){
-	// 	await fetch(`/api/get-file`, {
-	// 		method: 'POST',
-	// 		headers: {
-	// 			'Content-Type': 'application/json'
-	// 		},
-	// 		body: JSON.stringify({
-	// 			projectId: $page.params.projectId,
-	// 			fileName: fileName
-	// 		})
-	// 	})
-	// }
-	// test('flux_schnell_vFph2bakxl.webp')
-
 	let { data } = $props();
+	console.log(data)
 	let name: string = $state(data.name);
 	let id: string = $state(data.id);
 	if (data.user != undefined) {
@@ -61,7 +48,7 @@
 	} else {
 		$elements = [];
 	}
-	console.log(data);
+
 
 	function addElement(elements: any = [], type = 'text') {
 		if (type === 'code') {
@@ -97,13 +84,12 @@
 			formData.append('name', name);
 			formData.append('id', id);
 			formData.append('data', JSON.stringify(elements));
-			console.log(`saving: name - ${name}, id - ${id}`);
 			const response = await fetch('/api/threads/save', { method: 'POST', body: formData });
 			const responseData = await response.json();
 			console.log(responseData);
 			$isSavingThread = false;
 		} catch (err) {
-			console.log(err);
+			console.log(`error saving: ${err}`);
 		}
 	}
 
@@ -130,9 +116,10 @@
 	});
 </script>
 
-<NavPanel />
+
 
 {#if $width > 0 && data}
+<NavPanel />
 	<div class="conversationAndTutorialsContainer">
 		<div class="container" style="width: {discussionWidth}">
 			<h1 style="margin-top: 50px;">{name}</h1>
