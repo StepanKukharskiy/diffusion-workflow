@@ -220,14 +220,14 @@
 		min-height: 40px;
 		width: calc(100% - 20px);
 		box-sizing: border-box;
-		border-radius: 25px;
+		border-radius: 10px;
 		background: #fdfdfd;
 		background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
 		backdrop-filter: blur(25px);
 		-webkit-backdrop-filter: blur(25px);
 		padding: 0 20px;
 		margin: 10px;
-		box-shadow: 0 0 10px rgba(152, 152, 152, 0.3);
+		box-shadow: 0 0 10px hsl(0, 0%, 70%);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;

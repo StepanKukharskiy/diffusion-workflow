@@ -151,26 +151,15 @@
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
 	<div style="display: flex; flex-wrap: wrap;">
-		<div style="display: flex; flex-direction: column; width: 100%;">
-			<label for="prompt-{uuid}">File url</label>
-			<button
-				class="descriptionButton"
-				id="prompt-{uuid}"
-				onclick={(e: any) => {
-					// copy the textarea content to the clipboard
-					navigator.clipboard
-						.writeText(e.target.innerText)
-						.then(() => {
-							console.log(e.target.innerText);
-						})
-						.catch((err: any) => {
-							console.error('could not copy text: ', err);
-						});
-				}}
-				>{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`}</button
-			>
-		</div>
 
+		<button
+				onclick={() => {
+					navigator.clipboard.writeText(
+						`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
+					);
+				}}
+				class="tertiaryButton">Copy URL</button
+			>
 		<button
 			onclick={() => {
 				window.open(
@@ -202,17 +191,5 @@
 		/* border: 1px solid #1a1a1a30; */
 		border-radius: 10px;
 		background-color: hsl(0, 0%, 95%);
-	}
-	.descriptionButton {
-		margin-top: 10px;
-		border: none;
-		border-radius: 10px;
-		padding: 10px;
-		box-sizing: border-box;
-		text-align: left;
-		background: hsl(0, 0%, 95%);
-		font-family: 'Roboto', sans-serif;
-		font-weight: 300;
-		color: hsl(0, 0%, 0%);
 	}
 </style>

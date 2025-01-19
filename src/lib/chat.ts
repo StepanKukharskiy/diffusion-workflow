@@ -90,7 +90,7 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
                 temperature: 0.7
             });
 
-            return response.choices[0].message.content.toLowerCase()
+            return response.choices[0].message.content
         }
 
     } catch (err) {

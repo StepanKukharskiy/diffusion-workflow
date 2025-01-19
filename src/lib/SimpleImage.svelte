@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { elements, referenceImageUrl, textColor, chatPanelMode, user } from './store';
 	import { generateUUID, generateVideo, deleteBlock, generateModel, updateCredits } from './utils';
+	import SimpleTextCard from './SimpleTextCard.svelte';
 	let { imageUrl = '', query = '', uuid = '' } = $props();
 
 	function addElement(
@@ -85,62 +86,22 @@
 	{#if !isGenerating}
 		<div style="display: flex; flex-wrap: wrap;">
 			<div style="display: flex; flex-direction: column; width: 100%;">
-				<label for="prompt-{uuid}" style="margin-top: 10px;">Description</label>
-				<button
-					class="descriptionButton"
-					id="prompt-{uuid}"
-					onclick={(e: any) => {
-						// copy the textarea content to the clipboard
-						navigator.clipboard
-							.writeText(e.target.innerText)
-							.then(() => {
-								console.log('text copied to clipboard');
-							})
-							.catch((err: any) => {
-								console.error('could not copy text: ', err);
-							});
-					}}>{query}</button
-				>
-				<label for="prompt-{uuid}" style="margin-top: 10px;">File url</label>
-				<button
-					class="descriptionButton"
-					id="prompt-{uuid}"
-					onclick={(e: any) => {
-						// copy the textarea content to the clipboard
-						navigator.clipboard
-							.writeText(e.target.innerText)
-							.then(() => {
-								console.log(e.target.innerText);
-							})
-							.catch((err: any) => {
-								console.error('could not copy text: ', err);
-							});
-					}}
-					>{`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`}</button
-				>
+				<SimpleTextCard label={'Description'} text={query} />
 			</div>
-
-			<!-- {#if query != 'uploaded file'}
-						<button
-							class="tertiaryButton"
-							onclick={async () => {
-								const url = await generateImage();
-								imageUrl = url;
-								for (let element of $elements) {
-									if (element.uuid === uuid) {
-										element.imageUrl = url;
-									}
-								}
-								$user.requests = await updateCredits('image', `${$page.url.origin}/api/user/update-credits`)
-							}}>Retry generation</button
-						>
-				{/if} -->
 			<button
 				class="tertiaryButton"
 				onclick={async () => {
 					$referenceImageUrl = imageUrl;
 					$chatPanelMode = 'chat';
 				}}>Use as a reference image</button
+			>
+			<button
+				onclick={() => {
+					navigator.clipboard.writeText(
+						`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`
+					);
+				}}
+				class="tertiaryButton">Copy URL</button
 			>
 			<button
 				onclick={() => {
@@ -179,17 +140,5 @@
 		width: 100%;
 		max-width: 600px;
 		margin: auto;
-	}
-	.descriptionButton {
-		margin-top: 10px;
-		border: none;
-		border-radius: 10px;
-		padding: 10px;
-		box-sizing: border-box;
-		text-align: left;
-		background: hsl(0, 0%, 95%);
-		font-family: 'Roboto', sans-serif;
-		font-weight: 300;
-		color: hsl(0, 0%, 0%);
 	}
 </style>
