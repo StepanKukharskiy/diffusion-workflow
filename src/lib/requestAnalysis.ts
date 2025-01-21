@@ -27,6 +27,9 @@ export async function analyseRequest(query = '') {
 
                     If it starts with 'a model', 'I need a 3d model', or similar words respond 'model'.
                     If it describes a 3d model respond 'model'.
+
+                    If it starts with 'interpolate', 'I need to interpolate', or similar words respond 'interpolation'.
+                    If it describes a need for an interpolation between image frames respond 'interpolation'.
                     
                     Otherwise respond 'chat'.
                     

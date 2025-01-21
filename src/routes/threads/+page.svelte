@@ -65,17 +65,17 @@
 
 	<div class="threadsListContainer">
 		<div class="threadsDataContainer">
-			<h2 class="secondaryHeading">Projects</h2>
+			<h2 class="secondaryHeading">Threads</h2>
 
 				<div class="createThreadFormContainer">
 					{#if isCreatingNewThread}
 						<div style="display: flex; align-items: center;" transition:slide>
 							<span class="warning"></span>
-							<p style="margin-right: 10px;">Creating a project</p>
+							<p style="margin-right: 10px;">Creating</p>
 							<div class="loader"></div>
 						</div>
 					{:else}
-						<input bind:value={name} placeholder="What would you like to create?" />
+						<input bind:value={name} placeholder="What are you working on?" />
 
 						<div style="display: flex; align-items: center;" transition:slide>
 							<span class="warning"></span>
@@ -93,13 +93,13 @@
 			{#if isLoadingThreads}
 				<div style="display: flex; align-items: center;" transition:slide>
 					<span class="warning"></span>
-					<p style="margin-right: 10px;">Loading projects</p>
+					<p style="margin-right: 10px;">Loading threads</p>
 					<div class="loader"></div>
 				</div>
 			{:else if threadsList != undefined && threadsList.length > 0}
 				
 
-				<h4 class="tertiaryHeading" style="margin-top: 20px;">Your projects:</h4>
+				<h4 class="tertiaryHeading" style="margin-top: 20px;">Things you've discussed before:</h4>
 				<ul>
 					{#each threadsList as thread}
 						<li>
@@ -108,7 +108,7 @@
 									class="tertiaryButton"
 									style="padding-left: 0;"
 									onclick={() => {
-										goto(`/project/${thread.id}`);
+										goto(`/threads/${thread.id}`);
 									}}>{thread.name}</button
 								>
 								<!-- <p>{thread.updated}</p> -->

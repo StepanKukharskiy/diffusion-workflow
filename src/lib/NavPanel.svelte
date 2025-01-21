@@ -98,7 +98,7 @@
 						class="smallMenuButton"
 						onclick={() => {
 							goto('/threads');
-						}}>Projects</button
+						}}>Threads</button
 					>
 					<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
 					<button class="smallMenuButton" onclick={toggleApps}>Apps</button>
@@ -165,7 +165,7 @@
 					class="smallMenuButton"
 					onclick={() => {
 						goto('/threads');
-					}}>Projects</button
+					}}>Threads</button
 				>
 
 				<button

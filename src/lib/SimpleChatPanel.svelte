@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import SimpleTextCard from './SimpleTextCard.svelte';
-	import { elements, user, referenceImageUrl } from './store';
+	import { height, elements, user, referenceImageUrl } from './store';
 	import { generateUUID, updateCredits } from './utils';
 	import { slide } from 'svelte/transition';
 
@@ -157,8 +157,8 @@
 				}}>quit</button
 			>
 		</div>
-		<div class="hintsWrapper" style='max-height: calc(100vh - {textarea.style.height} - 160px);'>
-			<h3>AI features</h3>
+		<div class="hintsWrapper" style='max-height: calc({$height} - {textarea.style.height} - 160px);'>
+			<details><summary>AI features</summary>
 			<div class="hintContainer">
 				<h3 class="tertiaryHeading">Chat</h3>
 				<p>
@@ -247,12 +247,19 @@
 					text={`Interpolate these images: https://yourimage.com/image1.jpg, https://yourimage.com/image2.jpg, https://yourimage.com/image3.jpg`}
 				/>
 			</div>
-			<h3 style='margin-top: 20px;'>Projects</h3>
-			<p>Projects contain a list of projects created by you.</p>
-			<h3>Resources</h3>
+		</details>
+		<details>
+			<summary>Threads</summary>
+			<p>Threads contain a list of things, topics or subjects that have been talked about previously.</p>
+		</details>
+		<details>
+			<summary>Resources</summary>
 			<p>Resources contain a list of tutorials.</p>
-			<h3>Apps</h3>
+		</details>
+		<details>
+			<summary>Apps</summary>
 			<p>Apps contain templates to create your frontend apps as well as apps that were already created by you.</p>
+		</details>
 		</div>
 	</div>
 {/if}

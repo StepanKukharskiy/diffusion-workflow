@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 
 export async function load({ locals, params }) {
   console.log('loading data')
-  console.log(locals)
+  // console.log(locals)
   try {
     if (locals.user !== undefined) {
       const id = params.projectId

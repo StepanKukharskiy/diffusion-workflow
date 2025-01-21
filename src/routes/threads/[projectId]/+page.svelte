@@ -28,6 +28,7 @@
 	import SimpleCodeProject from '$lib/SimpleCodeProject.svelte';
 	import SimpleSketch from '$lib/SimpleSketch.svelte';
 	import Simple3dViewer from '$lib/Simple3dViewer.svelte';
+	import SimpleChatPanel from '$lib/SimpleChatPanel.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -247,9 +248,9 @@
 	{/if} -->
 
 			<div
-				style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 0px; display: flex; justify-content: center; align-items: center;"
+				style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 0px; display: flex; justify-content: center; align-items: center; flex-direction: column;"
 			>
-				<ChatPanel />
+				<SimpleChatPanel />
 			</div>
 		</div>
 

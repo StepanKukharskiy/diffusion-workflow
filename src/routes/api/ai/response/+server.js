@@ -6,6 +6,8 @@ import { imageResponse } from "$lib/image";
 import { videoResponse } from "$lib/video";
 import { vectorResponse } from "$lib/vector";
 import { modelResponse } from "$lib/model";
+import { interpolationResponse } from "$lib/interpolate";
+import { extractFrames } from "$lib/framesExtractor";
 
 const together = new Together({ apiKey: TOGETHER_API_TOKEN });
 
@@ -129,7 +131,6 @@ export async function POST({ request, locals }) {
 
             const formData = new FormData();
             formData.append("generatedModels", modelBlob, `model.glb`);
-            console.log(formData)
             const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
 
             const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
@@ -141,6 +142,31 @@ export async function POST({ request, locals }) {
             response = {
                 type: 'model',
                 url: generatedModelFileUrl
+            }
+            console.log(response)
+        }
+
+        if (requestType?.trim() === 'interpolation') {
+            console.log('getting interpolation agent response')
+            const frames = await extractFrames(query.query)
+            const videoResponseData = await interpolationResponse(frames)
+            const videoResponseDataUrl = await videoResponseData?.json()
+            const videoForDb = await fetch(videoResponseDataUrl.videoUrl);
+            const arrayBuffer = await videoForDb.arrayBuffer();
+            const videoBlob = new Blob([arrayBuffer], { type: 'video/mp4' });
+            const formData = new FormData();
+            formData.append("generatedVideos", videoBlob, `${query.model}.mp4`);
+            const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+            const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+            const generatedVideoFileName = record.generatedVideos[record.generatedVideos.length - 1];
+            const generatedVideoFileUrl = await locals.pb.files.getUrl(record, generatedVideoFileName, {
+                //'thumb': '100x250'
+            });
+
+            response = {
+                type: 'video',
+                url: generatedVideoFileUrl
             }
             console.log(response)
         }
