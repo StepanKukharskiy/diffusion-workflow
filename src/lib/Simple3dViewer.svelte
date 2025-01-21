@@ -106,7 +106,7 @@
 		scene.add(object);
 		camera.position.z = 1;
 
-		lights = new THREE.HemisphereLight('white', 'grey', 10);
+		lights = new THREE.HemisphereLight('white', 'grey', 5);
 		sun = new THREE.DirectionalLight('white', 1);
 		sun.position.set(5, 5, 5);
 		sun.castShadow = true;
@@ -142,6 +142,15 @@
 		controls.update(); // Update controls
 		renderer.render(scene, camera);
 	}
+
+	let lightIntensity = $state(5); // Default light intensity
+
+	function updateLightIntensity(value: number) {
+		lightIntensity = value;
+		if (lights) {
+			lights.intensity = lightIntensity;
+		}
+	}
 </script>
 
 <div class="canvasContainer">
@@ -150,6 +159,19 @@
 		id="{uuid}-canvas"
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
+	<div class='canvasMenuContainer'>
+	<label for="{uuid}-lightIntencity">Light Intencity</label>
+	<input
+			type="number"
+			id="{uuid}-lightIntencity"
+			min="0"
+			max="20"
+			step="1"
+			value={lightIntensity}
+			oninput={(e:any) => updateLightIntensity(parseFloat(e.target.value))}
+		/>
+	</div>
+
 	<div style="display: flex; flex-wrap: wrap;">
 
 		<button
@@ -185,11 +207,19 @@
 		width: 100%;
 		max-width: 800px;
 		margin-bottom: 50px;
+		positioN: relative;
 	}
 	canvas {
 		z-index: 10;
 		/* border: 1px solid #1a1a1a30; */
 		border-radius: 10px;
 		background-color: hsl(0, 0%, 95%);
+	}
+	.canvasMenuContainer{
+		position: absolute; 
+		top: 20px; 
+		left: 10px; 
+		z-index: 2; 
+		margin-right: 10px;
 	}
 </style>

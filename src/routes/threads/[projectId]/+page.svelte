@@ -176,7 +176,7 @@
 							name={element.name}
 							id={element.id}
 						/>
-					{:else if element.type === '3dViewer'}
+					{:else if element.type === '3dViewer' || element.type === 'model'}
 						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} />
 					{/if}
 				{/each}
