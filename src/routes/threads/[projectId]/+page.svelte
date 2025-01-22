@@ -5,6 +5,7 @@
 		elements,
 		filesLocalCopy,
 		tutorialsPanelState,
+		appsPanelState,
 		width,
 		user,
 		isSavingThread
@@ -21,6 +22,7 @@
 	import CodeProject from '$lib/CodeProject.svelte';
 	import NavPanel from '$lib/NavPanel.svelte';
 	import TutorialsPanel from '$lib/TutorialsPanel.svelte';
+	import AppsPanel from '$lib/AppsPanel.svelte';
 	import ChatPanel from '$lib/ChatPanel.svelte';
 	import SimpleText from '$lib/SimpleText.svelte';
 	import SimpleImage from '$lib/SimpleImage.svelte';
@@ -118,10 +120,12 @@
 	});
 
 	$effect(() => {
-		if ($tutorialsPanelState && $width > 700) {
-			discussionWidth = 'calc(100% - 400px)';
-		} else {
-			discussionWidth = '100%';
+		if ($width > 700) {
+			if ($tutorialsPanelState || $appsPanelState) {
+				discussionWidth = 'calc(100% - 400px)';
+			} else {
+				discussionWidth = '100%';
+			}
 		}
 	});
 </script>
@@ -257,6 +261,12 @@
 		{#if $tutorialsPanelState}
 			<div>
 				<TutorialsPanel />
+			</div>
+		{/if}
+
+		{#if $appsPanelState}
+			<div>
+				<AppsPanel />
 			</div>
 		{/if}
 	</div>
