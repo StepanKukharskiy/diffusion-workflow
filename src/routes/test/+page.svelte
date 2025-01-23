@@ -3,13 +3,13 @@
 	import P5wrapper from '$lib/P5wrapper.svelte';
 	import { width, height } from '$lib/store';
 	import input from '$lib/logos/input.webp';
-	import chat from '$lib/images/chat.webp';
-	import image from '$lib/images/image.webp';
-	import image2 from '$lib/images/image2.webp';
-	import model from '$lib/images/model.webp';
-	import video from '$lib/images/video.webp';
-	import vector from '$lib/images/vector.webp';
-	import web from '$lib/images/web.webp';
+	import chat from '$lib/images/chat2.webp';
+	import image from '$lib/images/image4.webp';
+	import image2 from '$lib/images/image3.webp';
+	import model from '$lib/images/model2.webp';
+	import video from '$lib/images/video2.webp';
+	import vector from '$lib/images/vector2.webp';
+	import web from '$lib/images/web2.webp';
 	import { slide, fade } from 'svelte/transition';
 
 	let textarea: any = $state();
@@ -26,7 +26,7 @@
 		p.setup = function () {
 			cellSize = 20;
 			gridSizeX = Math.round($width / cellSize);
-			gridSizeY = Math.round($height * 0.8 / cellSize);
+			gridSizeY = Math.round(($height * 0.8) / cellSize);
 			iteration = 0; // Counter variable
 			maxIterations = 20; // Maximum number of iterations
 			p.createCanvas(gridSizeX * cellSize, gridSizeY * cellSize);
@@ -157,15 +157,19 @@
 		}
 	];
 	const totalImages = gallery.length;
+	let intervalId: any;
 
 	function scrollToImage(index: number) {
 		galleryItem = index;
 	}
 
 	// Automatically change images every 3 seconds
-	setInterval(() => {
-		scrollToImage((galleryItem + 1) % totalImages);
-	}, 5000);
+	function startInterval() {
+		intervalId = setInterval(() => {
+			scrollToImage((galleryItem + 1) % totalImages);
+		}, 3000);
+	}
+	startInterval();
 </script>
 
 <div class="start-page-container">
@@ -185,8 +189,10 @@
 			</div>
 		</div>
 
-		<div class="section" style='margin-top: 20px;'>
-			<h3 class="secondaryHeading">One interface, every model you need.</h3>
+		<div class="section" style="margin-top: 20px;">
+			<span style="width: 50%; border-top: 1px solid hsl(0, 0%, 90%); margin-bottom: 40px;"></span>
+
+			<h3 class="secondaryHeading">One interface, every task you have.</h3>
 			<p>Generate text, code, images, videos, and 3D assets — all from one platform.</p>
 
 			<div class="gallery">
@@ -197,7 +203,8 @@
 				<textarea
 					bind:this={textarea}
 					placeholder={`Type "?" for manual. Type questions or prompts for images, SVGs, videos, and 3d models.`}
-				>{gallery[galleryItem].text}</textarea>
+					>{gallery[galleryItem].text}</textarea
+				>
 				<button
 					class="tertiaryButton"
 					style="width: 40px; height: 40px; disply: flex; justify-content: center; align-items: center;"
@@ -224,9 +231,11 @@
 					class="primaryButton"
 					onclick={() => {
 						galleryItem++;
-						if(galleryItem >= totalImages){
+						if (galleryItem >= totalImages) {
 							galleryItem = 0;
 						}
+						clearInterval(intervalId); // Clear the existing interval
+						startInterval();
 					}}
 				>
 					Go
@@ -244,32 +253,82 @@
 			</div>
 		</div>
 
-		<div class="section">
-			<h3 class="secondaryHeading">The fast and easy way to create with AI.</h3>
-			<p>
-				No complex workflows or local hardware limits. Everything works in the cloud with the
-				fastest GPUs.
-			</p>
-		</div>
-		<div class="section">
-			<h3 class="secondaryHeading">Make it a web app.</h3>
-			<p>Generate content and turn it into web apps. Host with us and share with everyone.</p>
-		</div>
+		<div class="grid">
+			<div class="section">
+				<svg
+					width="30"
+					height="30"
+					viewBox="0 0 64 64"
+					xmlns="http://www.w3.org/2000/svg"
+					fill="black"
+				>
+					<path d="M32 0L12 36h16l-8 28L52 28H36l8-28z" />
+				</svg>
 
-		<div class="section">
-			<h3 class="secondaryHeading">AI Agents</h3>
-			<p>
-				Specifically designed to make your creative search and iterations easier and faster. Coming
-				soon.
-			</p>
-		</div>
+				<h3 class="secondaryHeading" style="margin-top: 20px;">
+					The fast and easy way to create with AI.
+				</h3>
+				<p>
+					No complex workflows or local hardware limits. Everything works in the cloud with the
+					fastest GPUs.
+				</p>
+			</div>
+			<div class="section">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="30" height="30">
+					<circle cx="32" cy="32" r="30" stroke="black" stroke-width="2" fill="none"/>
+					<path d="M2,32 A30,30 0 0,1 62,32" stroke="black" stroke-width="2" fill="none"/>
+					<path d="M32,2 A30,30 0 0,1 32,62" stroke="black" stroke-width="2" fill="none"/>
+					<path d="M12,12 A30,30 0 0,1 52,52" stroke="black" stroke-width="2" fill="none"/>
+					<path d="M12,52 A30,30 0 0,1 52,12" stroke="black" stroke-width="2" fill="none"/>
+					<line x1="2" y1="32" x2="62" y2="32" stroke="black" stroke-width="2"/>
+					<line x1="32" y1="2" x2="32" y2="62" stroke="black" stroke-width="2"/>
+				  </svg>
 
-		<div class="section">
-			<h3 class="secondaryHeading">Tutorials</h3>
-			<p>
-				Learning materials from industry experts. From building your first game to training your
-				first neural network — we’ve got you covered.
-			</p>
+				<h3 class="secondaryHeading" style="margin-top: 20px;">Make it a web app.</h3>
+				<p>Generate content and turn it into web apps. Host with us and share with everyone.</p>
+			</div>
+
+			<div class="section">
+				<svg
+					class="brain-icon"
+					width="30"
+					height="30"
+					viewBox="0 0 64 64"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="M32 2C20.954 2 12 10.954 12 22c0 4.418 1.79 8.418 4.688 11.312C14.79 36.582 13 40.582 13 45c0 11.046 8.954 20 20 20s20-8.954 20-20c0-4.418-1.79-8.418-4.688-11.312C51.21 30.418 53 26.418 53 22c0-11.046-8.954-20-20-20zm0 2c9.941 0 18 8.059 18 18 0 3.866-1.387 7.418-3.688 10.188C48.613 34.582 50 38.134 50 42c0 9.941-8.059 18-18 18s-18-8.059-18-18c0-3.866 1.387-7.418 3.688-10.188C15.387 29.418 14 25.866 14 22c0-9.941 8.059-18 18-18z"
+					/>
+				</svg>
+				<h3 class="secondaryHeading" style="margin-top: 20px;">AI Agents</h3>
+				<p>
+					Specifically designed to make your creative search and iterations easier and faster.
+					Coming soon.
+				</p>
+			</div>
+
+			<div class="section">
+				<svg
+					width="30"
+					height="30"
+					viewBox="0 0 64 64"
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path d="M8 2h40a4 4 0 0 1 4 4v52a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z" />
+					<path d="M8 2v60M48 2v60M8 18h40" />
+					<path d="M24 18v44M32 18v44" />
+				</svg>
+				<h3 class="secondaryHeading" style="margin-top: 20px;">Tutorials</h3>
+				<p>
+					Learning materials from industry experts. From building your first game to training your
+					first neural network — we’ve got you covered.
+				</p>
+			</div>
 		</div>
 
 		<div class="section">
@@ -296,6 +355,7 @@
 <style>
 	.start-page-container {
 		overflow-y: scroll;
+		overflow-x: hidden;
 		height: 100vh;
 		height: 100svh;
 		width: 100%;
@@ -375,7 +435,7 @@
 		font-size: 1rem;
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
-		height: 40px;
+		height: 60px;
 		padding: 10px;
 		margin: 0;
 		box-sizing: border-box;
@@ -405,5 +465,18 @@
 
 	.gallery-buttons button.active {
 		background-color: hsl(0, 0%, 2%);
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+		padding: 10px;
+		box-sizing: border-box;
+	}
+
+	.grid .section {
+		background-color: hsl(0, 0%, 95%);
+		border-radius: 10px;
 	}
 </style>
