@@ -199,11 +199,11 @@
 		<div class="section" style="margin-top: 20px;">
 			<span style="width: 50%; border-top: 1px solid hsl(0, 0%, 90%); margin-bottom: 40px;"></span>
 
-			<h3 class="secondaryHeading">One interface, every task you have</h3>
+			<h2 class="secondaryHeading">One interface, every task you have</h2>
 			<p>Generate text, code, images, videos, and 3D assets — all from one platform.</p>
 
 			<div class="gallery">
-				<img src={gallery[galleryItem].image} alt="input" style="width: 50%;" transition:slide />
+				<img src={gallery[galleryItem].image} alt="input" style="width: 70%;" transition:slide />
 			</div>
 
 			<div class="chat-panel-container">
@@ -253,7 +253,11 @@
 				{#each gallery as _, index}
 					<button
 						class:active={index === galleryItem}
-						onclick={() => scrollToImage(index)}
+						onclick={() => {
+							scrollToImage(index);
+							clearInterval(intervalId); // Clear the existing interval
+							startInterval();
+						}}
 						aria-label="Next Image"
 					></button>
 				{/each}
@@ -354,12 +358,27 @@
 		</div>
 
 		<div class="section">
-			<h3 class="secondaryHeading">Describe Your Task, We’ll Handle the Rest</h3>
+			<h2 class="secondaryHeading" style="margin-top: 5em;">
+				Describe Your Task, We’ll Handle the Rest
+			</h2>
 			<p>Create anything: graphic design, architecture, games, and more.</p>
+
+			<div class="gallery">
+				<img src={gallery[galleryItem].image} alt="input" style="width: 70%;" transition:slide />
+			</div>
+			<div class="gallery-buttons">
+				{#each gallery as _, index}
+					<button
+						class:active={index === galleryItem}
+						onclick={() => scrollToImage(index)}
+						aria-label="Next Image"
+					></button>
+				{/each}
+			</div>
 		</div>
 
-		<div class="section">
-			<h3 class="secondaryHeading">The perfect UI to create with AI</h3>
+		<div class="section" style='min-height: 50vh; justify-content: center;'>
+			<h2 class="secondaryHeading">The perfect UI to create with AI</h2>
 			<p>Stay in your creative flow with no complex setups or controls.</p>
 			<button class="primaryButton">Get started - it's free</button>
 		</div>
@@ -375,6 +394,15 @@
 </div>
 
 <style>
+	h1{
+		font-size: 2em;
+	}
+	h2{
+		font-size: 1.5em;
+	}
+	h3{
+		font-size: 1.2em;
+	}
 	.start-page-container {
 		overflow-y: scroll;
 		overflow-x: hidden;
@@ -495,6 +523,7 @@
 		gap: 10px;
 		padding: 10px;
 		box-sizing: border-box;
+		margin-top: 5em;
 	}
 
 	.grid .section {
@@ -502,9 +531,9 @@
 		border-radius: 10px;
 	}
 
-	@media screen and (max-width: 700px){
+	@media screen and (max-width: 700px) {
 		.grid {
-		grid-template-columns: 1fr;
-	}
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
