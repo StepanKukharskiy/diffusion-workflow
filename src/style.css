@@ -59,6 +59,7 @@ p {
     display: flex;
     align-items: center;
     padding: 10px;
+    cursor: pointer;
 }
 .primaryButton:hover{
     background: hsl(0,0%,30%);
