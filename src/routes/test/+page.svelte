@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import P5wrapper from '$lib/P5wrapper.svelte';
 	import { width, height } from '$lib/store';
+	import kodiia_small from '$lib/logos/kodiia_small.svg';
 	import input from '$lib/logos/input.webp';
 	import chat from '$lib/images/chat2.webp';
 	import image from '$lib/images/image4.webp';
@@ -10,13 +11,21 @@
 	import video from '$lib/images/video2.webp';
 	import vector from '$lib/images/vector2.webp';
 	import web from '$lib/images/web2.webp';
-	import ca1 from '$lib/images/ca_1.webp'
-	import ca2 from '$lib/images/ca_2.webp'
-	import ca3 from '$lib/images/ca_3.webp'
-	import ca4 from '$lib/images/ca_4.webp'
-	import ca5 from '$lib/images/ca_5.webp'
-	import ca6 from '$lib/images/ca_6.webp'
-	import ca7 from '$lib/images/ca_7.webp'
+	import ca1 from '$lib/images/ca_1.webp';
+	import ca2 from '$lib/images/ca_8.webp';
+	import ca3 from '$lib/images/ca_3.webp';
+	import game2 from '$lib/images/ca_4.webp';
+	import ca5 from '$lib/images/ca_5.webp';
+	import ca6 from '$lib/images/ca_6.webp';
+	import ca7 from '$lib/images/ca_7.webp';
+	import ca8 from '$lib/images/ca_10.webp';
+	import vector1 from '$lib/images/vector_1.webp';
+	import vector2 from '$lib/images/vector_2.webp';
+	import vector3 from '$lib/images/vector_3.webp';
+	import game1 from '$lib/images/game_1.webp';
+	import game3 from '$lib/images/game_3.webp';
+	import library from '$lib/images/library2.webp';
+	import fortnite from '$lib/images/fortnite2.webp';
 	import { slide, fade } from 'svelte/transition';
 
 	let textarea: any = $state();
@@ -184,9 +193,41 @@
 		}, 3000);
 	}
 	startInterval();
+
+	const projects = [library, fortnite, game3];
+	let projectItem = $state(0);
+	const totalProjectImages = projects.length;
+	let projectIntervalId: any;
+
+	function scrollToProjectImage(index: number) {
+		projectItem = index;
+	}
+	function startProjectInterval() {
+		projectIntervalId = setInterval(() => {
+			scrollToProjectImage((projectItem + 1) % totalProjectImages);
+		}, 3000);
+	}
+	startProjectInterval();
 </script>
 
 <div class="start-page-container">
+	<div class="nav-container">
+		<nav>
+			<div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+				<a href="https://kodiia.com">
+					<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
+				</a>
+				<div style="display: flex; align-items: center;">
+					<button class="tertiaryButton" onclick={()=>{window.open('/')}}>About</button>
+					<button class="tertiaryButton" onclick={()=>{window.open('/')}}>Docs</button>
+					<button class="tertiaryButton" onclick={()=>{window.open('/')}}>Pricing</button>
+					<button class="tertiaryButton" onclick={()=>{window.open('/')}}>Blog</button>
+					<button class="primaryButton" style="margin-left: 10px;">Get started</button>
+				</div>
+			</div>
+		</nav>
+	</div>
+
 	<div class="start-page-wrapper">
 		<div class="hero">
 			<div class="hero-wrapper">
@@ -358,8 +399,8 @@
 				>
 				<h3 class="secondaryHeading" style="margin-top: 20px;">Learn with industry experts</h3>
 				<p>
-					Our tutorials are curated by world-class experts. From building your first game to training your
-					first neural network — we’ve got you covered.
+					Our tutorials are curated by world-class experts. From building your first game to
+					training your first neural network — we’ve got you covered.
 				</p>
 			</div>
 		</div>
@@ -368,46 +409,90 @@
 			<h2 class="secondaryHeading" style="margin-top: 5em;">
 				Describe Your Task, We’ll Handle the Rest
 			</h2>
-			<p>Create anything: graphic design, architecture, games, and more.</p>
+			<p>
+				No matter what creative adventure you’re on — whether it’s designing a stunning library in
+				the mountains, crafting an epic new location in Fortnite, or dreaming up a wild poster for a
+				game that blends Star Wars with Pac-Man (how cool is that?)—we’ve got your back!
+			</p>
 
-			<div class='tasks-grid'>
-				<div class='tasks-grid-column'>
+			<!-- <div class="tasks-grid">
+				<div class="tasks-grid-column">
+					<img src={ca1} alt="example" />
 					<p>What is cellular automata?</p>
-					<img src='{ca1}' alt='example' />
+					
+				</div>
+
+				<div class="tasks-grid-column">
+					<img src={ca2} alt="example" />
 					<p>Can you come up with a code for a cellular automaton in p5.js?</p>
-					<img src='{ca2}' alt='example' />
+					
 				</div>
-				<div class='tasks-grid-column'>
-					<p>A top down view of a park area, wooden pavilions, roofs, ponds with flowers, autumn</p>
-					<img src='{ca3}' alt='example' />
-					<p>A Pac-Man style game</p>
-					<img src='{ca4}' alt='example' />
-					<p>A gameplay view of a Pac-Man style game</p>
-					<img src='{ca5}' alt='example' />
-				</div>
-				<div class='tasks-grid-column'>
-					<p>A vector illustration of a poster for an AI art exhibition</p>
-					<img src='{ca6}' alt='example' />
-					<p>An image of an abstract artwork, simple geometry</p>
-					<img src='{ca7}' alt='example' />
+				<div class="tasks-grid-column">
+					<img src={ca8} alt="example" />
+				<p>
+					A cartoon style image of a street with buildings, cartoon heroes are seen in the windows,
+					friendly cats, flowers, robots
+				</p>
+				
 				</div>
 			</div>
 
-			<!-- <div class="gallery">
-				<img src={gallery[galleryItem].image} alt="input" style="width: 70%;" transition:slide />
+		<div class="tasks-grid">
+			<div class="tasks-grid-column">
+				<img src={game1} alt="example" />
+				<p>
+					How can I create a game by mixing Pac-Man and Fortnite? What would it look like? What
+					would be the game about?
+				</p>
+				
 			</div>
-			<div class="gallery-buttons">
-				{#each gallery as _, index}
+			<div class="tasks-grid-column">
+				<img src={game2} alt="example" />
+				<p>A Pac Man style game code</p>
+				
+			</div>
+			<div class="tasks-grid-column">
+				<img src={game3} alt="example" />
+				<p>
+					A vector illustration of a game art inspired by Pac-Man, Fortnite, and Star Wars, epic
+					style
+				</p>
+				
+			</div>
+		</div>
+		<div class="tasks-grid">
+			<div class="tasks-grid-column">
+				<img src={vector1} alt="example" />
+				<p>What are vector fields and how they are used in architecture?</p>
+				
+			</div>
+			<div class="tasks-grid-column">
+				<img src={vector2} alt="example" />
+				<p>Come up with a code for a 3D vector field with three.js and Perlin Noise</p>
+				
+			</div>
+			<div class="tasks-grid-column">
+				<img src={vector3} alt="example" />
+				<p>A photo of a pavilion in a park, complex fluid forms, clear sky, soft lighting</p>
+				
+			</div>
+		</div> -->
+
+			<div class="gallery">
+				<img src={projects[projectItem]} alt="input" style="width: 70%;" transition:slide />
+			</div>
+			<div class="gallery-buttons" style="margin-top: 20px;">
+				{#each projects as _, index}
 					<button
-						class:active={index === galleryItem}
-						onclick={() => scrollToImage(index)}
+						class:active={index === projectItem}
+						onclick={() => scrollToProjectImage(index)}
 						aria-label="Next Image"
 					></button>
 				{/each}
-			</div> -->
+			</div>
 		</div>
 
-		<div class="section" style='min-height: 50vh; justify-content: center;'>
+		<div class="section" style="min-height: 50vh; justify-content: center;">
 			<h2 class="secondaryHeading">The perfect UI to create with AI</h2>
 			<p>Stay in your creative flow with no complex setups or controls.</p>
 			<button class="primaryButton">Get started - it's free</button>
@@ -424,13 +509,43 @@
 </div>
 
 <style>
-	h1{
+	.nav-container{
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 99;
+	}
+	nav {
+		
+		min-height: 40px;
+		width: calc(100% - 20px);
+		max-width: 1200px;
+		box-sizing: border-box;
+		border-radius: 10px;
+		background: #fdfdfd;
+		background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+		backdrop-filter: blur(25px);
+		-webkit-backdrop-filter: blur(25px);
+		padding: 10px;
+		margin: 10px;
+		box-shadow: 0 0 10px hsl(0, 0%, 70%);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		z-index: 99;
+	}
+	h1 {
 		font-size: 2em;
 	}
-	h2{
+	h2 {
 		font-size: 1.5em;
 	}
-	h3{
+	h3 {
 		font-size: 1.2em;
 	}
 	.start-page-container {
@@ -475,6 +590,9 @@
 		align-items: center;
 		text-align: center;
 		position: relative;
+	}
+	.section p {
+		max-width: 600px;
 	}
 	.footer {
 		text-align: center;
@@ -561,22 +679,22 @@
 		border-radius: 10px;
 	}
 
-	.tasks-grid{
+	.tasks-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
 		gap: 10px;
 		padding: 10px;
 		box-sizing: border-box;
 	}
-	.tasks-grid-column{
+	.tasks-grid-column {
 		display: flex;
 		flex-direction: column;
 	}
-	.tasks-grid-column img{
+	.tasks-grid-column img {
 		width: 100%;
 		margin: 0px 0;
 	}
-	.tasks-grid-column p{
+	.tasks-grid-column p {
 		text-align: left;
 		width: fit-content;
 		margin-top: 40px;
