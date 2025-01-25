@@ -10,6 +10,13 @@
 	import video from '$lib/images/video2.webp';
 	import vector from '$lib/images/vector2.webp';
 	import web from '$lib/images/web2.webp';
+	import ca1 from '$lib/images/ca_1.webp'
+	import ca2 from '$lib/images/ca_2.webp'
+	import ca3 from '$lib/images/ca_3.webp'
+	import ca4 from '$lib/images/ca_4.webp'
+	import ca5 from '$lib/images/ca_5.webp'
+	import ca6 from '$lib/images/ca_6.webp'
+	import ca7 from '$lib/images/ca_7.webp'
 	import { slide, fade } from 'svelte/transition';
 
 	let textarea: any = $state();
@@ -328,7 +335,7 @@
 						/></g
 					></svg
 				>
-				<h3 class="secondaryHeading" style="margin-top: 20px;">AI Agents</h3>
+				<h3 class="secondaryHeading" style="margin-top: 20px;">Iterate with AI Agents</h3>
 				<p>
 					Specifically designed to make your creative search and iterations easier and faster.
 					Coming soon.
@@ -349,9 +356,9 @@
 						d="M32.7 50h22.5c1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8H32.7c-1 0-1.8.8-1.8 1.8s.8 1.8 1.8 1.8zM32.7 59.3h22.5c1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8H32.7c-1 0-1.8.8-1.8 1.8s.8 1.8 1.8 1.8zM32.7 68.7h22.5c1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8H32.7c-1 0-1.8.8-1.8 1.8s.8 1.8 1.8 1.8zM32.7 78h22.5c1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8H32.7c-1 0-1.8.8-1.8 1.8s.8 1.8 1.8 1.8zM72.8 50h22.5c1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8H72.8c-1 0-1.8.8-1.8 1.8s.9 1.8 1.8 1.8zM72.8 59.3h22.5c1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8H72.8c-1 0-1.8.8-1.8 1.8s.9 1.8 1.8 1.8zM72.8 68.7h22.5c1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8H72.8c-1 0-1.8.8-1.8 1.8s.9 1.8 1.8 1.8zM72.8 78h22.5c1 0 1.8-.8 1.8-1.8s-.8-1.8-1.8-1.8H72.8c-1 0-1.8.8-1.8 1.8s.9 1.8 1.8 1.8z"
 					/></svg
 				>
-				<h3 class="secondaryHeading" style="margin-top: 20px;">Tutorials</h3>
+				<h3 class="secondaryHeading" style="margin-top: 20px;">Learn with industry experts</h3>
 				<p>
-					Learning materials from industry experts. From building your first game to training your
+					Our tutorials are curated by world-class experts. From building your first game to training your
 					first neural network — we’ve got you covered.
 				</p>
 			</div>
@@ -363,7 +370,30 @@
 			</h2>
 			<p>Create anything: graphic design, architecture, games, and more.</p>
 
-			<div class="gallery">
+			<div class='tasks-grid'>
+				<div class='tasks-grid-column'>
+					<p>What is cellular automata?</p>
+					<img src='{ca1}' alt='example' />
+					<p>Can you come up with a code for a cellular automaton in p5.js?</p>
+					<img src='{ca2}' alt='example' />
+				</div>
+				<div class='tasks-grid-column'>
+					<p>A top down view of a park area, wooden pavilions, roofs, ponds with flowers, autumn</p>
+					<img src='{ca3}' alt='example' />
+					<p>A Pac-Man style game</p>
+					<img src='{ca4}' alt='example' />
+					<p>A gameplay view of a Pac-Man style game</p>
+					<img src='{ca5}' alt='example' />
+				</div>
+				<div class='tasks-grid-column'>
+					<p>A vector illustration of a poster for an AI art exhibition</p>
+					<img src='{ca6}' alt='example' />
+					<p>An image of an abstract artwork, simple geometry</p>
+					<img src='{ca7}' alt='example' />
+				</div>
+			</div>
+
+			<!-- <div class="gallery">
 				<img src={gallery[galleryItem].image} alt="input" style="width: 70%;" transition:slide />
 			</div>
 			<div class="gallery-buttons">
@@ -374,7 +404,7 @@
 						aria-label="Next Image"
 					></button>
 				{/each}
-			</div>
+			</div> -->
 		</div>
 
 		<div class="section" style='min-height: 50vh; justify-content: center;'>
@@ -531,8 +561,37 @@
 		border-radius: 10px;
 	}
 
+	.tasks-grid{
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 10px;
+		padding: 10px;
+		box-sizing: border-box;
+	}
+	.tasks-grid-column{
+		display: flex;
+		flex-direction: column;
+	}
+	.tasks-grid-column img{
+		width: 100%;
+		margin: 0px 0;
+	}
+	.tasks-grid-column p{
+		text-align: left;
+		width: fit-content;
+		margin-top: 40px;
+		margin-bottom: 5px;
+		padding: 10px;
+		border-radius: 10px;
+		background-color: hsl(0, 0%, 95%);
+		box-sizing: border-box;
+	}
+
 	@media screen and (max-width: 700px) {
 		.grid {
+			grid-template-columns: 1fr;
+		}
+		.tasks-grid {
 			grid-template-columns: 1fr;
 		}
 	}
