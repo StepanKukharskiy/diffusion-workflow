@@ -73,6 +73,7 @@
 	let mobileMenuDisplay = 'none';
 </script>
 
+<div class='nav-container'>
 <nav style="color: {$textColor};">
 	{#if $user != undefined}
 		{#if $width > 700}
@@ -207,18 +208,27 @@
 		{/if}
 	{/if}
 </nav>
+</div>
 
 {#if $loginPanelState}
 	<LogInPanel />
 {/if}
 
 <style>
-	nav {
+	.nav-container {
 		position: fixed;
 		top: 0;
 		left: 0;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 99;
+	}
+	nav {
 		min-height: 40px;
 		width: calc(100% - 20px);
+		max-width: 1200px;
 		box-sizing: border-box;
 		border-radius: 10px;
 		background: #fdfdfd;
