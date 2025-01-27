@@ -263,6 +263,7 @@
 		</button>
 	{/if}
 </div>
+
 {#if showHintPanel}
 	<div class="hintPanel" style="bottom: calc({textarea.style.height} + 30px);" transition:slide>
 		<div class="hintsWrapper">

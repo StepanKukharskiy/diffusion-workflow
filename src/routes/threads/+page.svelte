@@ -1,23 +1,25 @@
 <script lang="ts">
 	import LogInPanel from '$lib/LogInPanel.svelte';
 	import NavPanel from '$lib/NavPanel.svelte';
-	import { user, loginPanelState } from '$lib/store';
+	import { user, loginPanelState, threadsList } from '$lib/store';
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import SimpleThreadCard from '$lib/SimpleThreadCard.svelte';
 
 	let { data } = $props();
-	let threadsList: any = $state({}),
-		isLoadingThreads: any = $state(),
+	let isLoadingThreads: any = $state(),
 		createNewThread: any = $state(false),
 		isCreatingNewThread: any = $state(false),
+		isDeletingThread: any = $state(),
 		name: string = $state('');
 
 	onMount(async () => {
 		if (data.user != undefined) {
 			isLoadingThreads = true;
 			$user = data.user;
-			threadsList = await getThreadsList();
+			$threadsList = await getThreadsList();
 		} else {
 			$loginPanelState = true;
 		}
@@ -50,10 +52,18 @@
 		}
 	}
 
+	async function deleteThreadData(id = '') {
+		isDeletingThread = true;
+		const formData = new FormData();
+		formData.append('id', id);
+		await fetch(`${$page.url.origin}/api/threads/delete`, { method: 'POST', body: formData });
+		isDeletingThread = false;
+	}
+
 	$effect(async function () {
 		if ($user) {
 			isLoadingThreads = true;
-			threadsList = await getThreadsList();
+			$threadsList = await getThreadsList();
 		}
 	});
 </script>
@@ -67,40 +77,43 @@
 		<div class="threadsDataContainer">
 			<h2 class="secondaryHeading">Threads</h2>
 
-				<div class="createThreadFormContainer">
-					{#if isCreatingNewThread}
-						<div style="display: flex; align-items: center;" transition:slide>
+			<div class="createThreadFormContainer">
+				{#if isCreatingNewThread}
+					<div style="display: flex; align-items: center;" transition:slide>
+						<span class="warning"></span>
+						<p style="margin-right: 10px;">Creating</p>
+						<div class="loader"></div>
+					</div>
+				{:else}
+					<input
+						bind:value={name}
+						placeholder="What are you working on?"
+						style="margin-bottom: 10px;"
+					/>
+					{#if name.length < 1}
+						<div style="display: flex; align-items: center; padding: 0 0 10px 0;" transition:slide>
 							<span class="warning"></span>
-							<p style="margin-right: 10px;">Creating</p>
-							<div class="loader"></div>
+							<p style="margin: 0px;">Please, enter a thread name to create one</p>
 						</div>
-					{:else}
-						<input bind:value={name} placeholder="What are you working on?" />
-
-						<div style="display: flex; align-items: center;" transition:slide>
-							<span class="warning"></span>
-							<p style="margin-right: 10px;">Please, enter a project name to create one</p>
-						</div>
-						<button
-							class="primaryButton"
-							disabled={name === '' ? true : false}
-							onclick={() => {
-								createThread();
-							}}>Create</button
-						>
 					{/if}
-				</div>
+					<button
+						class="primaryButton"
+						disabled={name === '' ? true : false}
+						onclick={() => {
+							createThread();
+						}}>Create</button
+					>
+				{/if}
+			</div>
 			{#if isLoadingThreads}
 				<div style="display: flex; align-items: center;" transition:slide>
 					<span class="warning"></span>
 					<p style="margin-right: 10px;">Loading threads</p>
 					<div class="loader"></div>
 				</div>
-			{:else if threadsList != undefined && threadsList.length > 0}
-				
-
-				<h4 class="tertiaryHeading" style="margin-top: 20px;">Things you've discussed before:</h4>
-				<ul>
+			{:else if $threadsList != undefined && $threadsList.length > 0}
+				<p style="margin: 20px 0;">Things you've discussed before:</p>
+				<!-- <ul>
 					{#each threadsList as thread}
 						<li>
 							<div class="threadContainer">
@@ -111,11 +124,14 @@
 										goto(`/threads/${thread.id}`);
 									}}>{thread.name}</button
 								>
-								<!-- <p>{thread.updated}</p> -->
+								
 							</div>
 						</li>
 					{/each}
-				</ul>
+				</ul> -->
+				{#each $threadsList as thread}
+					<SimpleThreadCard thread={{ name: thread.name, id: thread.id }} />
+				{/each}
 			{/if}
 		</div>
 	</div>
@@ -132,7 +148,7 @@
 	.threadsDataContainer {
 		margin: auto;
 		margin-top: 60px;
-		max-width: 300px;
+		max-width: 600px;
 		overflow-y: auto;
 	}
 	.threadContainer {

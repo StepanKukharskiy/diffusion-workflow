@@ -76,6 +76,7 @@ export let loginPanelState = writable(false)
 export let isUserAuthenticated = writable(false)
 export let user:any = writable(undefined)
 export let projectsList:any = writable([])
+export let threadsList:any = writable([])
 export let isSavingThread = writable(false)
 export let manual = writable(false)
 // export let canvasScale = writable(1.0);
