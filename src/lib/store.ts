@@ -77,6 +77,7 @@ export let isUserAuthenticated = writable(false)
 export let user:any = writable(undefined)
 export let projectsList:any = writable([])
 export let isSavingThread = writable(false)
+export let manual = writable(false)
 // export let canvasScale = writable(1.0);
 // export let canvasNodesMenuState = writable(false);
 // export let selectedNode = writable('');

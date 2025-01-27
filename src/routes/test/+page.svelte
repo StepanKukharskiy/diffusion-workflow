@@ -256,7 +256,9 @@
 							window.open('/');
 						}}>Blog</button
 					>
-					<button class="primaryButton" style="margin-left: 10px;">Get started</button>
+					<button class="primaryButton" style="margin-left: 10px;" onclick={()=>{
+						window.open('/threads')
+					}}>Get started</button>
 				</div>
 			</div>
 		</nav>
@@ -270,7 +272,9 @@
 					Brainstorm, create visuals, generate web apps, and more — all with just text. No complex
 					setups and expensive hardware requirements.
 				</p>
-				<button class="primaryButton">Get started - it's free</button>
+				<button class="primaryButton" onclick={()=>{
+					window.open('/threads')
+				}}>Get started - it's free</button>
 			</div>
 			<div class="sketchWrapper" style="filter: blur(20px) hue-rotate({hueRotation}deg);">
 				<!-- Use the P5wrapper component and pass the sketch function -->
@@ -282,7 +286,7 @@
 			<span style="width: 50%; border-top: 1px solid hsl(0, 0%, 90%); margin-bottom: 40px;"></span>
 
 			<h2 class="secondaryHeading">One interface, every task you have</h2>
-			<p>Generate text, code, images, videos, and 3D assets — all from one platform.</p>
+			<p>Generate text, code, images, videos, and 3D assets — all with just one line of text.</p>
 
 			<div class="gallery">
 				<img src={gallery[galleryItem].image} alt="input" style="width: 70%;" transition:slide />
@@ -445,7 +449,7 @@
 			</h2>
 			<p>
 				No matter what creative adventure you’re on — whether it’s designing a stunning library in
-				the mountains, crafting an epic new location in Fortnite, or dreaming up a wild poster for a
+				the mountains, exploring options for an epic new location in Fortnite, or dreaming up a wild poster for a
 				game that blends Star Wars with Pac-Man (how cool is that?)—we’ve got your back!
 			</p>
 
@@ -466,7 +470,9 @@
 		<div class="section" style="min-height: 50vh; justify-content: center;">
 			<h2 class="secondaryHeading">The perfect UI to create with AI</h2>
 			<p>Stay in your creative flow with no complex setups or controls.</p>
-			<button class="primaryButton">Get started - it's free</button>
+			<button class="primaryButton" onclick={()=>{
+				window.open('/threads')
+			}}>Get started - it's free</button>
 		</div>
 
 		<!-- <div class="section">
