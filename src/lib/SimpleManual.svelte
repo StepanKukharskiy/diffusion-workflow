@@ -6,7 +6,7 @@
 	let { textarea } = $props();
 </script>
 
-<div class="hint" transition:slide style="height: calc({$height}px - {textarea} - 90px);">
+<div class="hint" transition:slide style="height: calc({$height}px - {textarea} - 120px);">
 	<div
 		style="display: flex; width: 100%; justify-content: space-between; align-items: center;"
 	>
@@ -118,13 +118,18 @@
 		</details>
 		<details>
 			<summary>Resources</summary>
-			<p>Resources contain a list of tutorials.</p>
+			<p>Resources contain a list of tutorials. Type 'tutorials' to open the tutorials list.</p>
 		</details>
 		<details>
 			<summary>Apps</summary>
 			<p>
-				Apps contain templates to create your frontend apps as well as apps that were already
-				created by you.
+				Apps contain a list of apps that were created by you. Type 'apps' to open the apps list.
+			</p>
+		</details>
+		<details>
+			<summary>Templates</summary>
+			<p>
+				Templates contain templates to create your frontend apps. Type 'apps' to open the apps list.
 			</p>
 		</details>
 	</div>
@@ -143,7 +148,7 @@
 		-webkit-backdrop-filter: blur(25px);
 		border-radius: 10px;
 		box-shadow: 0 0 10px hsl(0, 0%, 70%);
-		margin-bottom: 10px;
+		margin-bottom: 0px;
 	}
 	.hintsWrapper {
 		overflow-y: auto;

@@ -6,7 +6,6 @@ export async function GET({locals}){
             const tutorials = await locals.pb.collection('tutorials').getList(1, 100, { '$autoCancel': false, sort: '-created' }
             );
             const tutorialsObject = serializeNonPOJOs(tutorials)
-            console.log(tutorialsObject.items[0].courseSpecialName)
 
             let availableTutorials = []
             for(let tutorial of tutorialsObject.items){

@@ -130,7 +130,7 @@
 					{/each}
 				</ul> -->
 				{#each $threadsList as thread}
-					<SimpleThreadCard thread={{ name: thread.name, id: thread.id }} />
+					<SimpleThreadCard thread={{ name: thread.name, id: thread.id, updated: thread.updated }} />
 				{/each}
 			{/if}
 		</div>
@@ -147,7 +147,7 @@
 	}
 	.threadsDataContainer {
 		margin: auto;
-		margin-top: 60px;
+		margin-top: 80px;
 		max-width: 600px;
 		overflow-y: auto;
 	}

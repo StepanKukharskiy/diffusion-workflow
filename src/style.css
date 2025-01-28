@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@300&family=Roboto:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Montserrat:wght@300&family=Roboto:wght@300&family=Roboto:wght@700&display=swap');
 
 :root {
     --gradientColor: #ffffff;
@@ -8,7 +8,7 @@ body {
     margin: 0;
     padding: 0px 0px;
     font-family: 'Roboto', sans-serif;
-    font-size: 1rem;
+    font-size: 1.2rem;
     background: #f9f9f9;
     height: 100svh;
     overflow: hidden;
@@ -42,7 +42,7 @@ p {
 .tertiaryHeading {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.0rem;
+    font-size: 1.2rem;
     color: hsl(0, 0%, 10%);
     width: fit-content;
 }
@@ -54,7 +54,7 @@ p {
     color: hsl(0, 0%, 98%);
     font-family: Roboto, sans-serif;
     font-weight: 300;
-    font-size: 1rem;
+    font-size: 1.2rem;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -76,7 +76,7 @@ p {
     color: hsl(0, 0%, 10%);
     font-family: Roboto, sans-serif;
     font-weight: 300;
-    font-size: 1rem;
+    font-size: 1.2rem;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -93,7 +93,7 @@ p {
     color: inherit;
     font-family: Roboto, sans-serif;
     font-weight: 300;
-    font-size: 1rem;
+    font-size: 1.2rem;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -144,7 +144,7 @@ details[open]>summary::after {
 }
 
 button {
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 300;
     cursor: pointer;
 }
@@ -156,7 +156,7 @@ textarea {
     border-radius: 10px;
     padding: 5px;
     box-sizing: border-box;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 300;
     margin-top: 5px;
 }
@@ -308,7 +308,7 @@ video {
     color: inherit;
     font-family: Roboto, sans-serif;
     font-weight: 300;
-    font-size: 1rem;
+    font-size: 1.2rem;
     text-decoration: none;
     display: flex;
     align-items: center;

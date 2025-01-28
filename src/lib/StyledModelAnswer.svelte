@@ -4,7 +4,7 @@
 	import { textColor } from './store';
 
 	export let htmlContent = ''; //markdown
-	console.log(htmlContent);
+	console.log(`initial markdown: ${htmlContent}`);
 	console.log(splitMarkdownText(htmlContent));
 
 	function splitMarkdownText(markdownText = '') {

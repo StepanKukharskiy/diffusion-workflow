@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { elements, textColor, projectsList } from './store';
+	import { elements, textColor, projectsList, apps } from './store';
 	import { page } from '$app/stores';
 	import { generateUUID } from './utils';
 	import { slide } from 'svelte/transition';
@@ -67,6 +67,7 @@
 							console.log(files);
 							addElement($elements, 'code', files, project.name, project.id);
 							$elements = $elements;
+							$apps = false;
 						}}>Edit</button
 					>
 					<button

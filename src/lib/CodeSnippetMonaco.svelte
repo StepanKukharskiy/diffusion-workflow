@@ -138,6 +138,7 @@
 		/* box-shadow: 0 0 10px #3d95ee50; */
 		border-radius: 10px;
 		transition: all 0.25s;
+		margin-bottom: 20px;
 	}
 	.codeSnippet {
 		padding: 10px;

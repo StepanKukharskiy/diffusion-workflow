@@ -135,7 +135,7 @@
 {#if $width > 0 && data}
 	<div class="conversationAndTutorialsContainer">
 		<div class="container" style="width: {discussionWidth}">
-			<h1 style="margin-top: 50px;">{name}</h1>
+			<h1 style="margin-top: 80px;">{name}</h1>
 
 			<!-- <Simple3dViewer modelUrl={'https://kodiia-db.pockethost.io/api/files/u2gxg2hnw25d8mw/0xjag4dn7c30f4d/model_w68J61XGn4.glb'} uuid={''} /> -->
 			<!-- <CodeProject /> -->

@@ -96,16 +96,16 @@
 
 				<div class="desktopMenu">
 					<button
-						class="smallMenuButton"
+						class="tertiaryButton"
 						onclick={() => {
 							window.open('/threads', "_self");
 						}}>Threads</button
 					>
-					<button class="smallMenuButton" onclick={toggleTutorials}>Resources</button>
-					<button class="smallMenuButton" onclick={toggleApps}>Apps</button>
+					<!-- <button class="tertiaryButton" onclick={toggleTutorials}>Resources</button> -->
+					<button class="tertiaryButton" onclick={toggleApps}>Apps</button>
 					{#if $user}
 						{#if !isLoggingOut}
-							<button type="submit" class="smallMenuButton" onclick={logout}>Log Out</button>
+							<button type="submit" class="tertiaryButton" onclick={logout}>Log Out</button>
 						{:else}
 							<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 						{/if}
@@ -113,7 +113,7 @@
 					{:else}
 						<!-- <a class="smallMenuButton" href="/register">Sign Up</a> -->
 						<button
-							class="smallMenuButton"
+							class="tertiaryButton"
 							onclick={() => {
 								$loginPanelState = true;
 							}}>Log In</button
@@ -163,27 +163,27 @@
 				</div>
 
 				<button
-					class="smallMenuButton"
+					class="tertiaryButton"
 					onclick={() => {
 						window.open('/threads', "_self");
 					}}>Threads</button
 				>
 
-				<button
-					class="smallMenuButton"
+				<!-- <button
+					class="tertiaryButton"
 					onclick={() => {
 						toggleTutorials();
 						mobileMenuDisplay = 'none';
 					}}>Resources</button
-				>
+				> -->
 
-				<button
-					class="smallMenuButton"
+				<!-- <button
+					class="tertiaryButton"
 					onclick={() => {
 						toggleApps();
 						mobileMenuDisplay = 'none';
 					}}>Apps</button
-				>
+				> -->
 
 				{#if $user}
 					{#if !isLoggingOut}
@@ -227,7 +227,7 @@
 	}
 	nav {
 		min-height: 40px;
-		width: calc(100% - 20px);
+		width: 100%;
 		max-width: 1200px;
 		box-sizing: border-box;
 		border-radius: 10px;
@@ -235,7 +235,7 @@
 		background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
 		backdrop-filter: blur(25px);
 		-webkit-backdrop-filter: blur(25px);
-		padding: 0 20px;
+		padding: 10px;
 		margin: 10px;
 		box-shadow: 0 0 10px hsl(0, 0%, 70%);
 		display: flex;

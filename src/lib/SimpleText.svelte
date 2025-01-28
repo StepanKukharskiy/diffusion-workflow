@@ -5,7 +5,6 @@
 	import { deleteBlock, generateUUID, updateCredits } from './utils';
 
 	let { query = '', answer = '', uuid = '' } = $props();
-	console.log(query);
 
 	function addElement(elements: any, type = 'text', query = '', generatedImageUrl = '') {
 		elements.push({
@@ -14,7 +13,6 @@
 			query: query,
 			imageUrl: generatedImageUrl
 		});
-		console.log(elements);
 	}
 
 	let isGeneratingImage = $state(false),
@@ -41,10 +39,8 @@
 				projectId: $page.params.projectId
 			})
 		});
-		console.log(message);
 		const messageObject = await message.json();
 		generatedImageUrl = messageObject.imageUrl;
-		console.log(`api response: ${messageObject}`);
 		isGeneratingImage = false;
 		return generatedImageUrl;
 	}

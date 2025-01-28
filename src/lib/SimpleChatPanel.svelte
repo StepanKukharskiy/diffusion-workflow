@@ -2,10 +2,13 @@
 	import { page } from '$app/stores';
 	import SimpleManual from './SimpleManual.svelte';
 	import SimpleTextCard from './SimpleTextCard.svelte';
-	import { elements, user, referenceImageUrl, manual, tutorialsPanelState, appsPanelState } from './store';
+	import { elements, user, referenceImageUrl, manual, tutorials, templates, apps, tutorialsPanelState, appsPanelState } from './store';
 	import { generateUUID, updateCredits } from './utils';
 	import { slide } from 'svelte/transition';
 	import { onMount } from 'svelte';
+	import SimpleTutorials from './SimpleTutorials.svelte';
+	import SimpleTemplates from './SimpleTemplates.svelte';
+	import SimpleApps from './SimpleApps.svelte';
 
 	let textarea: any = $state(),
 		isGenerating = $state(false),
@@ -17,7 +20,7 @@
 
 	let showHintPanel = $state(false);
 	let suggestions: string[] = $state([]); // New state variable for suggestions
-	const commands: string[] = ['tutorials', 'apps']; // List of commands
+	const commands: string[] = ['templates', 'tutorials', 'apps']; // List of commands
 
 	function updateTextareaHeight() {
 		textarea.style.height = `40px`;
@@ -152,18 +155,34 @@
 		if (query === '?') {
 			$manual = true;
 		} else if (query === 'tutorials') {
-			$tutorialsPanelState = true;
+			$tutorials = true;
+		} else if (query === 'templates') {
+			$templates = true;
 		} else if (query === 'apps') {
-			$appsPanelState = true;
+			$apps = true;
 		} else {
 			$manual = false;
-			$tutorialsPanelState = false;
+			$apps = false;
+			$templates = false;
+			$tutorials = false;
 		}
 	}
 </script>
 
 {#if $manual}
 	<SimpleManual textarea={textarea.style.height} />
+{/if}
+
+{#if $tutorials}
+	<SimpleTutorials textarea={textarea.style.height} />
+{/if}
+
+{#if $templates}
+<SimpleTemplates textarea={textarea.style.height} />
+{/if}
+
+{#if $apps}
+<SimpleApps textarea={textarea.style.height} />
 {/if}
 
 <div class="chatPanelContainer">
@@ -265,7 +284,7 @@
 </div>
 
 {#if showHintPanel}
-	<div class="hintPanel" style="bottom: calc({textarea.style.height} + 30px);" transition:slide>
+	<div class="hintPanel" style="bottom: calc({textarea.style.height} + 40px);" transition:slide>
 		<div class="hintsWrapper">
 			{#each suggestions as suggestion}
 				<button
@@ -288,6 +307,7 @@
 	.chatPanelContainer {
 		width: 100%;
 		max-width: 800px;
+		margin: 10px;
 		padding: 10px;
 		box-sizing: border-box;
 		display: flex;
