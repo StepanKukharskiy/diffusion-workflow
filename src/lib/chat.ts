@@ -23,8 +23,8 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
             case 'llama3.1-405b':
                 selectedModel = 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo'
                 break;
-            case 'mistral-7B-Instruct-v0.1':
-                selectedModel = 'mistralai/Mistral-7B-Instruct-v0.1'
+            case 'deepseek-V3':
+                selectedModel = 'deepseek-ai/DeepSeek-V3'
                 break;
             case 'mixtral-8x22B-Instruct-v0.1':
                 selectedModel = 'mistralai/Mixtral-8x22B-Instruct-v0.1'

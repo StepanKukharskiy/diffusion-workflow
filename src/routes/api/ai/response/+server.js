@@ -22,7 +22,7 @@ export async function POST({ request, locals }) {
 
         if (requestType?.trim() === 'chat') {
             console.log('getting chat agent response')
-            const chatResponseData = await chatResponse('llama3.3-70b', query.query, query.systemPrompt, query.previousAnswers, query.referenceImage)
+            const chatResponseData = await chatResponse(query.model, query.query, query.systemPrompt, query.previousAnswers, query.referenceImage)
             console.log(query.referenceImage)
             console.log(chatResponseData)
 

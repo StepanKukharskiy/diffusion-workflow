@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import SimpleManual from './SimpleManual.svelte';
 	import SimpleTextCard from './SimpleTextCard.svelte';
-	import { elements, user, referenceImageUrl, manual, tutorials, templates, apps, tutorialsPanelState, appsPanelState } from './store';
+	import { elements, user, referenceImageUrl, manual, tutorials, templates, apps, tutorialsPanelState, appsPanelState, chatModel } from './store';
 	import { generateUUID, updateCredits } from './utils';
 	import { slide } from 'svelte/transition';
 	import { onMount } from 'svelte';
@@ -51,6 +51,7 @@
 	}
 
 	async function getResponse(data = { model: '', systemPrompt: '', query: '' }) {
+		console.log(`model: ${data.model}, ${$chatModel}`)
 		isGenerating = true;
 		const message = await fetch(`${$page.url.origin}/api/ai/response`, {
 			method: 'POST',
@@ -264,8 +265,9 @@
 			class="primaryButton"
 			disabled={query === '' ? true : false}
 			onclick={async () => {
+				console.log($chatModel)
 				const response = await getResponse({
-					model: modelOption,
+					model: $chatModel,
 					systemPrompt: systemPrompt,
 					query: query
 				});
@@ -338,6 +340,9 @@
 	#magicButton {
 		width: 40px;
 		height: 40px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 	.hintPanel {
 		position: absolute;

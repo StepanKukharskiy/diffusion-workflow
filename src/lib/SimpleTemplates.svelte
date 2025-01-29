@@ -123,7 +123,7 @@
 		flex-direction: column;
 		background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25));
 		backdrop-filter: blur(40px);
-		-webkit-backdrop-filter: blur(25px);
+		-webkit-backdrop-filter: blur(40px);
 		border-radius: 10px;
 		box-shadow: 0 0 10px hsl(0, 0%, 70%);
 		margin-bottom: 0px;

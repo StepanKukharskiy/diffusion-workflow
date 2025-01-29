@@ -60,6 +60,7 @@ p {
     align-items: center;
     padding: 10px;
     cursor: pointer;
+    height: fit-content;
 }
 .primaryButton:hover{
     background: hsl(0,0%,30%);
