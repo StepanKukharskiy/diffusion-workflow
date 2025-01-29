@@ -102,7 +102,7 @@
 						}}>Threads</button
 					>
 					<!-- <button class="tertiaryButton" onclick={toggleTutorials}>Resources</button> -->
-					<button class="tertiaryButton" onclick={toggleApps}>Apps</button>
+					<!-- <button class="tertiaryButton" onclick={toggleApps}>Apps</button> -->
 					{#if $user}
 						{#if !isLoggingOut}
 							<button type="submit" class="tertiaryButton" onclick={logout}>Log Out</button>
