@@ -223,7 +223,7 @@
 				amt-interpolation</button
 			>
 		</div>
-		<button class="tertiaryButton" onclick={logout}>Log Out</button>
+		<button class="tertiaryButton" onclick={()=>{logout(); $account = false;}}>Log Out</button>
 	</div>
 </div>
 
