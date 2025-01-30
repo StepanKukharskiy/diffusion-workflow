@@ -34,7 +34,11 @@ export async function POST({ request, locals }) {
 
         if (requestType?.trim() === 'image') {
             console.log('getting image agent response')
-            const model = 'flux-schnell'
+            let model = 'flux-schnell'
+            if(query.referenceImage != ''){
+                model = query.imageCompositionReferenceModel
+            }
+            console.log(model)
             const imageResponseData = await imageResponse(model, query.query, query.referenceImage)
             const imageResponseDataUrl = await imageResponseData?.json()
 

@@ -66,9 +66,7 @@
 {:else}
 	<div class="nav-container">
 		<nav style="color: {$textColor};">
-			{#if $user != undefined}
-				{#if $width > 700}
-					<div
+			<div
 						style="width: 100%; display: flex; align-items: center; justify-content: space-between;"
 					>
 						<a href="https://kodiia.com">
@@ -105,10 +103,24 @@
 											$account = true;
 										}}
 									>
+										{$user.requests}
 										{#if $isSavingThread}
-											<div class="loader" style='border-color: transparent white;'></div>
+											<div class="loader" style="border-color: transparent white;"></div>
 										{:else}
-											{$user.requests}
+											<div
+												style="padding: 0 0 0 10px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;"
+											>
+												<svg
+													width="20"
+													height="20"
+													viewBox="0 0 20 20"
+													xmlns="http://www.w3.org/2000/svg"
+												>
+													<circle cx="10" cy="4" r="2" fill="white" />
+													<circle cx="10" cy="10" r="2" fill="white" />
+													<circle cx="10" cy="16" r="2" fill="white" />
+												</svg>
+											</div>
 										{/if}
 									</button>
 								{:else}
@@ -125,6 +137,69 @@
 								>
 							{/if}
 							<!-- <button class='smallMenuButton' on:click={changeTheme}>◑</button> -->
+						</div>
+					</div>
+			<!-- {#if $user != undefined}
+				{#if $width > 700}
+					<div
+						style="width: 100%; display: flex; align-items: center; justify-content: space-between;"
+					>
+						<a href="https://kodiia.com">
+							<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
+						</a>
+
+
+						<div class="desktopMenu">
+							<button
+								class="tertiaryButton"
+								onclick={() => {
+									window.open('/threads', '_self');
+								}}>Threads</button
+							>
+							
+							{#if $user}
+								{#if !isLoggingOut}
+									
+									<button
+										class="primaryButton"
+										onclick={() => {
+											$account = true;
+										}}
+									>
+										{$user.requests}
+										{#if $isSavingThread}
+											<div class="loader" style="border-color: transparent white;"></div>
+										{:else}
+											<div
+												style="padding: 0 0 0 10px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;"
+											>
+												<svg
+													width="10"
+													height="20"
+													viewBox="0 0 10 20"
+													xmlns="http://www.w3.org/2000/svg"
+												>
+													<circle cx="5" cy="4" r="2" fill="white" />
+													<circle cx="5" cy="10" r="2" fill="white" />
+													<circle cx="5" cy="16" r="2" fill="white" />
+												</svg>
+											</div>
+										{/if}
+									</button>
+								{:else}
+									<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+								{/if}
+								
+							{:else}
+								
+								<button
+									class="tertiaryButton"
+									onclick={() => {
+										$loginPanelState = true;
+									}}>Log In</button
+								>
+							{/if}
+							
 						</div>
 					</div>
 				{:else}
@@ -161,13 +236,11 @@
 						class="mobileMenu"
 						style="display: {mobileMenuDisplay}; height: calc({$height}px - 80px);"
 					>
-						<!-- {#if $page.route.id == '/projects/[projectUrl]/edit'}
+						
                 <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{$filesPanelDisplay = 'block'; mobileMenuDisplay = 'none'}}'>Files</button>
-            {/if} -->
+            {/if} 
 
-						<!-- <div class="requestsWrapper">
-					<h4 style="margin: 10px 10px 0 10px;" class="tertiaryHeading">{$user.requests}</h4>
-				</div> -->
+						
 
 						<button
 							class="tertiaryButton"
@@ -176,47 +249,32 @@
 							}}>Threads</button
 						>
 
-						<!-- <button
-					class="tertiaryButton"
-					onclick={() => {
-						toggleTutorials();
-						mobileMenuDisplay = 'none';
-					}}>Resources</button
-				> -->
+						
 
-						<!-- <button
-					class="tertiaryButton"
-					onclick={() => {
-						toggleApps();
-						mobileMenuDisplay = 'none';
-					}}>Apps</button
-				> -->
+						
 
 						{#if $user}
 							{#if !isLoggingOut}
-								<!-- <button type="submit" class="tertiaryButton" style="padding: 10px;" onclick={logout}
-							>Log Out</button
-						> -->
-						<button
-						class="primaryButton"
-						onclick={() => {
-							$account = true;
-						}}
-					>
-						{#if $isSavingThread}
-							<div class="loader" style='border-color: transparent white;'></div>
-						{:else}
-							{$user.requests}
-						{/if}
-					</button>
+								
+								<button
+									class="primaryButton"
+									onclick={() => {
+										$account = true;
+									}}
+								>
+									{#if $isSavingThread}
+										<div class="loader" style="border-color: transparent white;"></div>
+									{:else}
+										{$user.requests}
+									{/if}
+								</button>
 							{:else}
 								<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
 							{/if}
 
 							
-							<!-- <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{stylesPanelState.set(true)}}'>Set theme</button> -->
 						{:else}
-							<!-- <a class="smallMenuButton" style="padding: 10px;" href="/register">Sign Up</a> -->
+							
 							<button
 								class="smallMenuButton"
 								onclick={() => {
@@ -227,7 +285,7 @@
 						{/if}
 					</div>
 				{/if}
-			{/if}
+			{/if} -->
 		</nav>
 	</div>
 {/if}

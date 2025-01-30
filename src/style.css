@@ -23,7 +23,7 @@ h4 {
     font-family: 'Montserrat', sans-serif;
 }
 
-p {
+p, a {
     color: hsl(0, 0%, 30%);
 }
 

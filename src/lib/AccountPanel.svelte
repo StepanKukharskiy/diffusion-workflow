@@ -16,6 +16,8 @@
 		chatModel,
 		visionModel,
 		imageModel,
+		imageCompositionReferenceModel,
+		videoModel,
 		appsPanelState
 	} from '$lib/store';
 	import { generateUUID } from './utils';
@@ -81,17 +83,17 @@
 			}}>quit</button
 		>
 	</div>
-	
+
 	<div class="wrapper">
 		<div class="item-wrapper">
 			<h3 class="tertiaryHeading">Email</h3>
 			<p>{$user.email}</p>
 		</div>
-		<div class="item-wrapper" style='display: flex; flex-direction: column;'>
+		<div class="item-wrapper" style="display: flex; flex-direction: column;">
 			<div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
 				<h3 class="tertiaryHeading">Credits</h3>
 				<div style="display: flex; align-items: center;">
-					<p style='margin-right: 20px;'>{$user.requests}</p>
+					<p style="margin-right: 20px;">{$user.requests}</p>
 					<button
 						class="tertiaryButton"
 						onclick={() => {
@@ -101,44 +103,88 @@
 				</div>
 			</div>
 			{#if addCredits}
-					<div transition:slide style='display: flex; align-items: center;'>
-						<span class="warning"></span>
-						<p>Please, reach out via Discord</p>
-					</div>
-				{/if}
+				<div transition:slide style="display: flex; align-items: center;">
+					<span class="warning"></span>
+					<p>Please, reach out via <a href="https://discord.gg/PWjgJafMkF">Discord</a></p>
+				</div>
+			{/if}
 		</div>
 
-		
-		<div class="item-wrapper" style='display: flex; flex-direction: column; align-items: start;'>
-			<h3 class="tertiaryHeading" style='margin-bottom: 10px;'>Chat models</h3>
-			<button class={$chatModel === 'llama3.3-70b' ? 'secondaryButton' : 'tertiaryButton'} onclick={(e:any)=>{
-				$chatModel = e.target.innerText;
-				}}>llama3.3-70b</button>
-			<button class={$chatModel === 'mixtral-8x22B-Instruct-v0.1' ? 'secondaryButton' : 'tertiaryButton'} onclick={(e:any)=>{
-				$chatModel = e.target.innerText;
-				}}>
+		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
+			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">Chat models</h3>
+			<button
+				class={$chatModel === 'llama3.3-70b' ? 'secondaryButton' : 'tertiaryButton'}
+				onclick={(e: any) => {
+					$chatModel = e.target.innerText;
+				}}>llama3.3-70b</button
+			>
+			<button
+				class={$chatModel === 'mixtral-8x22B-Instruct-v0.1' ? 'secondaryButton' : 'tertiaryButton'}
+				onclick={(e: any) => {
+					$chatModel = e.target.innerText;
+				}}
+			>
 				mixtral-8x22B-Instruct-v0.1
 			</button>
-			<button class={$chatModel === 'deepseek-V3' ? 'secondaryButton' : 'tertiaryButton'} onclick={(e:any)=>{
-				$chatModel = e.target.innerText;
-				}}>
+			<button
+				class={$chatModel === 'deepseek-V3' ? 'secondaryButton' : 'tertiaryButton'}
+				onclick={(e: any) => {
+					$chatModel = e.target.innerText;
+				}}
+			>
 				deepseek-V3
 			</button>
 		</div>
 
-		<div class="item-wrapper" style='display: flex; flex-direction: column; align-items: start;'>
-			<h3 class="tertiaryHeading" style='margin-bottom: 10px;'>Vision models</h3>
-			<button class={$visionModel === 'llama3.2-90b' ? 'secondaryButton' : 'tertiaryButton'} onclick={(e:any)=>{
-				$visionModel = e.target.innerText;
-				}}>llama3.2-90b</button>
+		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
+			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">Vision models</h3>
+			<button
+				class={$visionModel === 'llama3.2-90b' ? 'secondaryButton' : 'tertiaryButton'}
+				onclick={(e: any) => {
+					$visionModel = e.target.innerText;
+				}}>llama3.2-90b</button
+			>
 		</div>
-		<div class="item-wrapper" style='display: flex; flex-direction: column; align-items: start;'>
-			<h3 class="tertiaryHeading" style='margin-bottom: 10px;'>Image models</h3>
-			<button class={$imageModel === 'flux-schnell' ? 'secondaryButton' : 'tertiaryButton'} onclick={(e:any)=>{
-				$imageModel = e.target.innerText;
-				}}>flux-schnell</button>
+		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
+			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">Image models</h3>
+			<button
+				class={$imageModel === 'flux-schnell' ? 'secondaryButton' : 'tertiaryButton'}
+				onclick={(e: any) => {
+					$imageModel = e.target.innerText;
+				}}>flux-schnell</button
+			>
 		</div>
-		<button type="submit" class="tertiaryButton" onclick={logout}>Log Out</button>
+		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
+			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">
+				Image composition reference models
+			</h3>
+			<button
+				class={$imageCompositionReferenceModel === 'flux-canny-pro'
+					? 'secondaryButton'
+					: 'tertiaryButton'}
+				onclick={(e: any) => {
+					$imageCompositionReferenceModel = e.target.innerText;
+				}}>flux-canny-pro</button
+			>
+			<button
+				class={$imageCompositionReferenceModel === 'flux-depth-pro'
+					? 'secondaryButton'
+					: 'tertiaryButton'}
+				onclick={(e: any) => {
+					$imageCompositionReferenceModel = e.target.innerText;
+				}}>flux-depth-pro</button
+			>
+		</div>
+		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
+			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">Video models</h3>
+			<button
+				class={$videoModel === 'video-01' ? 'secondaryButton' : 'tertiaryButton'}
+				onclick={(e: any) => {
+					$videoModel = e.target.innerText;
+				}}>video-01</button
+			>
+		</div>
+		<button class="tertiaryButton" onclick={logout}>Log Out</button>
 	</div>
 </div>
 

@@ -32,8 +32,8 @@ export async function imageResponse(model = '', query = '', referenceComposition
                         imageUrl: imageUrl
                     }
                 }
-            } else {
-                console.log(referenceCompositionImageUrl)
+            } else if (model === 'flux-canny-pro'){
+                console.log('using canny model')
                 const input = {
                     steps: 50,
                     prompt: query,
@@ -44,6 +44,22 @@ export async function imageResponse(model = '', query = '', referenceComposition
                     prompt_upsampling: false
                 }
                 const output = await replicate.run("black-forest-labs/flux-canny-pro", { input });
+                const imageUrl = output.url().href;
+                response = {
+                    imageUrl: imageUrl
+                }
+            }  else if (model === 'flux-depth-pro'){
+                console.log('using depth model')
+                const input = {
+                    steps: 50,
+                    prompt: query,
+                    guidance: 45,
+                    control_image: referenceCompositionImageUrl,
+                    output_format: "jpg",
+                    safety_tolerance: 2,
+                    prompt_upsampling: false
+                }
+                const output = await replicate.run("black-forest-labs/flux-depth-pro", { input });
                 const imageUrl = output.url().href;
                 response = {
                     imageUrl: imageUrl
