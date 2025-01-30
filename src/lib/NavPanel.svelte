@@ -60,7 +60,7 @@
 </script>
 
 {#if $account}
-	<div style="width: 100%; position: absolute; top: 0; left: 0; z-index: 99">
+	<div style="width: 100%; position: absolute; top: 0; left: 0; z-index: 99; display: flex; justify-content: center;">
 		<AccountPanel />
 	</div>
 {:else}

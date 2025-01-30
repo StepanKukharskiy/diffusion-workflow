@@ -320,7 +320,7 @@ video {
     text-decoration: underline;
 }
 
-.warning {
+.warning, .black-dot, .transparent-dot {
     display: inline-block;
     width: 10px;
     height: 10px;
@@ -328,7 +328,12 @@ video {
     background: orange;
     margin-right: 10px;
 }
-
+.black-dot {
+    background: hsl(0, 0%, 10%);
+}
+.transparent-dot {
+    background: hsla(0, 0%, 10%, 0%);
+}
 .loader {
     displaY: block;
     width: 10px;
