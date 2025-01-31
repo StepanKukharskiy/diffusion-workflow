@@ -39,10 +39,9 @@
 	let { data } = $props();
 	let name: string = $state(data.name);
 	let id: string = $state(data.id);
-	let showOptions = $state(false)
-	console.log(data);
+	let showOptions = $state(false);
 
-	if(data.createdBy === data.user.id){
+	if (data.user != undefined && data.createdBy === data.user.id) {
 		showOptions = true;
 	}
 	if (data.user != undefined) {
@@ -122,7 +121,9 @@
 </script>
 
 {#if $width > 0 && data}
-	<NavPanel />
+	{#if showOptions}
+		<NavPanel />
+	{/if}
 
 	<div class="conversationAndTutorialsContainer">
 		<div class="container" style="width: {discussionWidth}">
@@ -131,15 +132,30 @@
 			<div class={layout}>
 				{#each $elements as element}
 					{#if element.type === 'text'}
-						<SimpleText query={element.query} answer={element.answer} uuid={element.uuid} options={showOptions} />
+						<SimpleText
+							query={element.query}
+							answer={element.answer}
+							uuid={element.uuid}
+							options={showOptions}
+						/>
 					{:else if element.type === 'file'}
 						<FileInput uuid={element.uuid} />
 					{:else if element.type === 'video'}
-						<SimpleVideo videoUrl={element.videoUrl} uuid={element.uuid} options={showOptions}/>
+						<SimpleVideo videoUrl={element.videoUrl} uuid={element.uuid} options={showOptions} />
 					{:else if element.type === 'imageGeneration'}
-						<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid} options={showOptions}/>
+						<SimpleImage
+							imageUrl={element.imageUrl}
+							query={element.query}
+							uuid={element.uuid}
+							options={showOptions}
+						/>
 					{:else if element.type === 'image'}
-						<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid} options={showOptions}/>
+						<SimpleImage
+							imageUrl={element.imageUrl}
+							query={element.query}
+							uuid={element.uuid}
+							options={showOptions}
+						/>
 					{:else if element.type === 'sketch'}
 						<SimpleSketch shapes={element.shapes} uuid={element.uuid} />
 					{:else if element.type === 'code'}
@@ -151,7 +167,7 @@
 							options={showOptions}
 						/>
 					{:else if element.type === '3dViewer' || element.type === 'model'}
-						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} options={showOptions}/>
+						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} options={showOptions} />
 					{/if}
 				{/each}
 			</div>
