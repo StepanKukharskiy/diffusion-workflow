@@ -36,23 +36,15 @@
 	let createButton: any;
 	let layout = $state('container-block');
 
-	// async function test(fileName = ''){
-	// 	await fetch(`/api/get-file`, {
-	// 		method: 'POST',
-	// 		headers: {
-	// 			'Content-Type': 'application/json'
-	// 		},
-	// 		body: JSON.stringify({
-	// 			projectId: $page.params.projectId,
-	// 			fileName: fileName
-	// 		})
-	// 	})
-	// }
-	// test('flux_schnell_vFph2bakxl.webp')
-
 	let { data } = $props();
 	let name: string = $state(data.name);
 	let id: string = $state(data.id);
+	let showOptions = $state(false)
+	console.log(data);
+
+	if(data.createdBy === data.user.id){
+		showOptions = true;
+	}
 	if (data.user != undefined) {
 		$user = data.user;
 	}
@@ -61,7 +53,6 @@
 	} else {
 		$elements = [];
 	}
-	console.log(data);
 
 	function addElement(elements: any = [], type = 'text') {
 		if (type === 'code') {
@@ -113,8 +104,8 @@
 	elements.subscribe(() => {
 		clearTimeout(saveTimeout);
 		saveTimeout = setTimeout(async () => {
-			if(browser){
-			await saveThread($elements);
+			if (browser && showOptions) {
+				await saveThread($elements);
 			}
 		}, 10000);
 	});
@@ -130,132 +121,48 @@
 	});
 </script>
 
-<NavPanel />
-
 {#if $width > 0 && data}
+	<NavPanel />
+
 	<div class="conversationAndTutorialsContainer">
 		<div class="container" style="width: {discussionWidth}">
 			<h1 style="margin-top: 80px;">{name}</h1>
 
-			<!-- <Simple3dViewer modelUrl={'https://kodiia-db.pockethost.io/api/files/u2gxg2hnw25d8mw/0xjag4dn7c30f4d/model_w68J61XGn4.glb'} uuid={''} /> -->
-			<!-- <CodeProject /> -->
-			<!-- <button onclick={setLayout}>display grid</button> -->
-			<!-- {#if data.data != ''}
-				{#each data.data as element}
-					{#if element.type === 'text'}
-						<SimpleText query={element.query} answer={element.answer} uuid={element.uuid} />
-					{/if}
-				{/each}
-			{/if} -->
-
 			<div class={layout}>
-				<!-- <TextInput imageUrl={'https://media.istockphoto.com/id/1443562748/photo/cute-ginger-cat.jpg?s=612x612&w=0&k=20&c=vvM97wWz-hMj7DLzfpYRmY2VswTqcFEKkC437hxm3Cg='} /> -->
 				{#each $elements as element}
 					{#if element.type === 'text'}
-						<!-- <TextInput imageUrl={element.imageUrl} codeProjectUuid={element.codeProjectUuid} /> -->
-						<SimpleText query={element.query} answer={element.answer} uuid={element.uuid} />
+						<SimpleText query={element.query} answer={element.answer} uuid={element.uuid} options={showOptions} />
 					{:else if element.type === 'file'}
 						<FileInput uuid={element.uuid} />
 					{:else if element.type === 'video'}
-						<!-- <VideoGeneration refImageUrl={element.imageUrl} /> -->
-						<SimpleVideo videoUrl={element.videoUrl} uuid={element.uuid} />
+						<SimpleVideo videoUrl={element.videoUrl} uuid={element.uuid} options={showOptions}/>
 					{:else if element.type === 'imageGeneration'}
-						<!-- <ImageGeneration
-						refImageUrl={element.imageUrl}
-						maskImageUrl={element.maskImageUrl}
-						prompt={element.prompt}
-					/> -->
-						<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid} />
+						<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid} options={showOptions}/>
 					{:else if element.type === 'image'}
-						<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid} />
+						<SimpleImage imageUrl={element.imageUrl} query={element.query} uuid={element.uuid} options={showOptions}/>
 					{:else if element.type === 'sketch'}
-						<!-- <Sketch /> -->
 						<SimpleSketch shapes={element.shapes} uuid={element.uuid} />
-						<!-- <SketchTest shapes={element.shapes} uuid={element.uuid} /> -->
 					{:else if element.type === 'code'}
-						<!-- <CodeProject files={element.files} uuid={element.uuid} /> -->
 						<SimpleCodeProject
 							files={element.files}
 							uuid={element.uuid}
 							name={element.name}
 							id={element.id}
+							options={showOptions}
 						/>
 					{:else if element.type === '3dViewer' || element.type === 'model'}
-						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} />
+						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} options={showOptions}/>
 					{/if}
 				{/each}
 			</div>
 
-			<!-- {#if isCreateOptionsVisible}
-	<div class='optionsContainer'>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'text');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>chat</button
-		>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'imageGeneration');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>image</button
-		>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'file');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>file</button
-		>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'sketch');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>sketch</button
-		>
-		<button
-			class="createOptionsMenu"
-			style="color: hsl({$textColor});"
-			onclick={() => {
-				isCreateOptionsVisible = false;
-				addElement($elements, 'code');
-				$elements = $elements;
-				scrollToCreateButton();
-			}}>code</button
-		>
-	</div>
-	{:else}
-		<button
-			bind:this={createButton}
-			style="background: hsl({$textColor}); color: hsl({$bgColor});"
-			class="createButton"
-			onclick={() => {
-				isCreateOptionsVisible = !isCreateOptionsVisible;
-				setTimeout(()=>{isCreateOptionsVisible = false;}, 10000)
-			}}>Add</button
-		>
-	{/if} -->
-
-			<div
-				style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 0px; display: flex; justify-content: center; align-items: center; flex-direction: column;"
-			>
-				<SimpleChatPanel />
-			</div>
+			{#if showOptions}
+				<div
+					style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 0px; display: flex; justify-content: center; align-items: center; flex-direction: column;"
+				>
+					<SimpleChatPanel />
+				</div>
+			{/if}
 		</div>
 
 		{#if $tutorialsPanelState}
@@ -270,60 +177,13 @@
 			</div>
 		{/if}
 	</div>
+{:else}
+	<div
+		style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;"
+	>
+		<div class="loader"></div>
+	</div>
 {/if}
-
-<!-- <div class="discussionNav">
-	<button
-		class="smallMenuButton"
-		style="color: hsl({$textColor});"
-		onclick={() => {
-			isCreateOptionsVisible = false;
-			addElement($elements, 'text');
-			$elements = $elements;
-			scrollToCreateButton();
-		}}>Start Chat</button
-	>
-	<button
-		class="smallMenuButton"
-		style="color: hsl({$textColor});"
-		onclick={() => {
-			isCreateOptionsVisible = false;
-			addElement($elements, 'imageGeneration');
-			$elements = $elements;
-			scrollToCreateButton();
-		}}>Generate Image</button
-	>
-	<button
-		class="smallMenuButton"
-		style="color: hsl({$textColor});"
-		onclick={() => {
-			isCreateOptionsVisible = false;
-			addElement($elements, 'file');
-			$elements = $elements;
-			scrollToCreateButton();
-		}}>Upload File</button
-	>
-	<button
-		class="smallMenuButton"
-		style="color: hsl({$textColor});"
-		onclick={() => {
-			isCreateOptionsVisible = false;
-			addElement($elements, 'sketch');
-			$elements = $elements;
-			scrollToCreateButton();
-		}}>Create Sketch</button
-	>
-	<button
-		class="smallMenuButton"
-		style="color: hsl({$textColor});"
-		onclick={() => {
-			isCreateOptionsVisible = false;
-			addElement($elements, 'code');
-			$elements = $elements;
-			scrollToCreateButton();
-		}}>Start Coding</button
-	>
-</div> -->
 
 <style>
 	.conversationAndTutorialsContainer {

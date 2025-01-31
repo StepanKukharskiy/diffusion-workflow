@@ -1,5 +1,4 @@
 <script>
-	// import kodiia_logo_bw from '$lib/logos/kodiia_logo_bw.svg'
 	import kodiia_small from '$lib/logos/kodiia_small.svg';
 	import { slide } from 'svelte/transition';
 	import {
@@ -20,272 +19,78 @@
 	import LogInPanel from './LogInPanel.svelte';
 	import AccountPanel from './AccountPanel.svelte';
 
-	// console.log($page)
-
-	// function changeTheme(){
-	//     if($theme === 'dark'){
-	//         $theme = 'light';
-	//         $bgColor = '0, 0%, 98%';
-	//         $secondaryColor = '0, 0%, 100%'
-	//         $textColor = '0, 0%, 10%'
-	//         $primaryColor = '155, 70%, 45%'
-	//         $accentColor = '80, 95%, 40%'
-	//     } else {
-	//         $theme = 'dark';
-	//         $bgColor = '0, 0%, 5%';
-	//         $secondaryColor = '0, 0%, 15%'
-	//         $textColor = '0, 0%, 98%'
-	//         $primaryColor = '155, 70%, 55%'
-	//         $accentColor = '80, 95%, 60%'
-	//     }
-	// }
-
 	let isLoggingOut = false;
 	console.log($user);
 
-	if ($user === undefined) {
-		$loginPanelState = true;
-	}
-
-	function toggleTutorials() {
-		$tutorialsPanelState = !$tutorialsPanelState;
-		$appsPanelState = false;
-	}
-	function toggleApps() {
-		$tutorialsPanelState = false;
-		$appsPanelState = !$appsPanelState;
-	}
-
-	let mobileMenuDisplay = 'none';
+	$effect(() => {
+		if ($user === undefined) {
+			$loginPanelState = true;
+		}
+	});
 </script>
 
 {#if $account}
-	<div style="width: 100%; position: absolute; top: 0; left: 0; z-index: 99; display: flex; justify-content: center;">
+	<div
+		style="width: 100%; position: absolute; top: 0; left: 0; z-index: 99; display: flex; justify-content: center;"
+	>
 		<AccountPanel />
 	</div>
 {:else}
 	<div class="nav-container">
 		<nav style="color: {$textColor};">
-			<div
-						style="width: 100%; display: flex; align-items: center; justify-content: space-between;"
-					>
-						<a href="https://kodiia.com">
-							<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
-						</a>
+			<div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+				<a href="https://kodiia.com">
+					<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
+				</a>
 
-						<!-- {#if $isSavingThread}
-						<div style="display: flex; align-items: center">
-							<span class="warning"></span>
-							<p style="margin: 0">Saving...</p>
-							<div class="loader"></div>
-						</div>
+				<div class="desktopMenu">
+					<button
+						class="tertiaryButton"
+						onclick={() => {
+							window.open('/threads', '_self');
+						}}>Threads</button
+					>
+					{#if $user}
+						{#if !isLoggingOut}
+							<button
+								class="primaryButton"
+								onclick={() => {
+									$account = true;
+								}}
+							>
+								{$user.requests}
+								{#if $isSavingThread}
+									<div class="loader" style="border-color: transparent white;"></div>
+								{:else}
+									<div
+										style="padding: 0 0 0 10px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;"
+									>
+										<svg
+											width="20"
+											height="20"
+											viewBox="0 0 20 20"
+											xmlns="http://www.w3.org/2000/svg"
+										>
+											<circle cx="10" cy="4" r="2" fill="white" />
+											<circle cx="10" cy="10" r="2" fill="white" />
+											<circle cx="10" cy="16" r="2" fill="white" />
+										</svg>
+									</div>
+								{/if}
+							</button>
+						{:else}
+							<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+						{/if}
 					{:else}
-						<div class="requestsWrapper">
-							<p style="margin: 0">{$user.requests}</p>
-						</div>
-					{/if} -->
-
-						<div class="desktopMenu">
-							<button
-								class="tertiaryButton"
-								onclick={() => {
-									window.open('/threads', '_self');
-								}}>Threads</button
-							>
-							<!-- <button class="tertiaryButton" onclick={toggleTutorials}>Resources</button> -->
-							<!-- <button class="tertiaryButton" onclick={toggleApps}>Apps</button> -->
-							{#if $user}
-								{#if !isLoggingOut}
-									<!-- <button type="submit" class="tertiaryButton" onclick={logout}>Log Out</button> -->
-									<button
-										class="primaryButton"
-										onclick={() => {
-											$account = true;
-										}}
-									>
-										{$user.requests}
-										{#if $isSavingThread}
-											<div class="loader" style="border-color: transparent white;"></div>
-										{:else}
-											<div
-												style="padding: 0 0 0 10px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;"
-											>
-												<svg
-													width="20"
-													height="20"
-													viewBox="0 0 20 20"
-													xmlns="http://www.w3.org/2000/svg"
-												>
-													<circle cx="10" cy="4" r="2" fill="white" />
-													<circle cx="10" cy="10" r="2" fill="white" />
-													<circle cx="10" cy="16" r="2" fill="white" />
-												</svg>
-											</div>
-										{/if}
-									</button>
-								{:else}
-									<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-								{/if}
-								<!-- <button class="smallMenuButton" on:click='{()=>{stylesPanelState.set(true)}}'>Set theme</button> -->
-							{:else}
-								<!-- <a class="smallMenuButton" href="/register">Sign Up</a> -->
-								<button
-									class="tertiaryButton"
-									onclick={() => {
-										$loginPanelState = true;
-									}}>Log In</button
-								>
-							{/if}
-							<!-- <button class='smallMenuButton' on:click={changeTheme}>◑</button> -->
-						</div>
-					</div>
-			<!-- {#if $user != undefined}
-				{#if $width > 700}
-					<div
-						style="width: 100%; display: flex; align-items: center; justify-content: space-between;"
-					>
-						<a href="https://kodiia.com">
-							<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
-						</a>
-
-
-						<div class="desktopMenu">
-							<button
-								class="tertiaryButton"
-								onclick={() => {
-									window.open('/threads', '_self');
-								}}>Threads</button
-							>
-							
-							{#if $user}
-								{#if !isLoggingOut}
-									
-									<button
-										class="primaryButton"
-										onclick={() => {
-											$account = true;
-										}}
-									>
-										{$user.requests}
-										{#if $isSavingThread}
-											<div class="loader" style="border-color: transparent white;"></div>
-										{:else}
-											<div
-												style="padding: 0 0 0 10px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;"
-											>
-												<svg
-													width="10"
-													height="20"
-													viewBox="0 0 10 20"
-													xmlns="http://www.w3.org/2000/svg"
-												>
-													<circle cx="5" cy="4" r="2" fill="white" />
-													<circle cx="5" cy="10" r="2" fill="white" />
-													<circle cx="5" cy="16" r="2" fill="white" />
-												</svg>
-											</div>
-										{/if}
-									</button>
-								{:else}
-									<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-								{/if}
-								
-							{:else}
-								
-								<button
-									class="tertiaryButton"
-									onclick={() => {
-										$loginPanelState = true;
-									}}>Log In</button
-								>
-							{/if}
-							
-						</div>
-					</div>
-				{:else}
-					<div
-						style="width: 100%; display: flex; align-items: center; justify-content: space-between;"
-					>
-						<a href="https://kodiia.com">
-							<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
-						</a>
-
-						<button
-							class="menuButton"
-							onclick={() => {
-								mobileMenuDisplay === 'none'
-									? (mobileMenuDisplay = 'block')
-									: (mobileMenuDisplay = 'none');
-							}}
-						>
-							{#if mobileMenuDisplay === 'none'}
-								<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-									<line x1="10" y1="20" x2="40" y2="20" stroke="#1a1a1a" stroke-width="2" />
-									<line x1="10" y1="30" x2="40" y2="30" stroke="#1a1a1a" stroke-width="2" />
-								</svg>
-							{:else}
-								<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-									<line x1="15" y1="15" x2="35" y2="35" stroke="#1a1a1a" stroke-width="2" />
-									<line x1="15" y1="35" x2="35" y2="15" stroke="#1a1a1a" stroke-width="2" />
-								</svg>
-							{/if}
-						</button>
-					</div>
-					<hr style="display: {mobileMenuDisplay}; margin: 0; width: 100%;" />
-					<div
-						class="mobileMenu"
-						style="display: {mobileMenuDisplay}; height: calc({$height}px - 80px);"
-					>
-						
-                <button class="smallMenuButton" style='padding: 10px;' on:click='{()=>{$filesPanelDisplay = 'block'; mobileMenuDisplay = 'none'}}'>Files</button>
-            {/if} 
-
-						
-
 						<button
 							class="tertiaryButton"
 							onclick={() => {
-								window.open('/threads', '_self');
-							}}>Threads</button
+								$loginPanelState = true;
+							}}>Log In</button
 						>
-
-						
-
-						
-
-						{#if $user}
-							{#if !isLoggingOut}
-								
-								<button
-									class="primaryButton"
-									onclick={() => {
-										$account = true;
-									}}
-								>
-									{#if $isSavingThread}
-										<div class="loader" style="border-color: transparent white;"></div>
-									{:else}
-										{$user.requests}
-									{/if}
-								</button>
-							{:else}
-								<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-							{/if}
-
-							
-						{:else}
-							
-							<button
-								class="smallMenuButton"
-								onclick={() => {
-									mobileMenuDisplay = 'none';
-									$loginPanelState = true;
-								}}>Log In</button
-							>
-						{/if}
-					</div>
-				{/if}
-			{/if} -->
+					{/if}
+				</div>
+			</div>
 		</nav>
 	</div>
 {/if}
@@ -328,28 +133,5 @@
 	.desktopMenu {
 		display: flex;
 		align-items: center;
-	}
-	.mobileMenu {
-		width: 100%;
-		overflow-y: auto;
-		margin-bottom: 10px;
-		padding-bottom: 10px;
-		box-sizing: border-box;
-		z-index: 20;
-	}
-
-	.menuButton {
-		width: 40px;
-		height: 40px;
-		border: none;
-		transform: scale(1);
-		background: none;
-		box-sizing: border-box;
-		display: flex;
-		align-items: center;
-	}
-	.menuButton:hover {
-		background: none;
-		transform: scale(1.1);
 	}
 </style>

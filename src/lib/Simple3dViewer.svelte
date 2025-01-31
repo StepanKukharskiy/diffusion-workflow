@@ -11,7 +11,7 @@
 	import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'; // Import OBJLoader
 	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-	let { uuid = '', modelUrl = '' } = $props(); // Added textureUrl prop
+	let { uuid = '', modelUrl = '', options = false } = $props(); // Added textureUrl prop
 	let appCanvas: HTMLCanvasElement;
 	let scene: THREE.Scene;
 	let camera: THREE.PerspectiveCamera;
@@ -171,7 +171,7 @@
 			oninput={(e:any) => updateLightIntensity(parseFloat(e.target.value))}
 		/>
 	</div>
-
+{#if options}
 	<div style="display: flex; flex-wrap: wrap;">
 
 		<button
@@ -200,6 +200,7 @@
 			}}>Delete</button
 		>
 	</div>
+	{/if}
 </div>
 
 <style>

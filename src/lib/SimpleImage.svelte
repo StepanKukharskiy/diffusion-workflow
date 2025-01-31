@@ -4,7 +4,7 @@
 	import { elements, referenceImageUrl, textColor, chatPanelMode, user } from './store';
 	import { generateUUID, generateVideo, deleteBlock, generateModel, updateCredits } from './utils';
 	import SimpleTextCard from './SimpleTextCard.svelte';
-	let { imageUrl = '', query = '', uuid = '' } = $props();
+	let { imageUrl = '', query = '', uuid = '', options = false } = $props();
 
 	function addElement(
 		elements: any,
@@ -83,49 +83,51 @@
 
 <div class="imageContainer">
 	<img src={imageUrl} alt="generated file" />
-	{#if !isGenerating}
-		<div style="display: flex; flex-wrap: wrap;">
-			<div style="display: flex; flex-direction: column; width: 100%;">
-				<SimpleTextCard label={'Description'} text={query} />
+	{#if options}
+		{#if !isGenerating}
+			<div style="display: flex; flex-wrap: wrap;">
+				<div style="display: flex; flex-direction: column; width: 100%;">
+					<SimpleTextCard label={'Description'} text={query} />
+				</div>
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						$referenceImageUrl = imageUrl;
+						$chatPanelMode = 'chat';
+					}}>Use as a reference image</button
+				>
+				<button
+					onclick={() => {
+						navigator.clipboard.writeText(
+							`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`
+						);
+					}}
+					class="tertiaryButton">Copy URL</button
+				>
+				<button
+					onclick={() => {
+						window.open(
+							`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`,
+							'_blank'
+						);
+					}}
+					class="tertiaryButton">Download</button
+				>
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						deleteBlock($elements, uuid);
+						$elements = $elements;
+					}}>Delete</button
+				>
 			</div>
-			<button
-				class="tertiaryButton"
-				onclick={async () => {
-					$referenceImageUrl = imageUrl;
-					$chatPanelMode = 'chat';
-				}}>Use as a reference image</button
-			>
-			<button
-				onclick={() => {
-					navigator.clipboard.writeText(
-						`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`
-					);
-				}}
-				class="tertiaryButton">Copy URL</button
-			>
-			<button
-				onclick={() => {
-					window.open(
-						`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`,
-						'_blank'
-					);
-				}}
-				class="tertiaryButton">Download</button
-			>
-			<button
-				class="tertiaryButton"
-				onclick={async () => {
-					deleteBlock($elements, uuid);
-					$elements = $elements;
-				}}>Delete</button
-			>
-		</div>
-	{:else}
-		<div style="display: flex; align-items: center;">
-			<span class="warning"></span>
-			<p style="margin-right: 10px;">Generating</p>
-			<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-		</div>
+		{:else}
+			<div style="display: flex; align-items: center;">
+				<span class="warning"></span>
+				<p style="margin-right: 10px;">Generating</p>
+				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+			</div>
+		{/if}
 	{/if}
 </div>
 

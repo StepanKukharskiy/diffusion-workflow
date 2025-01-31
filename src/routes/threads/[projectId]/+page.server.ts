@@ -7,6 +7,7 @@ export async function load({ locals, params }) {
     name: project.name,
     id: project.id,
     data: project.data,
+    createdBy: project.createdBy,
     user: locals.user
   }
 }

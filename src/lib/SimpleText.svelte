@@ -4,7 +4,7 @@
 	import StyledModelAnswer from './StyledModelAnswer.svelte';
 	import { deleteBlock, generateUUID, updateCredits } from './utils';
 
-	let { query = '', answer = '', uuid = '' } = $props();
+	let { query = '', answer = '', uuid = '', options = false } = $props();
 
 	function addElement(elements: any, type = 'text', query = '', generatedImageUrl = '') {
 		elements.push({
@@ -49,31 +49,36 @@
 <div class="textContainer">
 	<h4 class="query">{query}</h4>
 	<StyledModelAnswer htmlContent={answer} />
-	{#if !isGeneratingImage}
-	<div style='display: flex; flex-wrap: wrap;'>
-					<button
-						class="tertiaryButton"
-						onclick={async () => {
-							const url = await generateImage();
-							addElement($elements, 'image', answer, url);
-							$elements = $elements;
-							$user.requests = await updateCredits('image', `${$page.url.origin}/api/user/update-credits`)
-						}}>Create an image with this text</button
-					>
-					<button
-						class="tertiaryButton"
-						onclick={async () => {
-							deleteBlock($elements, uuid)
-							$elements = $elements;
-						}}>Delete</button
-					>
-					</div>
-	{:else}
-		<div style="display: flex; align-items: center;">
-			<span class="warning"></span>
-			<p style="margin-right: 10px;">Generating image</p>
-			<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-		</div>
+	{#if options}
+		{#if !isGeneratingImage}
+			<div style="display: flex; flex-wrap: wrap;">
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						const url = await generateImage();
+						addElement($elements, 'image', answer, url);
+						$elements = $elements;
+						$user.requests = await updateCredits(
+							'image',
+							`${$page.url.origin}/api/user/update-credits`
+						);
+					}}>Create an image with this text</button
+				>
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						deleteBlock($elements, uuid);
+						$elements = $elements;
+					}}>Delete</button
+				>
+			</div>
+		{:else}
+			<div style="display: flex; align-items: center;">
+				<span class="warning"></span>
+				<p style="margin-right: 10px;">Generating image</p>
+				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+			</div>
+		{/if}
 	{/if}
 </div>
 

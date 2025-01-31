@@ -341,7 +341,7 @@
 		background: none;
 		background-color: hsla(0, 0%, 0%, 0.05);
 		color: hsl(0, 0%, 10%);
-		font-size: 1rem;
+		font-size: 1.2rem;
 		font-family: 'Roboto', sans-serif;
 		font-weight: 300;
 		height: 40px;

@@ -18,7 +18,7 @@
 	import { slide } from 'svelte/transition';
 	import bg_image from '$lib/images/bg.webp';
 
-	let { files = '', uuid = '', name = '', id = '' } = $props();
+	let { files = '', uuid = '', name = '', id = '', options = false } = $props();
 
 	console.log(files);
 
@@ -57,7 +57,7 @@
 	});
 
 	function getCanvas() {
-		let isThereCanvas
+		let isThereCanvas;
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
 				element.files = files;
@@ -314,7 +314,10 @@
 			formData.append(`files`, new Blob([file.data], { type: 'text/plain' }), file.name);
 		});
 		// formData.append('files', files)
-		const project = await fetch(`${$page.url.origin}/api/projects/save`, { method: 'POST', body: formData });
+		const project = await fetch(`${$page.url.origin}/api/projects/save`, {
+			method: 'POST',
+			body: formData
+		});
 		const projectData = await project.json();
 		id = projectData.id;
 		isSavingProject = false;
@@ -454,132 +457,74 @@
 		</div>
 	{/if}
 
-	<!-- <ul>
-			<li>
-				<button class="tertiaryButton" onclick={toggleFullScreen}> Full Screen </button>
-			</li>
-			<li>
-				<button
-					class="tertiaryButton"
-					onclick={() => {
-						duplicate($elements);
-					}}
-				>
-					Duplicate Project
-				</button>
-			</li>
-			<li>
-				<button
-					class="optionsButton"
-					onclick={async () => {
-						addElement($elements, 'text', '', uuid);
-						$elements = $elements;
-					}}
-				>
-					Discuss
-				</button>
-				<button
-					class="tertiaryButton"
-					disabled={!isThereCanvasInIframe}
-					onclick={async () => {
-						$referenceImageUrl = '';
+	{#if options}
+		<div style="display: flex; flex-wrap: wrap;">
+			<button
+				class="tertiaryButton"
+				disabled={isSavingProject}
+				onclick={async () => {
+					await saveProject();
+					await getProjectsList();
+					$projectsList = $projectsList;
+					console.log($projectsList);
+					$elements = $elements;
+				}}>Save Project</button
+			>
+
+			<button class="tertiaryButton" onclick={toggleFullScreen}> Full Screen </button>
+
+			<button
+				class="tertiaryButton"
+				onclick={() => {
+					duplicate($elements);
+				}}
+			>
+				Duplicate Project
+			</button>
+
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					$referenceImageUrl = '';
+					isThereCanvasInIframe = getCanvas();
+					if (isThereCanvasInIframe) {
 						const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
 						$referenceImageUrl = screenshotUrl;
 						$chatPanelMode = 'image';
 						// addElement($elements, 'image', screenshotUrl);
 						$elements = $elements;
-					}}
-				>
-					Create Image
-				</button>
-			</li>
-			<li>
-				<button
-					class="tertiaryButton"
-					onclick={async () => {
-						deleteBlock($elements, uuid);
+					}
+				}}
+			>
+				Create Image
+			</button>
+
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					$referenceImageUrl = '';
+					isThereCanvasInIframe = getCanvas();
+					if (isThereCanvasInIframe) {
+						const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
+						$referenceImageUrl = screenshotUrl;
+						$chatPanelMode = 'chat';
+						// addElement($elements, 'image', screenshotUrl);
 						$elements = $elements;
-					}}>Delete</button
-				>
-			</li>
-			<li>
-				<button
-					class="tertiaryButton"
-					disabled={isSavingProject}
-					onclick={async () => {
-						saveProject();
-						$elements = $elements
-					}}>Save Project</button
-				>
-			</li>
-		</ul> -->
+					}
+				}}
+			>
+				Discuss Image
+			</button>
 
-	<div style="display: flex; flex-wrap: wrap;">
-		<button
-			class="tertiaryButton"
-			disabled={isSavingProject}
-			onclick={async () => {
-				await saveProject();
-				await getProjectsList();
-				$projectsList = $projectsList;
-				console.log($projectsList);
-				$elements = $elements;
-			}}>Save Project</button
-		>
-
-		<button class="tertiaryButton" onclick={toggleFullScreen}> Full Screen </button>
-
-		<button
-			class="tertiaryButton"
-			onclick={() => {
-				duplicate($elements);
-			}}
-		>
-			Duplicate Project
-		</button>
-
-		<button
-			class="tertiaryButton"
-			onclick={async () => {
-				$referenceImageUrl = '';
-				isThereCanvasInIframe = getCanvas()
-				if (isThereCanvasInIframe) {
-					const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
-					$referenceImageUrl = screenshotUrl;
-					$chatPanelMode = 'image';
-					// addElement($elements, 'image', screenshotUrl);
+			<button
+				class="tertiaryButton"
+				onclick={async () => {
+					deleteBlock($elements, uuid);
 					$elements = $elements;
-				}
-			}}
-		>
-			Create Image
-		</button>
-
-		<button
-			class="tertiaryButton"
-			onclick={async () => {
-				$referenceImageUrl = '';
-				isThereCanvasInIframe = getCanvas()
-				if (isThereCanvasInIframe) {
-					const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
-					$referenceImageUrl = screenshotUrl;
-					$chatPanelMode = 'chat';
-					// addElement($elements, 'image', screenshotUrl);
-					$elements = $elements;
-				}
-			}}
-		>
-			Discuss Image
-		</button>
-
-		<button
-			class="tertiaryButton"
-			onclick={async () => {
-				deleteBlock($elements, uuid);
-				$elements = $elements;
-			}}>Delete</button
-		>
-	</div>
+				}}>Delete</button
+			>
+		</div>
+	{/if}
 </div>
 
 <style>
