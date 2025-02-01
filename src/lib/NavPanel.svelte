@@ -60,10 +60,10 @@
 							>
 								{$user.requests}
 								{#if $isSavingThread}
-									<div class="loader" style="border-color: transparent white;"></div>
+									<div class="loader" style="border-color: transparent white; width: 10px; height: 10px;"></div>
 								{:else}
 									<div
-										style="padding: 0 0 0 10px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;"
+										style="padding: 0 0 0 10px; box-sizing: border-box; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;"
 									>
 										<svg
 											width="20"

@@ -253,7 +253,7 @@
 					<button
 						class="tertiaryButton"
 						onclick={() => {
-							window.open('/');
+							window.open('/blog', "_self");
 						}}>Blog</button
 					>
 					<button
