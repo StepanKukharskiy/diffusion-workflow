@@ -28,6 +28,7 @@
 	import library from '$lib/images/library2.webp';
 	import fortnite from '$lib/images/fortnite2.webp';
 	import { slide, fade } from 'svelte/transition';
+	import MainPageNavPanel from '$lib/MainPageNavPanel.svelte';
 
 	let textarea: any = $state();
 	let hueRotation = $state(0);
@@ -226,48 +227,7 @@
 </script>
 
 <div class="start-page-container">
-	<div class="nav-container">
-		<nav>
-			<div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
-				<a href="https://kodiia.com">
-					<img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
-				</a>
-				<div style="display: flex; align-items: center;">
-					<button
-						class="tertiaryButton"
-						onclick={() => {
-							window.open('/');
-						}}>About</button
-					>
-					<button
-						class="tertiaryButton"
-						onclick={() => {
-							window.open('/');
-						}}>Docs</button
-					>
-					<button
-						class="tertiaryButton"
-						onclick={() => {
-							window.open('/');
-						}}>Pricing</button
-					>
-					<button
-						class="tertiaryButton"
-						onclick={() => {
-							window.open('/blog', "_self");
-						}}>Blog</button
-					>
-					<button
-						class="primaryButton"
-						style="margin-left: 10px;"
-						onclick={() => {
-							window.open('/threads', '_self');
-						}}>Get started</button
-					>
-				</div>
-			</div>
-		</nav>
-	</div>
+	<MainPageNavPanel />
 
 	<div class="start-page-wrapper">
 		<div class="hero">
@@ -280,6 +240,7 @@
 				<h1 class="primaryHeading" style="font-weight: 300; max-width: 600px;">
 					Bring <span style="font-weight: 700;"><i>creativity</i></span> back to your creative
 					workflows <span style="font-weight: 700;"><i>with AI</i></span>
+					<!-- Workspace for your ideas. Ideate faster. Communicate better. -->
 				</h1>
 				<p style="max-width: 500px;">
 					Creative software requires months of practice and top-tier hardware to truly get
