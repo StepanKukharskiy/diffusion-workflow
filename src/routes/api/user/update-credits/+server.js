@@ -25,6 +25,9 @@ export async function POST({ request, locals }) {
                 case 'video':
                     updatedCredits = Math.round((currentCredits - 20) * 10) / 10;
                     break
+                case 'video-interpolation':
+                    updatedCredits = Math.round((currentCredits - 10) * 10) / 10;
+                    break
                 default:
                     updatedCredits = Math.round((currentCredits - 0.1) * 10) / 10;
                     break

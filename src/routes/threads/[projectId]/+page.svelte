@@ -140,7 +140,7 @@
 						/>
 					{:else if element.type === 'file'}
 						<FileInput uuid={element.uuid} />
-					{:else if element.type === 'video'}
+					{:else if element.type === 'video' || element.type === 'video-interpolation'}
 						<SimpleVideo videoUrl={element.videoUrl} uuid={element.uuid} options={showOptions} />
 					{:else if element.type === 'imageGeneration'}
 						<SimpleImage

@@ -16,6 +16,7 @@ export async function POST({ request, locals }) {
     console.log(query)
 
     try {
+        if(locals.user.credits > 0){
         let response
         const requestType = await analyseRequest(query.query)
         console.log(requestType)
@@ -169,7 +170,7 @@ export async function POST({ request, locals }) {
             });
 
             response = {
-                type: 'video',
+                type: 'video-interpolation',
                 url: generatedVideoFileUrl
             }
             console.log(response)
@@ -184,6 +185,7 @@ export async function POST({ request, locals }) {
             }
         }
         )
+    }
 
     } catch (err) {
         console.log(err)

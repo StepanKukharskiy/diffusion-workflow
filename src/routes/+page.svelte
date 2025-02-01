@@ -213,17 +213,6 @@
 	}
 	startProjectInterval();
 
-	// async function subscribe() {
-	// 	console.log(email);
-	// 	isSubscribing = true;
-	// 	const formData = new FormData();
-	// 	formData.append('email', email);
-	// 	const response = await fetch('api/newsletter/subscribe', { method: 'POST', body: formData });
-	// 	const responseData = await response.json();
-	// 	if (response.ok) {
-	// 		isSubscribing = false;
-	// 	}
-	// }
 </script>
 
 <div class="start-page-container">
@@ -466,35 +455,6 @@
 </div>
 
 <style>
-	.nav-container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 99;
-	}
-	nav {
-		min-height: 40px;
-		width: calc(100% - 20px);
-		max-width: 1200px;
-		box-sizing: border-box;
-		border-radius: 10px;
-		background: #fdfdfd;
-		background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
-		backdrop-filter: blur(25px);
-		-webkit-backdrop-filter: blur(25px);
-		padding: 10px;
-		margin: 10px;
-		box-shadow: 0 0 10px hsl(0, 0%, 70%);
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		z-index: 99;
-	}
 	h1 {
 		font-size: 2em;
 	}
@@ -637,9 +597,6 @@
 	@media screen and (max-width: 700px) {
 		.grid {
 			grid-template-columns: 1fr;
-		}
-		.footer {
-			flex-direction: column;
 		}
 	}
 </style>
