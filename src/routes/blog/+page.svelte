@@ -1,5 +1,6 @@
 <script lang="ts">
 	import MainPageNavPanel from '$lib/MainPageNavPanel.svelte';
+	import Footer from '$lib/Footer.svelte';
 </script>
 
 <MainPageNavPanel />
@@ -16,15 +17,20 @@
 			}}> Read </button>
 		</div>
 	</div>
+	<Footer />
 </div>
+
 
 <style>
 	.blog-container {
-		margin-top: 100px;
+		padding-top: 100px;
+		box-sizing: border-box;
 		width: 100%;
+		height: 100vh;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		overflow-y: scroll;
 	}
 	.blog-topics {
 		max-width: 1200px;
