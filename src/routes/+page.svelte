@@ -234,7 +234,7 @@
 					Creative software requires months of practice and top-tier hardware to truly get
 					'creative' with it. So do AI tools. <br />But we believe there’s a better way.
 				</p> -->
-				<h1>Find Creative Solutions with Ease</h1>
+				<h1>Creative Solutions with Ease</h1>
 					<p>Great ideas need many iterations. Creative software is complex and hard to start with.
 					We make it simple. Grasp ideas instantly. Explore new directions. Iterate on any device. No barriers, just creativity.</p>
 				<!-- Figure Out Perfect Solutions with Ease
