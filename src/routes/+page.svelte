@@ -226,15 +226,20 @@
 					Brainstorm, create visuals, generate web apps, and more — all with just text. No complex
 					setups and expensive hardware requirements.
 				</p> -->
-				<h1 class="primaryHeading" style="font-weight: 300; max-width: 600px;">
+				<!-- <h1 class="primaryHeading" style="font-weight: 300; max-width: 600px;">
 					Bring <span style="font-weight: 700;"><i>creativity</i></span> back to your creative
 					workflows <span style="font-weight: 700;"><i>with AI</i></span>
-					<!-- Workspace for your ideas. Ideate faster. Communicate better. -->
 				</h1>
 				<p style="max-width: 500px;">
 					Creative software requires months of practice and top-tier hardware to truly get
 					'creative' with it. So do AI tools. <br />But we believe there’s a better way.
-				</p>
+				</p> -->
+				<h1>Find Creative Solutions with Ease</h1>
+					<p>Great ideas need many iterations. Creative software is complex and hard to start with.
+					We make it simple. Grasp ideas instantly. Explore new directions. Iterate on any device. No barriers, just creativity.</p>
+				<!-- Figure Out Perfect Solutions with Ease
+Finding the ideal concept can be a lengthy process that requires multiple iterations. Complex creative software often slows you down when you need to move quickly.
+With our workspace, grasp your ideas instantly, explore multiple directions, and iterate on any device—no barriers, just creativity. -->
 				<button
 					class="primaryButton"
 					style='margin-top: 10px;'

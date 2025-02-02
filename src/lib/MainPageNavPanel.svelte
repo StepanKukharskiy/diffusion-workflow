@@ -85,6 +85,7 @@
         font-size: 24px;
         background: none;
         border: none;
+        color: hsl(0, 0%, 10%);
     }
     .mobile-menu {
         display: none;
@@ -98,7 +99,6 @@
 		backdrop-filter: blur(40px);
 		-webkit-backdrop-filter: blur(40px);
         flex-direction: column;
-        justify-content: center;
         align-items: center;
         border-radius: 10px;
 		box-shadow: 0 0 10px hsl(0, 0%, 70%);
