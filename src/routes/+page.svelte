@@ -236,7 +236,7 @@
 				</p> -->
 				<h1>Creative Solutions with Ease</h1>
 					<p>Great ideas need many iterations. Creative software is complex and hard to start with.
-					We make it simple. Grasp ideas instantly. Explore new directions. Iterate on any device. No barriers, just creativity.</p>
+					We make it simple with AI. Grasp ideas instantly. Explore new directions. Iterate on any device. No barriers, just creativity.</p>
 				<!-- Figure Out Perfect Solutions with Ease
 Finding the ideal concept can be a lengthy process that requires multiple iterations. Complex creative software often slows you down when you need to move quickly.
 With our workspace, grasp your ideas instantly, explore multiple directions, and iterate on any device—no barriers, just creativity. -->
