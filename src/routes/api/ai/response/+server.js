@@ -16,7 +16,7 @@ export async function POST({ request, locals }) {
     console.log(query)
 
     try {
-        if(locals.user.credits > 0){
+        if(locals.user.requests > 0){
         let response
         const requestType = await analyseRequest(query.query)
         console.log(requestType)
