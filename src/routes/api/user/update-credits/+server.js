@@ -19,7 +19,7 @@ export async function POST({ request, locals }) {
                 case 'image':
                     updatedCredits = Math.round((currentCredits - 1) * 10) / 10;
                     break
-                case '3Dmodel':
+                case 'model':
                     updatedCredits = Math.round((currentCredits - 10) * 10) / 10;
                     break
                 case 'video':

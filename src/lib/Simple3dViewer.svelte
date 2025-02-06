@@ -10,6 +10,7 @@
 	import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 	import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'; // Import OBJLoader
 	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+	import { generateUUID } from './utils';
 
 	let { uuid = '', modelUrl = '', options = false } = $props(); // Added textureUrl prop
 	let appCanvas: HTMLCanvasElement;
@@ -20,6 +21,7 @@
 	let lights: THREE.HemisphereLight;
 	let sun: THREE.DirectionalLight;
 	let is3DModel = $state(false);
+	let isTakingScreenshot = $state(false);
 	console.log(
 		`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 	);
@@ -27,7 +29,7 @@
 	onMount(() => {
 		if (modelUrl) {
 			setTimeout(() => {
-				console.log(appCanvas)
+				console.log(appCanvas);
 				loadModel(
 					`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 				);
@@ -101,7 +103,11 @@
 		renderer.toneMappingExposure = 1;
 		// renderer.outputEncoding = THREE.sRGBEncoding;
 		// object.rotation.x = -Math.PI/2
-		object.children[0].children[0].material.metalness = 0;
+		if (object.children[0].children[0] != undefined) {
+			object.children[0].children[0].material.metalness = 0;
+		} else {
+			object.children[0].material.metalness = 0;
+		}
 		console.log(object);
 		scene.add(object);
 		camera.position.z = 1;
@@ -151,6 +157,50 @@
 			lights.intensity = lightIntensity;
 		}
 	}
+
+	async function getCanvasScreenshotUrl(canvas: any) {
+		isTakingScreenshot = true
+		if (canvas) {
+			renderer.render(scene, camera);
+			const dataURL = canvas.toDataURL('image/jpeg'); // Convert canvas to image
+			const blob = await fetch(dataURL).then((res) => res.blob());
+
+			const formData = new FormData();
+			formData.append('file', blob, 'canvas.jpeg');
+			formData.append('projectId', $page.params.projectId);
+			console.log($page.params.projectId);
+			console.log(formData);
+
+			const response = await fetch(`${$page.url.origin}/api/save-image`, {
+				method: 'POST',
+				body: formData
+			});
+
+			if (!response.ok) {
+				isTakingScreenshot = false;
+				console.error('Upload failed:', response.statusText);
+			} else {
+				const result = await response.json();
+				console.log('Upload successful:', result);
+				isTakingScreenshot = false;
+				return result.url;
+			}
+		} else {
+			isTakingScreenshot = false;
+			console.error(`No canvas found`);
+		}
+	}
+
+	function addElement(elements: any, type = 'text', query = '', url = '') {
+		if (type === 'image') {
+			elements.push({
+				uuid: generateUUID(),
+				type: type,
+				query: query,
+				imageUrl: url
+			});
+		}
+	}
 </script>
 
 <div class="canvasContainer">
@@ -159,47 +209,63 @@
 		id="{uuid}-canvas"
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
-	<div class='canvasMenuContainer'>
-	<label for="{uuid}-lightIntencity">Light Intencity</label>
-	<input
+	<div class="canvasMenuContainer">
+		<label for="{uuid}-lightIntencity">Light Intencity</label>
+		<input
 			type="number"
 			id="{uuid}-lightIntencity"
 			min="0"
 			max="20"
 			step="1"
 			value={lightIntensity}
-			oninput={(e:any) => updateLightIntensity(parseFloat(e.target.value))}
+			oninput={(e: any) => updateLightIntensity(parseFloat(e.target.value))}
 		/>
 	</div>
-{#if options}
-	<div style="display: flex; flex-wrap: wrap;">
+	{#if options}
+		{#if !isTakingScreenshot}
+			<div style="display: flex; flex-wrap: wrap;">
+				<button
+					onclick={() => {
+						navigator.clipboard.writeText(
+							`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
+						);
+					}}
+					class="tertiaryButton">Copy URL</button
+				>
+				<button
+					onclick={async () => {
+						const screenshotUrl = await getCanvasScreenshotUrl(appCanvas);
+						console.log(screenshotUrl);
+						addElement($elements, 'image', 'screenshot', screenshotUrl);
+						$elements = $elements;
+					}}
+					class="tertiaryButton">Get screenshot</button
+				>
+				<button
+					onclick={() => {
+						window.open(
+							`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`,
+							'_blank'
+						);
+					}}
+					class="tertiaryButton">Download</button
+				>
 
-		<button
-				onclick={() => {
-					navigator.clipboard.writeText(
-						`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
-					);
-				}}
-				class="tertiaryButton">Copy URL</button
-			>
-		<button
-			onclick={() => {
-				window.open(
-					`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`,
-					'_blank'
-				);
-			}}
-			class="tertiaryButton">Download</button
-		>
-
-		<button
-			class="tertiaryButton"
-			onclick={async () => {
-				deleteBlock($elements, uuid);
-				$elements = $elements;
-			}}>Delete</button
-		>
-	</div>
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						deleteBlock($elements, uuid);
+						$elements = $elements;
+					}}>Delete</button
+				>
+			</div>
+		{:else}
+			<div style="display: flex; align-items: center;">
+				<span class="warning"></span>
+				<p style="margin-right: 10px;">Loading</p>
+				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+			</div>
+		{/if}
 	{/if}
 </div>
 
@@ -208,7 +274,7 @@
 		width: 100%;
 		max-width: 800px;
 		margin-bottom: 50px;
-		positioN: relative;
+		position: relative;
 	}
 	canvas {
 		z-index: 10;
@@ -216,11 +282,11 @@
 		border-radius: 10px;
 		background-color: hsl(0, 0%, 95%);
 	}
-	.canvasMenuContainer{
-		position: absolute; 
-		top: 20px; 
-		left: 10px; 
-		z-index: 2; 
+	.canvasMenuContainer {
+		position: absolute;
+		top: 20px;
+		left: 10px;
+		z-index: 2;
 		margin-right: 10px;
 	}
 </style>

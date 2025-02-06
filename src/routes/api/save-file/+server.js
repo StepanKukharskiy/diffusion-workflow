@@ -6,21 +6,21 @@ export async function POST({ request, locals, params }) {
         const id = formData.get('projectId')
 
         const response = await locals.pb.collection('nodeEditorProjects').update(id, {
-            'screenshots' : file
+            'uploadedFiles' : file
         })
 
         console.log(response); // Log the response for debugging
 
         const record = await locals.pb.collection('nodeEditorProjects').getOne(id);
-        const screenshotName = record.screenshots[record.screenshots.length-1];
-        const screenshotUrl = await locals.pb.files.getUrl(record, screenshotName, {
+        const fileName = record.uploadedFiles[record.uploadedFiles.length-1];
+        const fileUrl = await locals.pb.files.getUrl(record, fileName, {
             //'thumb': '100x250'
         });
-        console.log(screenshotUrl)
+        console.log(fileUrl)
 
         return new Response(JSON.stringify({ 
             message: 'File metadata saved successfully',
-            url: screenshotUrl, 
+            url: fileUrl, 
             //id: response.id 
         }), {
             status: 200,

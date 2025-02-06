@@ -89,17 +89,25 @@
 		return generatedText;
 	}
 
-	async function uploadFile(file: any) {
+	async function uploadFile(file: any, type: any) {
 		uploadingFile = true;
 		const formData = new FormData();
 		formData.append('file', file, file.name);
 		formData.append('projectId', $page.params.projectId);
 
 		try {
-			const response = await fetch(`${$page.url.origin}/api/save-image`, {
-				method: 'POST',
-				body: formData
-			});
+			let response;
+			if (type === 'image') {
+				response = await fetch(`${$page.url.origin}/api/save-image`, {
+					method: 'POST',
+					body: formData
+				});
+			} else {
+				response = await fetch(`${$page.url.origin}/api/save-file`, {
+					method: 'POST',
+					body: formData
+				});
+			}
 
 			if (!response.ok) {
 				uploadingFile = false;
@@ -108,7 +116,7 @@
 				const result = await response.json();
 				const fileUrl = result.url;
 				uploadingFile = false;
-				return result.url;
+				return fileUrl;
 			}
 		} catch (error) {
 			uploadingFile = false;
@@ -120,9 +128,20 @@
 	async function handleFileInputChange(event: any) {
 		if (event.target.files.length > 0) {
 			const fileToUpload = event.target.files[0];
-			const fileUrl = await uploadFile(fileToUpload);
+			const fileFormat = fileToUpload.name.split('.')[1];
+			console.log(fileToUpload);
+			console.log(fileFormat);
+			let type = 'image';
+			if (fileFormat === 'glb') {
+				type = 'model';
+			}
+			const fileUrl = await uploadFile(fileToUpload, type);
 			const query = 'uploaded file';
-			addElement($elements, 'image', query, '', fileUrl);
+			if (type === 'image') {
+				addElement($elements, 'image', query, '', fileUrl);
+			} else {
+				addElement($elements, 'model', query, '', fileUrl);
+			}
 			$elements = $elements;
 		}
 	}
@@ -146,7 +165,7 @@
 				referenceImageUrl: $referenceImageUrl
 			});
 		}
-		if (type === 'video') {
+		if (type === 'video' || type === 'video-interpolation') {
 			elements.push({
 				uuid: generateUUID(),
 				type: type,
@@ -268,7 +287,7 @@
 		</button>
 		<input
 			type="file"
-			accept="image/*"
+			accept="image/*, model/gltf-binary, .glb, application/octet-stream"
 			bind:this={fileInput}
 			onchange={handleFileInputChange}
 			style="display: none;"
