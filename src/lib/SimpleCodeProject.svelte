@@ -347,7 +347,7 @@
 />
 
 <div class="nameContainer">
-	<input bind:value={name} />
+	<input bind:value={name} placeholder="Enter your app name" />
 </div>
 
 <div class="container" bind:this={container}>
@@ -459,17 +459,20 @@
 
 	{#if options}
 		<div style="display: flex; flex-wrap: wrap;">
-			<button
-				class="tertiaryButton"
-				disabled={isSavingProject}
-				onclick={async () => {
-					await saveProject();
-					await getProjectsList();
-					$projectsList = $projectsList;
-					console.log($projectsList);
-					$elements = $elements;
-				}}>Save Project</button
-			>
+			{#if name != ''}
+				<button
+					transition:slide
+					class="tertiaryButton"
+					disabled={isSavingProject}
+					onclick={async () => {
+						await saveProject();
+						await getProjectsList();
+						$projectsList = $projectsList;
+						console.log($projectsList);
+						$elements = $elements;
+					}}>Save App</button
+				>
+			{/if}
 
 			<button class="tertiaryButton" onclick={toggleFullScreen}> Full Screen </button>
 
@@ -595,7 +598,7 @@
 		border-radius: 10px;
 		background-color: hsl(0, 0%, 90%);
 		font-family: 'Source Code Pro', sans-serif;
-		font-size: 1rem;
+		font-size: 1em;
 		font-weight: 300;
 	}
 </style>

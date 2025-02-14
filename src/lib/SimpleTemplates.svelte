@@ -22,20 +22,90 @@
 
 	let isLoadingTemplate = $state(false);
 	let templatesList = [
-		{ name: 'static', description: 'static' },
-		{ name: 'p5.js', description: 'p5.js' },
-		{ name: 'three.js', description: 'three.js' },
-		{ name: 'brain.js', description: 'brain.js' },
-		{ name: 'CA3D', description: 'Cellular Automata 3D' },
-		{ name: 'GLB', description: 'GLB viewer' },
-		{ name: 'FF2D', description: 'Flow Field 2D' },
-		{ name: 'FF3D', description: 'Flow Field 3D' },
-		{ name: 'flock2D', description: 'Flock 2D' },
-		{ name: 'Voxel Editor', description: 'Voxel Editor' },
-		{ name: 'pixelart', description: 'Pixel Art Editor' },
-		{ name: 'truchet', description: 'Truchet tiles' },
-		{ name: 'CAdiffusion3d', description: 'Diffusion Cellular Automata 3D' },
-		{ name: 'ca diffusion game', description: 'Diffusion Cellular Automata Game' }
+		{
+			name: 'static',
+			description: 'Basic static website starter kit.',
+			type: 'basic',
+			heading: 'Static Website'
+		},
+		{
+			name: 'p5.js',
+			description: 'p5.js starter kit for creative coding.',
+			type: 'basic',
+			heading: 'p5.js Starter'
+		},
+		{
+			name: 'three.js',
+			description: 'three.js starter kit for 3D web graphics.',
+			type: 'basic',
+			heading: 'Three.js Starter'
+		},
+		{
+			name: 'brain.js',
+			description: 'brain.js starter kit for neural networks.',
+			type: 'basic',
+			heading: 'Brain.js Starter'
+		},
+		{
+			name: 'GLB',
+			description: 'GLB viewer to display your 3D scenes in a browser.',
+			type: 'basic',
+			heading: 'GLB Viewer'
+		},
+		{
+			name: 'OSM',
+			description: 'Create maps with OSM data. Geospatial data integration in p5.js.',
+			type: 'basic',
+			heading: 'OpenStreetMap Integration'
+		},
+		{
+			name: 'FF2D',
+			description: 'Flow Field 2D. Fluid dynamics visualization.',
+			type: 'simulation',
+			heading: '2D Flow Field'
+		},
+		{
+			name: 'FF3D',
+			description: 'Flow Field 3D. Fluid dynamics visualization.',
+			type: 'simulation',
+			heading: '3D Flow Field'
+		},
+		{
+			name: 'flock2D',
+			description: 'Flock 2D. Behavioral animation system.',
+			type: 'simulation',
+			heading: '2D Flocking Simulation'
+		},
+		{
+			name: 'Voxel Editor',
+			description: 'Voxel Editor for 3D model crafting in games and architecture visualization.',
+			type: 'art',
+			heading: 'Voxel Modeling Tool'
+		},
+		{
+			name: 'pixelart',
+			description: 'Pixel Art Editor for retro-styled digital asset creation.',
+			type: 'art',
+			heading: 'Pixel Art Creator'
+		},
+		{
+			name: 'truchet',
+			description: 'Truchet tiles generator for decorative and architectural pattern concepts.',
+			type: 'art',
+			heading: 'Truchet Pattern Generator'
+		},
+		{
+			name: 'CAdiffusion3d',
+			description: 'Diffusion Cellular Automata 3D for environment generation.',
+			type: 'art',
+			heading: '3D Diffusion CA'
+		},
+		{
+			name: 'city grid game',
+			description: 'A grid-based city building game with vanilla JavaScript.',
+			type: 'game',
+			heading: 'City Builder Game'
+		}
 	];
 
 	async function getTemplate(name = '') {
@@ -75,42 +145,126 @@
 			}}>quit</button
 		>
 	</div>
-    <div class='wrapper'>
-	{#if !isLoadingTemplate}
-    
-		<p style="margin-right: 10px;">
-			Frontend app templates for your projects. Click on a template to import it.
-		</p>
-		<div >
-			{#each templatesList as template}
-				<div class='item-wrapper'>
-					<h3 class="tertiaryHeading">{template.description}</h3>
+	<div class="wrapper">
+		{#if !isLoadingTemplate}
+			<p style="margin-right: 10px;">Coding templates for your projects.</p>
+			<div style="width: 100%">
+				<h3 class="tertiaryHeading" style='margin-bottom: 20px'>Art</h3>
+				<div class="grid">
+					{#each templatesList as template}
+						{#if template.type === 'art'}
+							<div class="item-wrapper">
+								<h3 class="tertiaryHeading">{template.heading}</h3>
+								<p>{template.description}</p>
 
-					<button
-						class="tertiaryButton"
-						onclick={async () => {
-							isLoadingTemplate = true;
-							const templateData = await getTemplate(template.name);
-							addElement($elements, 'code', templateData.files);
-							$elements = $elements;
-							isLoadingTemplate = false;
-							$templates = false;
-						}}
-					>
-						Add
-					</button>
+								<button
+									style="width: fit-content;"
+									class="tertiaryButton"
+									onclick={async () => {
+										isLoadingTemplate = true;
+										const templateData = await getTemplate(template.name);
+										addElement($elements, 'code', templateData.files);
+										$elements = $elements;
+										isLoadingTemplate = false;
+										$templates = false;
+									}}
+								>
+									Add
+								</button>
+							</div>
+						{/if}
+					{/each}
 				</div>
-			{/each}
-		</div>
-	{:else}
-		<div style="display: flex; align-items: center;" transition:slide>
-			<span class="warning"></span>
-			<p style="margin-right: 10px;">Loading template</p>
-			<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
-		</div>
-	{/if}
-    </div>
 
+				<h3 class="tertiaryHeading" style='margin: 20px 0;'>Simulations</h3>
+				<div class="grid">
+					{#each templatesList as template}
+						{#if template.type === 'simulation'}
+							<div class="item-wrapper">
+								<h3 class="tertiaryHeading">{template.heading}</h3>
+								<p>{template.description}</p>
+
+								<button
+									style="width: fit-content;"
+									class="tertiaryButton"
+									onclick={async () => {
+										isLoadingTemplate = true;
+										const templateData = await getTemplate(template.name);
+										addElement($elements, 'code', templateData.files);
+										$elements = $elements;
+										isLoadingTemplate = false;
+										$templates = false;
+									}}
+								>
+									Add
+								</button>
+							</div>
+						{/if}
+					{/each}
+				</div>
+
+				<h3 class="tertiaryHeading" style='margin: 20px 0;'>Game Design</h3>
+				<div class="grid">
+					{#each templatesList as template}
+						{#if template.type === 'game'}
+							<div class="item-wrapper">
+								<h3 class="tertiaryHeading">{template.heading}</h3>
+								<p>{template.description}</p>
+
+								<button
+									style="width: fit-content;"
+									class="tertiaryButton"
+									onclick={async () => {
+										isLoadingTemplate = true;
+										const templateData = await getTemplate(template.name);
+										addElement($elements, 'code', templateData.files);
+										$elements = $elements;
+										isLoadingTemplate = false;
+										$templates = false;
+									}}
+								>
+									Add
+								</button>
+							</div>
+						{/if}
+					{/each}
+				</div>
+
+				<h3 class="tertiaryHeading" style='margin: 20px 0;'>Basic</h3>
+				<div class="grid">
+					{#each templatesList as template}
+						{#if template.type === 'basic'}
+							<div class="item-wrapper">
+								<h3 class="tertiaryHeading">{template.heading}</h3>
+								<p>{template.description}</p>
+
+								<button
+									style="width: fit-content;"
+									class="tertiaryButton"
+									onclick={async () => {
+										isLoadingTemplate = true;
+										const templateData = await getTemplate(template.name);
+										addElement($elements, 'code', templateData.files);
+										$elements = $elements;
+										isLoadingTemplate = false;
+										$templates = false;
+									}}
+								>
+									Add
+								</button>
+							</div>
+						{/if}
+					{/each}
+				</div>
+			</div>
+		{:else}
+			<div style="display: flex; align-items: center;" transition:slide>
+				<span class="warning"></span>
+				<p style="margin-right: 10px;">Loading template</p>
+				<div class="loader" style="border-color: hsl({$textColor}) transparent;"></div>
+			</div>
+		{/if}
+	</div>
 </div>
 
 <style>
@@ -132,8 +286,14 @@
 		overflow-y: auto;
 		border-radius: 10px;
 	}
-    .item-wrapper{
-        border: none;
+	.grid {
+		width: 100%;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 10px;
+	}
+	.item-wrapper {
+		border: none;
 		border-radius: 10px;
 		background: hsl(0, 0%, 95%);
 		color: #1a1a1a;
@@ -142,11 +302,18 @@
 		font-weight: 300;
 		font-family: 'Robot', sans-serif;
 		display: flex;
-        justify-content: space-between;
-        align-items: center;
+		flex-direction: column;
+		justify-content: space-between;
+		/* align-items: center; */
 		box-sizing: border-box;
-    }
-    .item-wrapper:hover {
+	}
+	.item-wrapper:hover {
 		background: hsl(0, 0%, 93%);
+	}
+
+	@media screen and (max-width: 700px){
+		.grid{
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

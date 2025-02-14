@@ -15,7 +15,7 @@ export async function POST({ request, locals, params }) {
     console.log(query)
     const templateName = query.name
     const template = await locals.pb.collection('projects').getFirstListItem(`name="${templateName}"`);
-
+    // const imageUrl = `${locals.pb.baseUrl}/api/files/projects/${params.projectId}/${params.fileName}`
     console.log(template)
 
     const files = []
