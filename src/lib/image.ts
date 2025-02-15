@@ -31,6 +31,21 @@ export async function imageResponse(model = '', query = '', referenceComposition
                     response = {
                         imageUrl: imageUrl
                     }
+                } else if (model === 'flux-graphic-city'){
+                    console.log('using graphic city model')
+                    const input = {
+                        steps: 50,
+                        prompt: query,
+                        guidance: 45,
+                        output_format: "jpg",
+                        safety_tolerance: 2,
+                        prompt_upsampling: false
+                    }
+                    const [output] = await replicate.run("stepankukharskiy/flux-graphic-city:626d3796172949c1b429fdb81171f0ee0fcd5172cf1a940ccfe0caaac7b5a690", { input });
+                    const imageUrl = output.url().href;
+                    response = {
+                        imageUrl: imageUrl
+                    }
                 }
             } else if (model === 'flux-canny-pro'){
                 console.log('using canny model')
@@ -75,7 +90,7 @@ export async function imageResponse(model = '', query = '', referenceComposition
                 }
             }
             )
-
+            console.log(finalResponse)
             return finalResponse
         }
     }

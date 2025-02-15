@@ -39,6 +39,9 @@ export async function POST({ request, locals }) {
             if(query.referenceImage != ''){
                 model = query.imageCompositionReferenceModel
             }
+            if(query.query.includes("CITYGRAPHIC")){
+                model = 'flux-graphic-city'
+            }
             console.log(model)
             const imageResponseData = await imageResponse(model, query.query, query.referenceImage)
             const imageResponseDataUrl = await imageResponseData?.json()
