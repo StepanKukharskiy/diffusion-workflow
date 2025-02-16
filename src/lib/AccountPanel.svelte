@@ -169,6 +169,15 @@
 				<span class={$imageModel === 'flux-schnell' ? 'black-dot' : 'transparent-dot'}></span>
 				flux-schnell</button
 			>
+			<!-- flux-graphic-city -->
+			<button
+			class='tertiaryButton'
+			onclick={(e: any) => {
+				$imageModel = e.target.innerText;
+			}}>
+			<span class={$imageModel === 'flux-graphic-city' ? 'black-dot' : 'transparent-dot'}></span>
+			flux-graphic-city</button
+		>
 		</div>
 		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
 			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">

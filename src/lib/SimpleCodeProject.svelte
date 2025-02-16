@@ -502,7 +502,7 @@
 				Create Image
 			</button>
 
-			<button
+			<!-- <button
 				class="tertiaryButton"
 				onclick={async () => {
 					$referenceImageUrl = '';
@@ -517,7 +517,7 @@
 				}}
 			>
 				Discuss Image
-			</button>
+			</button> -->
 
 			<button
 				class="tertiaryButton"

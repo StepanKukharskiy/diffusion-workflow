@@ -13,6 +13,7 @@
 		tutorialsPanelState,
 		appsPanelState,
 		chatModel,
+		imageModel,
 		imageCompositionReferenceModel
 	} from './store';
 	import { generateUUID, updateCredits } from './utils';
@@ -72,6 +73,7 @@
 			},
 			body: JSON.stringify({
 				model: data.model,
+				imageModel: $imageModel,
 				imageCompositionReferenceModel: $imageCompositionReferenceModel,
 				systemPrompt: data.systemPrompt,
 				query: data.query,
