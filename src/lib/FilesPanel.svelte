@@ -7,7 +7,9 @@
 		leftPanelWidthSetByUser,
 		bgColor,
 		textColor,
-		elements
+		elements,
+		runCode,
+		editorState
 	} from '$lib/store';
 	import ProjectFileCard from '$lib/ProjectFileCard.svelte';
 	import CodeEditorMonaco from '$lib/CodeEditorMonaco.svelte';
@@ -15,19 +17,18 @@
 	// import JSZip from 'jszip';
 
 	let { uuid, files = [], panelWidth = $width * 0.2 + 'px' } = $props();
-	let editorState = $state(false),
-		fileToOpen = $state('');
-
-		console.log(`uuid from FilesPanel - ${uuid}`)
+	let fileToOpen = $state('');
 
 	function runEditor(fileName = '') {
-		editorState = !editorState;
+		$editorState = !$editorState;
 		fileToOpen = fileName;
 	}
 
+	$runCode = false
+
 	// let panelWidth = $state($width * 0.3 + 'px');
 	let panelState = $state(true);
-	let runCode = $state(true);
+	// let runCode = $state(true);
 	let button = $state(),
 		buttonText;
 
@@ -51,7 +52,7 @@
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
 				element.run = !element.run;
-				runCode = element.run;
+				$runCode = element.run;
 			}
 		}
 	}
@@ -83,20 +84,20 @@
 	<div class="contentContainer">
 		<div>
 			<!-- <h3 style="margin: 0; font-weight: 300; height: 30px;">{projectName}</h3> -->
-			{#if editorState}
+			<!-- {#if editorState}
 				<button
 					class="smallMenuButton"
 					onclick={() => {
 						editorState = false;
 					}}>files</button
 				>
-			{/if}
+			{/if} -->
 		</div>
 		<div
 			class="filesAndEditorWrapper"
-			style="height: {editorState ? 'calc(100% - 70px)' : 'calc(100% - 47px)'}"
+			style="height: {editorState ? 'calc(100% - 40px)' : 'calc(100% - 47px)'}"
 		>
-			{#if editorState}
+			{#if $editorState}
 				<div style="height: 100%; background: none;">
 					<CodeEditorMonaco
 						{uuid}
@@ -124,8 +125,8 @@
 			<!-- <div class='buttonWrapper' style='background: linear-gradient(hsl({$primaryColor}), hsl({$accentColor}))'>
                     <button on:click={downloadFiles} style='background: hsl({$bgColor}); color: hsl({$textColor});'>Download</button>
                 </div> -->
-			<button class="generationControlsButton" onclick={toggleRunCode}
-				>{runCode === false ? 'Run' : 'Stop'}</button
+			<button class="tertiaryButton" onclick={toggleRunCode}
+				>{$runCode === false ? 'Run' : 'Stop'}</button
 			>
 		</div>
 	</div>
@@ -152,7 +153,7 @@
 		height: 100%;
 	}
 	.filesAndEditorWrapper {
-		height: calc(100% - 75px);
+		height: calc(100% - 40px);
 		overflow-y: scroll;
 	}
 	.filesContainer {
@@ -160,24 +161,8 @@
 		height: calc(100% - 55px);
 	}
 
-	h3 {
-		font-weight: 300;
-	}
-
 	.bottomButtonsWrapper {
 		width: 100%;
 		display: flex;
-	}
-	.smallMenuButton {
-		background: none;
-		border: none;
-		font-family: Roboto, sans-serif;
-		font-size: 1rem;
-		font-weight: 300;
-		margin: 0;
-		padding: 0 10px 5px 0px;
-	}
-	.smallMenuButton:hover {
-		text-decoration: underline;
 	}
 </style>

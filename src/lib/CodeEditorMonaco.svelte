@@ -14,7 +14,7 @@
 	import parserCSS from 'prettier/plugins/postcss';
 	import parserMarkdown from 'prettier/plugins/markdown';
 
-	import { consolePanelState, bgColor, textColor, elements } from '$lib/store';
+	import { consolePanelState, bgColor, textColor, elements, runCode, user, editorState } from '$lib/store';
 	import { getFileLogoURL } from '$lib/utils';
 
 	let editorContainer: any;
@@ -155,13 +155,21 @@
 				plugins: [parserBabel, parserHTML, parserEstree, parserCSS]
 			};
 
+			for (let element of $elements) {
+				if (element.uuid === uuid) {
+					element.run = !element.run;
+					$runCode = false;
+				}
+			}
+
 			const formattedCode = await prettier.format(editor.getValue(), formatOptions);
 			// updateFileData(formattedCode);
 			clearTimeout(saveTimeout);
 			saveTimeout = setTimeout(async () => {
+				console.log($user);
 				updateFileData(formattedCode);
 			}, 1000);
-			$elements = $elements
+			$elements = $elements;
 			// console.log(formattedCode)
 			// console.log($elements);
 		});
@@ -251,44 +259,47 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width='10' height='10' viewBox="0 0 19.02 19.02"><title>icon_quit</title><line x1="0.5" y1="0.5" x2="18.52" y2="18.52" style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"/><line x1="0.5" y1="18.52" x2="18.52" y2="0.5" style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"/></svg>
                 </button>
             {/if} -->
-			<div style="display: flex; justify-content: center; align-items: center;">
-				<img src={logoPath} width="20" height="20" style="margin-right: 0px;" alt="file logo" />
-				<h5>{fileName}</h5>
+			<div style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding-top: 10px;">
+				<div style="display: flex; justify-content: center; align-items: center;">
+					<img src={logoPath} width="20" height="20" style="margin-right: 0px;" alt="file logo" />
+					<h5 style='margin: 0;'>{fileName}</h5>
+				</div>
+				<button class='tertiaryButton' style='padding: 0;' onclick={()=>{$editorState = false}}>close</button>
 			</div>
 			{#if readOnly}
 				<div style="display: flex; align-items: center;">
-					<button class="smallMenuButton" style="color: hsl({$textColor});" onclick={copy}
+					<button class="tertiaryButton" style="color: hsl({$textColor});" onclick={copy}
 						>{copyButtonText}</button
 					>
 				</div>
 			{:else}
-				<div style="display: flex; align-items: center;">
+				<div style="display: flex; align-items: center; padding-top: 5px;">
 					<button
-						class="smallMenuButton"
+						class="tertiaryButton"
 						type="button"
-						style="color: hsl({$textColor});"
+						style="color: hsl({$textColor}); padding: 0 10px; padding-left: 0px;"
 						onclick={paste}>paste</button
 					>
 					<button
-						class="smallMenuButton"
+						class="tertiaryButton"
 						type="button"
-						style="color: hsl({$textColor});"
+						style="color: hsl({$textColor}); padding: 0 10px;"
 						onclick={() => {
 							undo();
 						}}>undo</button
 					>
 					<button
-						class="smallMenuButton"
+						class="tertiaryButton"
 						type="button"
-						style="color: hsl({$textColor});"
+						style="color: hsl({$textColor}); padding: 0 10px;"
 						onclick={() => {
 							redo();
 						}}>redo</button
 					>
 					<button
-						class="smallMenuButton"
+						class="tertiaryButton"
 						type="button"
-						style="color: hsl({$textColor});"
+						style="color: hsl({$textColor}); padding: 0 10px;"
 						onclick={async () => {
 							formatText(editor.getValue()).then((result) => {
 								editor.setValue(result);
@@ -297,9 +308,9 @@
 					>
 					{#if mode === 'javascript'}
 						<button
-							class="smallMenuButton"
+							class="tertiaryButton"
 							type="button"
-							style="color: hsl({$textColor});"
+							style="color: hsl({$textColor}); padding: 0 10px;"
 							onclick={() => {
 								consolePanelState.set(true);
 							}}>console</button
@@ -314,8 +325,8 @@
 			class="editor"
 			bind:this={editorContainer}
 			style="height: {$consolePanelState && mode === 'javascript' && !readOnly
-				? 'calc(100% - 70px)'
-				: 'calc(100% - 70px)'}"
+				? 'calc(100% - 80px)'
+				: 'calc(100% - 80px)'}"
 		>
 			{#if !editorCreated}
 				<div
@@ -372,8 +383,8 @@
 		margin: 0;
 	}
 	.editorLoader {
-		width: 20px;
-		height: 20px;
+		width: 10px;
+		height: 10px;
 		border: 2px solid;
 		border-radius: 50%;
 		border-color: #1a1a1a transparent;
@@ -422,25 +433,14 @@
 		display: flex;
 		flex-direction: column;
 		align-items: start;
-		height: 55px;
-		padding: 0 20px 0 10px;
+		height: 65px;
+		padding: 0 10px 0 10px;
 	}
 	.editorMenu h5 {
 		margin: 5px;
 		/* font-family: Montserrat, sans-serif; */
+		font-size: 1.2rem;
 		font-weight: 300;
 	}
 
-	.smallMenuButton {
-		background: none;
-		border: none;
-		font-family: Roboto, sans-serif;
-		font-size: 1rem;
-		font-weight: 300;
-		margin: 0;
-		padding: 0 10px 5px 0px;
-	}
-	.smallMenuButton:hover {
-		text-decoration: underline;
-	}
 </style>

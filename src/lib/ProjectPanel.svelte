@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { elements, consoleMessages, textColor } from '$lib/store';
+	import { elements, consoleMessages, textColor, runCode } from '$lib/store';
 
 	let userSRCDoc = $state('');
 	let { uuid } = $props();
@@ -10,7 +10,7 @@
 		console.log('updated');
 		console.log(`showing project with this: ${uuid}`);
 		for (let element of $elements) {
-			if (element.uuid === uuid && element.run) {
+			if (element.uuid === uuid && $runCode) {
 				userSRCDoc = `<html>
             <body>${getFileContents('index.html')}</body>
             <style>${getFileContents('style.css')}</style>
@@ -40,6 +40,12 @@
             <\/script>
                
         </html>`;
+			} else {
+				userSRCDoc = `<html>
+            <body><div class='container'><p>Click 'Run'</p></div></body>
+            <style>${getFileContents('style.css')}
+			.container{width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;}</style>
+        </html>`
 			}
 		}
 	});

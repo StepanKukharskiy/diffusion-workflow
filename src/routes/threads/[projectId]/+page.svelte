@@ -8,7 +8,10 @@
 		appsPanelState,
 		width,
 		user,
-		isSavingThread
+		isSavingThread,
+
+		loginPanelState
+
 	} from '$lib/store';
 	import { generateUUID, initialCodeFiles } from '$lib/utils';
 	import { page } from '$app/stores';

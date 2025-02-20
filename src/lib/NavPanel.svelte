@@ -22,6 +22,13 @@
 	let isLoggingOut = false;
 	console.log($user);
 
+	user.subscribe((value = {})=>{
+		console.log(`user: ${$user}`)
+		if (value === undefined) {
+			$loginPanelState = true;
+		}
+	})
+
 	$effect(() => {
 		if ($user === undefined) {
 			$loginPanelState = true;
