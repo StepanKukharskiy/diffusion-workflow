@@ -34,6 +34,7 @@
 	import SimpleSketch from '$lib/SimpleSketch.svelte';
 	import Simple3dViewer from '$lib/Simple3dViewer.svelte';
 	import SimpleChatPanel from '$lib/SimpleChatPanel.svelte';
+	import SimpleP5Sketch from '$lib/SimpleP5Sketch.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -160,7 +161,7 @@
 							options={showOptions}
 						/>
 					{:else if element.type === 'sketch'}
-						<SimpleSketch shapes={element.shapes} uuid={element.uuid} />
+						<SimpleP5Sketch uuid={element.uuid} imageUrl={element.imageUrl} options={showOptions}/>
 					{:else if element.type === 'code'}
 						<SimpleCodeProject
 							files={element.files}
