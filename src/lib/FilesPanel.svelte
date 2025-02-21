@@ -8,7 +8,6 @@
 		bgColor,
 		textColor,
 		elements,
-		runCode,
 		editorState
 	} from '$lib/store';
 	import ProjectFileCard from '$lib/ProjectFileCard.svelte';
@@ -18,19 +17,19 @@
 
 	let { uuid, files = [], panelWidth = $width * 0.2 + 'px' } = $props();
 	let fileToOpen = $state('');
+	let runCode = $state(false)
 
 	function runEditor(fileName = '') {
 		$editorState = !$editorState;
 		fileToOpen = fileName;
 	}
 
-	$runCode = false
 
 	// let panelWidth = $state($width * 0.3 + 'px');
 	let panelState = $state(true);
 	// let runCode = $state(true);
 	let button = $state(),
-		buttonText;
+		buttonText = $state('Run');
 
 	$effect(() => {
 		if ($leftPanelWidthSetByUser > $width * 0.3) {
@@ -49,10 +48,11 @@
 	});
 
 	function toggleRunCode() {
+		console.log(runCode)
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
 				element.run = !element.run;
-				$runCode = element.run;
+				element.run === false ? buttonText = 'Run' : buttonText = 'Stop'
 			}
 		}
 	}
@@ -125,8 +125,8 @@
 			<!-- <div class='buttonWrapper' style='background: linear-gradient(hsl({$primaryColor}), hsl({$accentColor}))'>
                     <button on:click={downloadFiles} style='background: hsl({$bgColor}); color: hsl({$textColor});'>Download</button>
                 </div> -->
-			<button class="tertiaryButton" onclick={toggleRunCode}
-				>{$runCode === false ? 'Run' : 'Stop'}</button
+			<button class="tertiaryButton" bind:this={button} onclick={()=>{toggleRunCode(); $elements = $elements}}
+				>{buttonText}</button
 			>
 		</div>
 	</div>
