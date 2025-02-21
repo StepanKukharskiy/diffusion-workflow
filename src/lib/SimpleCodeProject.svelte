@@ -36,6 +36,7 @@
 	let controlsMenu: any = $state();
 	let controlsMenuHeight = $state(100);
 	let isSavingProject = $state(false);
+	let isThereCanvas = $state(false);
 
 	onMount(() => {
 		controlsMenuHeight = controlsMenu.offsetHeight;
@@ -72,6 +73,8 @@
 
 		return isThereCanvas;
 	}
+
+	isThereCanvas = getCanvas();
 
 	function resize(event: any) {
 		resizeCoverDiv.style.display = 'block';
@@ -120,12 +123,12 @@
 	function addElement(elements: any = [], type = 'text', imageUrl = '', codeProjectUuid = '') {
 		console.log(elements);
 		if (type === 'image') {
-			// elements.push({
-			// 	uuid: generateUUID(),
-			// 	type: type,
-			// 	query: '',
-			// 	imageUrl: imageUrl
-			// });
+			elements.push({
+				uuid: generateUUID(),
+				type: type,
+				query: 'canvas image',
+				imageUrl: imageUrl
+			});
 		} else if (type === 'text') {
 			elements.push({
 				type: type,
@@ -485,22 +488,21 @@
 				Duplicate Project
 			</button>
 
-			<button
-				class="tertiaryButton"
-				onclick={async () => {
-					$referenceImageUrl = '';
-					isThereCanvasInIframe = getCanvas();
-					if (isThereCanvasInIframe) {
+			{#if isThereCanvas}
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						$referenceImageUrl = '';
 						const screenshotUrl = await getCanvasScreenshotUrl(`iframe-${uuid}`);
-						$referenceImageUrl = screenshotUrl;
-						$chatPanelMode = 'image';
-						// addElement($elements, 'image', screenshotUrl);
+						// $referenceImageUrl = screenshotUrl;
+						// $chatPanelMode = 'image';
+						addElement($elements, 'image', screenshotUrl);
 						$elements = $elements;
-					}
-				}}
-			>
-				Create Image
-			</button>
+					}}
+				>
+					Create Image
+				</button>
+			{/if}
 
 			<!-- <button
 				class="tertiaryButton"

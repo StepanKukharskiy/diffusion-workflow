@@ -105,12 +105,18 @@
 					class="tertiaryButton">Copy URL</button
 				>
 				<button
-					onclick={() => {
-						window.open(
-							`${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`,
-							'_blank'
-						);
-					}}
+				onclick={() => {
+					// window.open(
+					// 	`${$page.url.origin}/api/get-file/${$page.params.projectId}/${videoUrl.split('/')[7]}`,
+					// 	'_blank'
+					// );
+					const link = document.createElement('a');
+					link.href = `${$page.url.origin}/api/get-file/${$page.params.projectId}/${imageUrl.split('/')[7]}`;
+					link.download = `${imageUrl.split('/').pop()}`; // Set the filename for download
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				}}
 					class="tertiaryButton">Download</button
 				>
 				<button
