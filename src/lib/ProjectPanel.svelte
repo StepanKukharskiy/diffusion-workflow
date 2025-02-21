@@ -5,10 +5,13 @@
 	let { uuid } = $props();
 
 	console.log(`uuid from ProjectPanel: ${uuid}`);
+	console.log($elements)
+	$elements = $elements;
 
 	$effect(() => {
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
+				console.log(uuid)
 				if(element.run){
 				console.log(`element run: ${element.run}`)
 				console.log(element)
@@ -42,10 +45,12 @@
                
         </html>`;
 			} else {
+				console.log(element.run)
 				userSRCDoc = `<html>
             <body><div class='container'><p>Click 'Run'</p></div></body>
             <style>
-			.container{width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Roboto', sans-serif; font-weight: 300;}</style>
+			body{margin: 0;}
+			.container{width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Roboto', sans-serif; font-weight: 300;}</style>
         </html>`
 			}
 		}
