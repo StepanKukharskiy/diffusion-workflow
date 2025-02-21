@@ -157,8 +157,7 @@
 
 			for (let element of $elements) {
 				if (element.uuid === uuid) {
-					element.run = !element.run;
-					$runCode = false;
+					element.run = false;
 				}
 			}
 
@@ -264,7 +263,15 @@
 					<img src={logoPath} width="20" height="20" style="margin-right: 0px;" alt="file logo" />
 					<h5 style='margin: 0;'>{fileName}</h5>
 				</div>
-				<button class='tertiaryButton' style='padding: 0;' onclick={()=>{$editorState = false}}>close</button>
+				<button class='tertiaryButton' style='padding: 0;' onclick={()=>{
+					for(let element of $elements){
+						if(element.uuid === uuid){
+							element.editorState = false
+							console.log(element)
+						}
+					}
+					$elements = $elements
+				}}>close</button>
 			</div>
 			{#if readOnly}
 				<div style="display: flex; align-items: center;">

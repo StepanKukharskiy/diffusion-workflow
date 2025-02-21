@@ -7,10 +7,9 @@
 	console.log(`uuid from ProjectPanel: ${uuid}`);
 
 	$effect(() => {
-		console.log('updated');
-		console.log(`showing project with this: ${uuid}`);
 		for (let element of $elements) {
-			if (element.uuid === uuid && element.run) {
+			if (element.uuid === uuid) {
+				if(element.run){
 				console.log(`element run: ${element.run}`)
 				console.log(element)
 				userSRCDoc = `<html>
@@ -49,6 +48,7 @@
 			.container{width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Roboto', sans-serif; font-weight: 300;}</style>
         </html>`
 			}
+		}
 		}
 	});
 

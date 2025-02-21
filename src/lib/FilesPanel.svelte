@@ -7,8 +7,8 @@
 		leftPanelWidthSetByUser,
 		bgColor,
 		textColor,
-		elements,
-		editorState
+		elements
+		// editorState
 	} from '$lib/store';
 	import ProjectFileCard from '$lib/ProjectFileCard.svelte';
 	import CodeEditorMonaco from '$lib/CodeEditorMonaco.svelte';
@@ -17,19 +17,32 @@
 
 	let { uuid, files = [], panelWidth = $width * 0.2 + 'px' } = $props();
 	let fileToOpen = $state('');
-	let runCode = $state(false)
+	let runCode = $state(false);
+	let editorState = $state(false);
 
 	function runEditor(fileName = '') {
-		$editorState = !$editorState;
+		// editorState = !editorState;
 		fileToOpen = fileName;
+		for (let element of $elements) {
+			if (element.uuid === uuid) {
+				element.editorState = true;
+				editorState = element.editorState;
+			}
+		}
 	}
 
-
-	// let panelWidth = $state($width * 0.3 + 'px');
 	let panelState = $state(true);
-	// let runCode = $state(true);
 	let button = $state(),
 		buttonText = $state('Run');
+
+	for (let element of $elements) {
+		if (element.uuid === uuid) {
+			element.editorState = false;
+			editorState = element.editorState;
+			element.run = false;
+			runCode = element.run;
+		}
+	}
 
 	$effect(() => {
 		if ($leftPanelWidthSetByUser > $width * 0.3) {
@@ -48,11 +61,12 @@
 	});
 
 	function toggleRunCode() {
-		console.log(runCode)
+		console.log(runCode);
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
 				element.run = !element.run;
-				element.run === false ? buttonText = 'Run' : buttonText = 'Stop'
+				runCode = element.run;
+				runCode === false ? (buttonText = 'Run') : (buttonText = 'Stop');
 			}
 		}
 	}
@@ -73,6 +87,16 @@
 		// hiddenElement.click();
 		// hiddenElement.remove()
 	}
+
+	$effect(() => {
+		for (let element of $elements) {
+			if (element.uuid === uuid) {
+				editorState = element.editorState;
+				runCode = element.run;
+				runCode === false ? (buttonText = 'Run') : (buttonText = 'Stop');
+			}
+		}
+	});
 </script>
 
 <div
@@ -97,7 +121,7 @@
 			class="filesAndEditorWrapper"
 			style="height: {editorState ? 'calc(100% - 40px)' : 'calc(100% - 47px)'}"
 		>
-			{#if $editorState}
+			{#if editorState}
 				<div style="height: 100%; background: none;">
 					<CodeEditorMonaco
 						{uuid}
@@ -125,8 +149,13 @@
 			<!-- <div class='buttonWrapper' style='background: linear-gradient(hsl({$primaryColor}), hsl({$accentColor}))'>
                     <button on:click={downloadFiles} style='background: hsl({$bgColor}); color: hsl({$textColor});'>Download</button>
                 </div> -->
-			<button class="tertiaryButton" bind:this={button} onclick={()=>{toggleRunCode(); $elements = $elements}}
-				>{buttonText}</button
+			<button
+				class="tertiaryButton"
+				bind:this={button}
+				onclick={() => {
+					toggleRunCode();
+					$elements = $elements;
+				}}>{buttonText}</button
 			>
 		</div>
 	</div>
