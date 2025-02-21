@@ -14,6 +14,7 @@ export async function analyseRequest(query = '') {
                 {
                     role: "system",
                     content: `Analyze the following request. 
+                    It may contaon URLs. Ignore them.
                     If it is a question respond 'chat'.
 
                     If it starts with 'an image', 'I need an image', or similar words respond 'image'.

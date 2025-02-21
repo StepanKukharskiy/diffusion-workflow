@@ -15,12 +15,23 @@ export async function POST({ request, locals }) {
     const query = await request.json()
     console.log(query)
 
+    function extractUrls(text = '') {
+        const urlPattern = /https?:\/\/[^\s]+/g;
+        const urls = text.match(urlPattern);
+        return urls || [];
+    }
+
     try {
         if(locals.user.requests > 0){
         let response
         const requestType = await analyseRequest(query.query)
         console.log(requestType)
 
+        const referenceImageUrl = extractUrls(query.query)[0]
+        console.log(referenceImageUrl)
+        if(referenceImageUrl != undefined){
+            query.referenceImage = referenceImageUrl
+        }
         if (requestType?.trim() === 'chat') {
             console.log('getting chat agent response')
             const chatResponseData = await chatResponse(query.model, query.query, query.systemPrompt, query.previousAnswers, query.referenceImage)

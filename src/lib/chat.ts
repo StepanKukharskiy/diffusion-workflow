@@ -2,7 +2,7 @@ import Together from "together-ai";
 import { TOGETHER_API_TOKEN } from '$env/static/private';
 
 export async function chatResponse(model = '', query = '', systemPrompt = '', context = '', image = '') {
-    console.log(`chat: ${model}, ${query}, ${systemPrompt}`)
+    console.log(`chat: ${model}, ${query}, ${systemPrompt}, ${image}`)
     try {
 
         const together = new Together({

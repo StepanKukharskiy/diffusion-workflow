@@ -267,6 +267,7 @@
 			class="tertiaryButton"
 			style="width: 40px; height: 40px; disply: flex; justify-content: center; align-items: center;"
 			aria-label="Upload File"
+			disabled={false}
 			onclick={() => {
 				fileInput.click();
 			}}

@@ -56,7 +56,7 @@
 				<h3 class="tertiaryHeading">Chat</h3>
 				<p>
 					To use the <b>chat</b> feature, simply ask questions or provide text-based instructions.
-					To utilize the <b>vision</b> feature, provide a reference image URL that you would like to
+					To utilize the <b>vision</b> feature, provide a reference image that you would like to
 					discuss with the AI.
 				</p>
 				<SimpleTextCard
