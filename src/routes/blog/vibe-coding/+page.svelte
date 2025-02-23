@@ -1,20 +1,25 @@
 <script lang="ts">
 	import MainPageNavPanel from '$lib/MainPageNavPanel.svelte';
 	import Footer from '$lib/Footer.svelte';
-	import img01 from '$lib/images/blog/iterative-image-generation/01.jpeg';
-	import img02 from '$lib/images/blog/iterative-image-generation/02.jpeg';
-	import img03 from '$lib/images/blog/iterative-image-generation/03.jpeg';
-	import img04 from '$lib/images/blog/iterative-image-generation/04.jpeg';
+	import vibecoding from '$lib/images/blog/vibe-coding/vibe-coding.png';
+	import pavilion from '$lib/images/blog/vibe-coding/pavilion.jpg';
 </script>
 
 <MainPageNavPanel />
 <div class="blog-container">
 	<div class="blog-data">
 		<h3>6 months of coding with AI - here is what I learned</h3>
+		<img src={pavilion} alt="vibe-coding" style='margin-top: 20px;'/>
+		<p style='font-size: 1rem'>
+			AI-driven pavilion design exploration with vibe-coding and three.js using Kodiia.
+		</p>
+
 		<p>
 			Vibe-coding is an up-and-coming trend. I’ve been doing it for 6 months, and here are some tips
 			I’ve learned along the way:
 		</p>
+
+		
 
 		<h4 style="margin-top: 20px;">Start Simple</h4>
 		<p>
@@ -52,6 +57,11 @@
 			versions will help you roll back changes or continue developing the project from a specific
 			point in a new direction. In Kodiia, you can do this by clicking the Duplicate button under
 			the code editor, giving your project copy a new name, and then clicking Save App.
+		</p>
+
+		<img src={vibecoding} alt="vibe-coding" />
+		<p style='font-size: 1rem'>
+			Vibe-coding a pavilion geometry using three.js in Kodiia.
 		</p>
 
 		<h4 style="margin-top: 20px;">80/20 Rule</h4>
