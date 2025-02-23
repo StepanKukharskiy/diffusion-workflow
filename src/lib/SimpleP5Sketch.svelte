@@ -10,6 +10,7 @@
     let sketchImageUrl = $state('')
     let circleSize = $state(15);
     let myColor = $state('#FFFFFF')
+	let brushType = $state('circle')
 
     function addImageElement(elements: any, url = '') {
 			elements.push({
@@ -65,7 +66,21 @@
 			if (p.mouseIsPressed) {
 				p.fill(myColor);
 				p.noStroke();
-				p.circle(p.mouseX, p.mouseY, circleSize);
+				switch (brushType) {
+					case 'circle':
+						p.circle(p.mouseX, p.mouseY, circleSize);
+						break;
+					case 'square':
+						p.square(p.mouseX - circleSize / 2, p.mouseY - circleSize / 2, circleSize);
+						break;
+					case 'triangle':
+						p.triangle(
+							p.mouseX, p.mouseY - circleSize / 2,
+							p.mouseX - circleSize / 2, p.mouseY + circleSize / 2,
+							p.mouseX + circleSize / 2, p.mouseY + circleSize / 2
+						);
+						break;
+				}
 			}
 		};
 
@@ -122,6 +137,14 @@
         <button onclick={() => {circleSize = 25}} class={circleSize === 25 ? 'primaryButton' : 'secondaryButton'} style="width: 25px; height: 25px; border-radius: 50%; margin-right: 10px;" aria-label='circle small size'></button>
         <button onclick={() => {circleSize = 35}} class={circleSize === 35 ? 'primaryButton' : 'secondaryButton'} style="width: 35px; height: 35px; border-radius: 50%; margin-right: 10px;" aria-label='circle small size'></button>
         <input type='color' bind:value={myColor} class='secondaryButton' style='height: 35px; cursor: pointer;'/>
+		<div style="margin-left: 10px;">
+			<!-- <label for="brushShape">Brush Shape:</label> -->
+			<select id="brushShape" bind:value={brushType} class='secondaryButton' style='padding: 0;'>
+				<option value="circle">&nbsp;●</option>
+				<option value="square">&nbsp;■</option>
+				<option value="triangle">&nbsp;▲</option>
+			</select>
+		</div>
     </div>
 		<div style="display: flex; flex-wrap: wrap;">
 			<button class="tertiaryButton" onclick={async () => {
@@ -145,5 +168,7 @@
 		max-width: 800px;
 		margin-bottom: 50px;
 	}
-
+	#brushShape{
+		height: 35px;
+	}
 </style>
