@@ -8,18 +8,36 @@
 	<div class="blog-topics">
 		<h2 style="margin-bottom: 20px;">Blog</h2>
 		<div class="blog-topic">
+			<h3>6 months of coding with AI - here is what I learned.</h3>
+			<div>
+				<p>Stepan Kukharskiy | February 23, 2025</p>
+			</div>
+			<button
+				class="tertiaryButton"
+				onclick={() => {
+					window.open('/blog/vibe-coding', '_self');
+				}}
+			>
+				Read
+			</button>
+		</div>
+		<div class="blog-topic">
 			<h3>Image generation models are not really creative. Here is how we can fix it.</h3>
 			<div>
-                <p>Stepan Kukharskiy | February 1, 2025</p>
-            </div>
-			<button class="tertiaryButton" onclick={() => {
-				window.open('/blog/iterative-image-generation', '_self')
-			}}> Read </button>
+				<p>Stepan Kukharskiy | February 1, 2025</p>
+			</div>
+			<button
+				class="tertiaryButton"
+				onclick={() => {
+					window.open('/blog/iterative-image-generation', '_self');
+				}}
+			>
+				Read
+			</button>
 		</div>
 	</div>
 	<Footer />
 </div>
-
 
 <style>
 	.blog-container {
