@@ -189,11 +189,11 @@
 	function triggerCommands() {
 		if (query === '?') {
 			$manual = true;
-		} else if (query === 'tutorials') {
+		} else if (query.toLowerCase() === 'tutorials') {
 			$tutorials = true;
-		} else if (query === 'templates') {
+		} else if (query.toLowerCase() === 'templates') {
 			$templates = true;
-		} else if (query === 'apps') {
+		} else if (query.toLowerCase() === 'apps') {
 			$apps = true;
 		} else {
 			$manual = false;
@@ -202,6 +202,13 @@
 			$tutorials = false;
 		}
 	}
+
+	onMount(()=>{
+		textarea = document.getElementById('textarea')
+		console.log(textarea.style.height)
+		textarea.style.height = '40px'
+		//updateTextareaHeight();
+	})
 </script>
 
 {#if $manual}
@@ -221,6 +228,28 @@
 {/if}
 
 <div class="chatPanelContainer">
+	<button
+		id="tipsButton"
+		class="secondaryButton"
+		onclick={() => {
+			if (textarea === undefined) {
+				textarea = document.getElementById('textarea');
+			}
+			$manual = true;
+		}}
+		>Tips <svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="20"
+			height="20"
+			viewBox="0 0 17 16"
+			fill="none"
+			stroke="currentColor"
+		>
+			<path
+				d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6zm3 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1-.5-.5z"
+			/>
+		</svg></button
+	>
 	{#if $referenceImageUrl}
 		<button
 			onclick={() => {
@@ -245,7 +274,7 @@
 			triggerCommands();
 			// Filter commands based on the current query
 			if (query.length > 0) {
-				suggestions = commands.filter((command) => command.startsWith(query));
+				suggestions = commands.filter((command) => command.startsWith(query.toLowerCase()));
 				showHintPanel = suggestions.length > 0;
 			} else {
 				showHintPanel = false;
@@ -378,6 +407,12 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+	#tipsButton {
+		padding: 5px;
+		position: absolute;
+		right: 0;
+		top: -45px;
 	}
 	.hintPanel {
 		position: absolute;
