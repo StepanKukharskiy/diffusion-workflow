@@ -46,7 +46,8 @@
 					reference and provide its URL. To use any image from the thread as a reference click 'Use
 					as a reference image'. Pick a different model by clicking the &#8942; button. The output
 					will be in JPEG format. To get the most creative results follow <a
-						href="/blog/iterative-image-generation">this steps</a
+						href="/blog/iterative-image-generation"
+						target="_blank">this steps</a
 					>.
 				</p>
 				<SimpleTextCard
@@ -128,7 +129,10 @@
 			<summary>Generate code</summary>
 			<p>
 				Add a coding template using 'templates' command for chat model to use it as a context. Ask
-				questions about the code provided.
+				questions about the code provided or an app you need to build. To get the best results with vibe-coding and code generation follow <a
+				href="/blog/vibe-coding"
+				target="_blank">this steps</a
+			>.
 			</p>
 		</details>
 
