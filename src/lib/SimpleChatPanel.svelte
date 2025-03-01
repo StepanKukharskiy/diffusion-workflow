@@ -203,12 +203,12 @@
 		}
 	}
 
-	onMount(()=>{
-		textarea = document.getElementById('textarea')
-		console.log(textarea.style.height)
-		textarea.style.height = '40px'
+	onMount(() => {
+		textarea = document.getElementById('textarea');
+		console.log(textarea.style.height);
+		textarea.style.height = '40px';
 		//updateTextareaHeight();
-	})
+	});
 </script>
 
 {#if $manual}
@@ -228,6 +228,7 @@
 {/if}
 
 <div class="chatPanelContainer">
+	<div class='inputArea'>
 	<button
 		id="tipsButton"
 		class="secondaryButton"
@@ -349,6 +350,21 @@
 	{/if}
 </div>
 
+<div class="suggestions">
+	<p style='margin: 0;'>Start with:</p>
+	<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'How do I'}}>How do I...</button>
+	<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'An image of'}}>An image of...</button>
+	<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'A video of'}}>A video of...</button>
+	{#if $referenceImageUrl === ''}
+		<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'An icon for'}}>An icon for...</button>
+	{:else}
+		<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'Make it a 3D model'}}>Make it a 3D model</button>
+	{/if}
+</div>
+	
+</div>
+
+
 {#if showHintPanel}
 	<div class="hintPanel" style="bottom: calc({textarea.style.height} + 40px);" transition:slide>
 		<div class="hintsWrapper">
@@ -377,13 +393,28 @@
 		padding: 10px;
 		box-sizing: border-box;
 		display: flex;
-		justify-content: center;
-		align-items: flex-end;
+		flex-direction: column;
+		
 		background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25));
 		backdrop-filter: blur(40px);
 		-webkit-backdrop-filter: blur(25px);
 		border-radius: 10px;
 		box-shadow: 0 0 10px hsl(0, 0%, 70%);
+	}
+	.inputArea {
+		width: 100%;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+		align-items: flex-end;
+	}
+	.suggestions{
+		width: 100%;
+		box-sizing: border-box;
+		display: flex;
+		/* justify-content: center; */
+		align-items: flex-end;
+		flex-wrap: wrap;
 	}
 	textarea {
 		border: none;
