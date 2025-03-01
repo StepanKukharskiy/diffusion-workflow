@@ -27,14 +27,12 @@
 	);
 
 	onMount(() => {
-		if (modelUrl) {
 			setTimeout(() => {
 				console.log(appCanvas);
 				loadModel(
 					`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 				);
 			}, 1000);
-		}
 	});
 
 	function loadModel(url: string) {

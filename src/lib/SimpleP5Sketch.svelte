@@ -3,29 +3,28 @@
 	import { deleteBlock } from './utils';
 	import P5wrapper from './P5wrapper.svelte';
 	import { page } from '$app/stores';
-    import { generateUUID } from './utils';
+	import { generateUUID } from './utils';
 
 	let { uuid, imageUrl = '', options = false } = $props();
 	let isTakingScreenshot = $state(false);
-    let sketchImageUrl = $state('')
-    let circleSize = $state(15);
-    let myColor = $state('#FFFFFF')
-	let brushType = $state('circle')
+	let sketchImageUrl = $state('');
+	let circleSize = $state(15);
+	let myColor = $state('#FFFFFF');
+	let brushType = $state('circle');
 
-    function addImageElement(elements: any, url = '') {
-			elements.push({
-				uuid: generateUUID(),
-				type: 'image',
-				query: 'sketch image',
-				imageUrl: url,
-				referenceImageUrl: ''
-			});
-    }
+	function addImageElement(elements: any, url = '') {
+		elements.push({
+			uuid: generateUUID(),
+			type: 'image',
+			query: 'sketch image',
+			imageUrl: url,
+			referenceImageUrl: ''
+		});
+	}
 
 	function sketch(p: any, appCanvas: any) {
 		let img: any;
 		let container: any;
-        
 
 		p.setup = function () {
 			container = document.querySelector('.sketchContainer');
@@ -75,9 +74,12 @@
 						break;
 					case 'triangle':
 						p.triangle(
-							p.mouseX, p.mouseY - circleSize / 2,
-							p.mouseX - circleSize / 2, p.mouseY + circleSize / 2,
-							p.mouseX + circleSize / 2, p.mouseY + circleSize / 2
+							p.mouseX,
+							p.mouseY - circleSize / 2,
+							p.mouseX - circleSize / 2,
+							p.mouseY + circleSize / 2,
+							p.mouseX + circleSize / 2,
+							p.mouseY + circleSize / 2
 						);
 						break;
 				}
@@ -95,6 +97,7 @@
 	}
 
 	async function getCanvas() {
+		isTakingScreenshot = true;
 		const canvas = document.getElementById(`p5Canvas-${uuid}`); // Select the canvas element
 
 		if (canvas) {
@@ -131,34 +134,71 @@
 <div class="sketchContainer">
 	<P5wrapper {sketch} />
 	{#if options}
-    <div style="display: flex; align-items: center; margin-top: 10px;">
-        <!-- Circle size buttons -->
-        <button onclick={() => {circleSize = 15}} class={circleSize === 15 ? 'primaryButton' : 'secondaryButton'} style="width: 15px; height: 15px; border-radius: 50%; margin-right: 10px;" aria-label='circle small size'></button>
-        <button onclick={() => {circleSize = 25}} class={circleSize === 25 ? 'primaryButton' : 'secondaryButton'} style="width: 25px; height: 25px; border-radius: 50%; margin-right: 10px;" aria-label='circle small size'></button>
-        <button onclick={() => {circleSize = 35}} class={circleSize === 35 ? 'primaryButton' : 'secondaryButton'} style="width: 35px; height: 35px; border-radius: 50%; margin-right: 10px;" aria-label='circle small size'></button>
-        <input type='color' bind:value={myColor} class='secondaryButton' style='height: 35px; cursor: pointer;'/>
-		<div style="margin-left: 10px;">
-			<!-- <label for="brushShape">Brush Shape:</label> -->
-			<select id="brushShape" bind:value={brushType} class='secondaryButton' style='padding: 0;'>
-				<option value="circle">&nbsp;●</option>
-				<option value="square">&nbsp;■</option>
-				<option value="triangle">&nbsp;▲</option>
-			</select>
-		</div>
-    </div>
-		<div style="display: flex; flex-wrap: wrap;">
-			<button class="tertiaryButton" onclick={async () => {
-                sketchImageUrl = await getCanvas()
-                addImageElement($elements, sketchImageUrl)
-                }}>Save as image to use as a reference</button>
+		<div style="display: flex; align-items: center; margin-top: 10px;">
+			<!-- Circle size buttons -->
 			<button
-				class="tertiaryButton"
-				onclick={async () => {
-					deleteBlock($elements, uuid);
-					$elements = $elements;
-				}}>Delete</button
-			>
+				onclick={() => {
+					circleSize = 15;
+				}}
+				class={circleSize === 15 ? 'primaryButton' : 'secondaryButton'}
+				style="width: 15px; height: 15px; border-radius: 50%; margin-right: 10px;"
+				aria-label="circle small size"
+			></button>
+			<button
+				onclick={() => {
+					circleSize = 25;
+				}}
+				class={circleSize === 25 ? 'primaryButton' : 'secondaryButton'}
+				style="width: 25px; height: 25px; border-radius: 50%; margin-right: 10px;"
+				aria-label="circle small size"
+			></button>
+			<button
+				onclick={() => {
+					circleSize = 35;
+				}}
+				class={circleSize === 35 ? 'primaryButton' : 'secondaryButton'}
+				style="width: 35px; height: 35px; border-radius: 50%; margin-right: 10px;"
+				aria-label="circle small size"
+			></button>
+			<input
+				type="color"
+				bind:value={myColor}
+				class="secondaryButton"
+				style="height: 35px; cursor: pointer;"
+			/>
+			<div style="margin-left: 10px;">
+				<!-- <label for="brushShape">Brush Shape:</label> -->
+				<select id="brushShape" bind:value={brushType} class="secondaryButton" style="padding: 0;">
+					<option value="circle">&nbsp;●</option>
+					<option value="square">&nbsp;■</option>
+					<option value="triangle">&nbsp;▲</option>
+				</select>
+			</div>
 		</div>
+		{#if !isTakingScreenshot}
+			<div style="display: flex; flex-wrap: wrap;">
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						sketchImageUrl = await getCanvas();
+						addImageElement($elements, sketchImageUrl);
+					}}>Save as image to use as a reference</button
+				>
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						deleteBlock($elements, uuid);
+						$elements = $elements;
+					}}>Delete</button
+				>
+			</div>
+		{:else}
+			<div
+				style="width: 40px; height: 40px; disply: flex; justify-content: center; align-items: center;"
+			>
+				<div class="loader"></div>
+			</div>
+		{/if}
 	{/if}
 </div>
 
@@ -168,7 +208,7 @@
 		max-width: 800px;
 		margin-bottom: 50px;
 	}
-	#brushShape{
+	#brushShape {
 		height: 35px;
 	}
 </style>

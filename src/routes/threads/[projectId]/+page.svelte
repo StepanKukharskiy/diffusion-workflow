@@ -10,9 +10,7 @@
 		user,
 		isSavingThread,
 		templates,
-
 		loginPanelState
-
 	} from '$lib/store';
 	import { generateUUID, initialCodeFiles } from '$lib/utils';
 	import { page } from '$app/stores';
@@ -78,10 +76,10 @@
 
 	function addSketch(elements: any = []) {
 		elements.push({
-				uuid: generateUUID(),
-				type: 'sketch',
-				imageUrl: ''
-			});
+			uuid: generateUUID(),
+			type: 'sketch',
+			imageUrl: ''
+		});
 	}
 
 	function scrollToCreateButton() {
@@ -170,7 +168,7 @@
 							options={showOptions}
 						/>
 					{:else if element.type === 'sketch'}
-						<SimpleP5Sketch uuid={element.uuid} imageUrl={element.imageUrl} options={showOptions}/>
+						<SimpleP5Sketch uuid={element.uuid} imageUrl={element.imageUrl} options={showOptions} />
 					{:else if element.type === 'code'}
 						<SimpleCodeProject
 							files={element.files}
@@ -184,10 +182,44 @@
 					{/if}
 				{/each}
 
-				<div style='width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;'><span>Continue with a prompt, upload an image or .glb file, </span><button class='tertiaryButton' style='text-decoration: underline; padding-right: 0;' onclick={()=>{addSketch($elements)}}>add sketch</button>, <button class='tertiaryButton' style='text-decoration: underline; padding-right: 0;' onclick={()=>{$templates = true}}>add code template</button><span>,</span><span> or click Tips for more.</span></div>
+				{#if showOptions && $elements.length < 55}
+					<div
+						class="descriptionButton"
+						style="width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;"
+					>
+						Continue with a prompt, upload an image or .glb file, click 'Tips' for more or:
+						<div
+							style="width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;"
+						>
+							<button
+								class="tertiaryButton"
+								style="text-decoration: underline; padding-left: 0;"
+								onclick={() => {
+									addSketch($elements);
+								}}>Add sketch</button
+							>
+							<button
+								class="tertiaryButton"
+								style="text-decoration: underline; padding-left: 0;"
+								onclick={() => {
+									$templates = true;
+								}}>Add code template</button
+							>
+						</div>
+					</div>
+				{/if}
+
+				{#if showOptions && $elements.length >= 55}
+					<div
+						class="descriptionButton"
+						style="width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;"
+					>
+						<span class="warning"></span>Thread gets too long. Consider starting a new one.
+					</div>
+				{/if}
 			</div>
 
-			{#if showOptions}
+			{#if showOptions && $elements.length < 55}
 				<div
 					style="width: calc({discussionWidth} - 20px); position: fixed; bottom: 0px; display: flex; justify-content: center; align-items: center; flex-direction: column;"
 				>

@@ -1,3 +1,4 @@
+import { redirect } from '@sveltejs/kit';
 
 export async function POST({ request, locals, fetch }) {
     const formData = await request.formData();
@@ -32,6 +33,8 @@ export async function POST({ request, locals, fetch }) {
         response = {
             message: `Something went wrong: ${err}`,
         }
+
+        throw redirect(300, '/threads')
     }
 
     console.log(response)
