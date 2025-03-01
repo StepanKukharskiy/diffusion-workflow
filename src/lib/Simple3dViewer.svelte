@@ -13,13 +13,13 @@
 	import { generateUUID } from './utils';
 
 	let { uuid = '', modelUrl = '', options = false } = $props(); // Added textureUrl prop
-	let appCanvas: HTMLCanvasElement;
-	let scene: THREE.Scene;
-	let camera: THREE.PerspectiveCamera;
-	let renderer: THREE.WebGLRenderer;
-	let controls: OrbitControls;
-	let lights: THREE.HemisphereLight;
-	let sun: THREE.DirectionalLight;
+	let appCanvas: any = $state();
+	let scene: any = $state();
+	let camera: any = $state();
+	let renderer: any = $state();
+	let controls: any = $state();
+	let lights: any = $state();
+	let sun: any = $state();
 	let is3DModel = $state(false);
 	let isTakingScreenshot = $state(false);
 	console.log(
@@ -27,13 +27,16 @@
 	);
 
 	onMount(() => {
-			setTimeout(() => {
-				console.log(appCanvas);
-				loadModel(
-					`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
-				);
-			}, 1000);
+		console.log('hi')
+		// Canvas is guaranteed to be available here
+		setTimeout(()=>{
+		console.log(appCanvas);
+		loadModel(
+			`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
+		);
+		}, 1000)
 	});
+
 
 	function loadModel(url: string) {
 		const extension = url.split('.').pop()?.toLowerCase(); // Get the file extension

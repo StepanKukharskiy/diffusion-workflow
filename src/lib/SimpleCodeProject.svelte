@@ -39,7 +39,9 @@
 	let isThereCanvas = $state(false);
 
 	onMount(() => {
+		if(controlsMenu){
 		controlsMenuHeight = controlsMenu.offsetHeight;
+		}
 		for (let element of $elements) {
 			if (element.uuid === uuid) {
 				element.files = files;
