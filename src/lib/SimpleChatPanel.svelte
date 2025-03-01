@@ -350,7 +350,7 @@
 	{/if}
 </div>
 
-<div class="suggestions">
+<!-- <div class="suggestions">
 	<p style='margin: 0;'>Start with:</p>
 	<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'How do I'}}>How do I...</button>
 	<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'An image of'}}>An image of...</button>
@@ -360,7 +360,7 @@
 	{:else}
 		<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'Make it a 3D model'}}>Make it a 3D model</button>
 	{/if}
-</div>
+</div> -->
 	
 </div>
 
