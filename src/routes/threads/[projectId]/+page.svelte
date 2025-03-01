@@ -9,6 +9,7 @@
 		width,
 		user,
 		isSavingThread,
+		templates,
 
 		loginPanelState
 
@@ -73,6 +74,14 @@
 				query: ''
 			});
 		}
+	}
+
+	function addSketch(elements: any = []) {
+		elements.push({
+				uuid: generateUUID(),
+				type: 'sketch',
+				imageUrl: ''
+			});
 	}
 
 	function scrollToCreateButton() {
@@ -174,6 +183,8 @@
 						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} options={showOptions} />
 					{/if}
 				{/each}
+
+				<div style='width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;'><span>Continue with a prompt, upload an image or .glb file, </span><button class='tertiaryButton' style='text-decoration: underline; padding-right: 0;' onclick={()=>{addSketch($elements)}}>add sketch</button>, <button class='tertiaryButton' style='text-decoration: underline; padding-right: 0;' onclick={()=>{$templates = true}}>add code template</button><span>,</span><span> or click Tips for more.</span></div>
 			</div>
 
 			{#if showOptions}

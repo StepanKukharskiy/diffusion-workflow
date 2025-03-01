@@ -150,7 +150,7 @@
 			<button class="tertiaryButton" onclick={async () => {
                 sketchImageUrl = await getCanvas()
                 addImageElement($elements, sketchImageUrl)
-                }}>Create image</button>
+                }}>Save as image to use as a reference</button>
 			<button
 				class="tertiaryButton"
 				onclick={async () => {
