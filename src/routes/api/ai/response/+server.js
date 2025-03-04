@@ -24,7 +24,11 @@ export async function POST({ request, locals }) {
     try {
         if(locals.user.requests > 0){
         let response
-        const requestType = await analyseRequest(query.query)
+        let requestType = await analyseRequest(query.query)
+        
+        if(requestType === undefined){
+            requestType = 'chat'
+        }
         console.log(requestType)
 
         const referenceImageUrl = extractUrls(query.query)[0]
