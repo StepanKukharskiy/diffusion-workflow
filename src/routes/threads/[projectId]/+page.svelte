@@ -187,7 +187,14 @@
 						class="descriptionButton"
 						style="width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;"
 					>
-						Continue with a prompt, upload an image or .glb file, click 'Tips' for more or:
+						<p style='margin-top: 0;'>Continue with a prompt, upload an image or .glb file, click 'Tips' for more.</p>
+						<ul>
+							<li>For images, start with 'An image of'.</li>
+							<li>Use reference images to control the composition.</li>
+							<li>For videos, start with 'A video of'.</li>
+							<li>For 3D models, provide a reference image and type 'Make this a 3D model'.</li>
+						</ul>
+						<p>Or:</p>
 						<div
 							style="width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;"
 						>
@@ -196,14 +203,14 @@
 								style="text-decoration: underline; padding-left: 0;"
 								onclick={() => {
 									addSketch($elements);
-								}}>Add sketch</button
+								}}>Add a sketch</button
 							>
 							<button
 								class="tertiaryButton"
 								style="text-decoration: underline; padding-left: 0;"
 								onclick={() => {
 									$templates = true;
-								}}>Add code template</button
+								}}>Add a code template</button
 							>
 						</div>
 					</div>
