@@ -8,12 +8,16 @@ import { vectorResponse } from "$lib/vector";
 import { modelResponse } from "$lib/model";
 import { interpolationResponse } from "$lib/interpolate";
 import { extractFrames } from "$lib/framesExtractor";
+import { agentResponse } from "$lib/agent";
 
 const together = new Together({ apiKey: TOGETHER_API_TOKEN });
 
 export async function POST({ request, locals }) {
     const query = await request.json()
     console.log(query)
+
+    // const agentResponseData = agentResponse('a sculpture')
+    // console.log(agentResponseData)
 
     function extractUrls(text = '') {
         const urlPattern = /https?:\/\/[^\s]+/g;
