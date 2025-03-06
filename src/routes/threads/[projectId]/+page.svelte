@@ -185,16 +185,16 @@
 				{#if showOptions && $elements.length < 55}
 					<div
 						class="descriptionButton"
-						style="width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;"
+						style="width: 100%; max-width: 800px; display: flex; flex-direction: column; flex-wrap: wrap;"
 					>
-						<p style='margin-top: 0;'>Continue with a prompt, upload an image or .glb file, click 'Tips' for more.</p>
+						<p style='margin: 0;'>Continue with a prompt, upload an image or .glb file, click 'Tips' for more.</p>
 						<ul>
 							<li>For images, start with 'An image of'.</li>
 							<li>Use reference images to control the composition.</li>
 							<li>For videos, start with 'A video of'.</li>
 							<li>For 3D models, provide a reference image and type 'Make this a 3D model'.</li>
 						</ul>
-						<p>Or:</p>
+						<p style='margin-top: 0;'>Or:</p>
 						<div
 							style="width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;"
 						>
