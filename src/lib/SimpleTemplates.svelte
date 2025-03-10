@@ -101,6 +101,12 @@
 			heading: '3D Diffusion CA'
 		},
 		{
+			name: 'CA3d',
+			description: 'Cellular Automata 3D.',
+			type: 'art',
+			heading: '3D CA'
+		},
+		{
 			name: 'city grid game',
 			description: 'A grid-based city building game with vanilla JavaScript.',
 			type: 'game',
