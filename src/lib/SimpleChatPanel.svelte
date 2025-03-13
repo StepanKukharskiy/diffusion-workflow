@@ -6,6 +6,7 @@
 		elements,
 		user,
 		referenceImageUrl,
+		maskImageUrl,
 		manual,
 		tutorials,
 		templates,
@@ -79,7 +80,8 @@
 				query: data.query,
 				previousAnswers: getContext($elements),
 				projectId: $page.params.projectId,
-				referenceImage: $referenceImageUrl
+				referenceImage: $referenceImageUrl,
+				maskImage: $maskImageUrl
 			})
 		});
 		const messageObject = await message.json();
@@ -260,6 +262,20 @@
 		>
 			<img
 				src={$referenceImageUrl}
+				alt="reference"
+				style="width: 40px; height: 40px; border-radius: 10px; margin-right: 10px;"
+			/>
+		</button>
+	{/if}
+	{#if $maskImageUrl}
+		<button
+			onclick={() => {
+				$maskImageUrl = '';
+			}}
+			style="border: none; padding: 0; margin: 0 10px 0 0; width: 40px; height: 40px; background: none;"
+		>
+			<img
+				src={$maskImageUrl}
 				alt="reference"
 				style="width: 40px; height: 40px; border-radius: 10px; margin-right: 10px;"
 			/>

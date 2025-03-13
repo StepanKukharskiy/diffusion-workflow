@@ -71,6 +71,7 @@ export let tutorialsPanelState = writable(false)
 export let appsPanelState = writable(false)
 
 export let referenceImageUrl = writable('')
+export let maskImageUrl = writable('')
 export let chatPanelMode = writable('chat')
 export let loginPanelState = writable(false)
 export let account = writable(false)

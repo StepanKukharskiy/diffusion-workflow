@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { elements, referenceImageUrl, textColor, chatPanelMode, user } from './store';
+	import { elements, referenceImageUrl, textColor, chatPanelMode, user, maskImageUrl } from './store';
 	import { generateUUID, generateVideo, deleteBlock, generateModel, updateCredits } from './utils';
 	import SimpleTextCard from './SimpleTextCard.svelte';
 	let { imageUrl = '', query = '', uuid = '', options = false } = $props();
@@ -57,7 +57,6 @@
 	let isGenerating = $state(false),
 		modelOption = $state('flux-schnell'),
 		refImageUrl = $state(''),
-		maskImageUrl = $state(''),
 		generatedImageUrl = $state('');
 
 	async function generateImage() {
@@ -109,6 +108,13 @@
 						$referenceImageUrl = imageUrl;
 						$chatPanelMode = 'chat';
 					}}>Use as a reference image</button
+				>
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						$maskImageUrl = imageUrl;
+						$chatPanelMode = 'chat';
+					}}>Use as a mask</button
 				>
 				<button
 					class="tertiaryButton"

@@ -7,7 +7,7 @@ const replicate = new Replicate({
 });
 
 
-export async function imageResponse(model = '', query = '', referenceCompositionImageUrl = '') {
+export async function imageResponse(model = '', query = '', referenceCompositionImageUrl = '', maskImageUrl = '') {
     try {
         let response
         let analysePromptResult = await analysePrompt(query)
@@ -31,7 +31,7 @@ export async function imageResponse(model = '', query = '', referenceComposition
                     response = {
                         imageUrl: imageUrl
                     }
-                } else if (model === 'flux-graphic-city'){
+                } else if (model === 'flux-graphic-city') {
                     console.log('using graphic city model')
                     const input = {
                         steps: 50,
@@ -46,7 +46,7 @@ export async function imageResponse(model = '', query = '', referenceComposition
                     response = {
                         imageUrl: imageUrl
                     }
-                } else if (model === 'flux-crmcs'){
+                } else if (model === 'flux-crmcs') {
                     console.log('using crmcs model')
                     const input = {
                         steps: 50,
@@ -62,7 +62,7 @@ export async function imageResponse(model = '', query = '', referenceComposition
                         imageUrl: imageUrl
                     }
                 }
-            } else if (model === 'flux-canny-pro'){
+            } else if (referenceCompositionImageUrl != '' && maskImageUrl === '' && model === 'flux-canny-pro') {
                 console.log('using canny model')
                 const input = {
                     steps: 50,
@@ -78,7 +78,7 @@ export async function imageResponse(model = '', query = '', referenceComposition
                 response = {
                     imageUrl: imageUrl
                 }
-            }  else if (model === 'flux-depth-pro'){
+            } else if (referenceCompositionImageUrl != '' && maskImageUrl === '' && model === 'flux-depth-pro') {
                 console.log('using depth model')
                 const input = {
                     steps: 50,
@@ -90,6 +90,24 @@ export async function imageResponse(model = '', query = '', referenceComposition
                     prompt_upsampling: false
                 }
                 const output = await replicate.run("black-forest-labs/flux-depth-pro", { input });
+                const imageUrl = output.url().href;
+                response = {
+                    imageUrl: imageUrl
+                }
+            } else if (referenceCompositionImageUrl != '' && maskImageUrl != '') {
+                console.log('using inpainting model')
+                const input = {
+                    mask: maskImageUrl,
+                    image: referenceCompositionImageUrl,
+                    steps: 50,
+                    prompt: query,
+                    guidance: 60,
+                    outpaint: "None",
+                    output_format: "jpg",
+                    safety_tolerance: 2,
+                    prompt_upsampling: false
+                }
+                const output = await replicate.run("black-forest-labs/flux-fill-pro", { input });
                 const imageUrl = output.url().href;
                 response = {
                     imageUrl: imageUrl

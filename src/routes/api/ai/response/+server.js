@@ -62,7 +62,7 @@ export async function POST({ request, locals }) {
                 model = 'flux-graphic-city'
             }
             console.log(model)
-            const imageResponseData = await imageResponse(model, query.query, query.referenceImage)
+            const imageResponseData = await imageResponse(model, query.query, query.referenceImage, query.maskImage)
             const imageResponseDataUrl = await imageResponseData?.json()
 
             const imageForDb = await fetch(imageResponseDataUrl.imageUrl);
