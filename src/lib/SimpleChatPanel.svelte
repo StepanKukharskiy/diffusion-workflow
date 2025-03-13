@@ -442,8 +442,12 @@
 	#tipsButton {
 		padding: 5px;
 		position: absolute;
-		right: 0;
-		top: -45px;
+		border-radius: 10px 10px 0 0;
+		border-bottom: none;
+		right: 10px;
+		top: -34px;
+		box-sizing: border-box;
+		z-index: -1;
 	}
 	.hintPanel {
 		position: absolute;
