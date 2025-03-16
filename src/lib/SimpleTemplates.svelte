@@ -107,6 +107,12 @@
 			heading: '3D CA'
 		},
 		{
+			name: 'differential growth',
+			description: 'Differential Growth sketch tool made with p5.js',
+			type: 'art',
+			heading: 'Differential Growth 2D'
+		},
+		{
 			name: 'city grid game',
 			description: 'A grid-based city building game with vanilla JavaScript.',
 			type: 'game',
