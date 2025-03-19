@@ -7,6 +7,7 @@ export async function POST({ request, locals, fetch }) {
     const name = formData.get('name')
     const id = formData.get('id')
     const data = formData.get('data')
+    const dataFile = formData.get('dataFile')
 
     let response = {}
     let record
@@ -15,12 +16,13 @@ export async function POST({ request, locals, fetch }) {
         const pbFormData = new FormData();
         pbFormData.append('name', name);
         pbFormData.append('createdBy', locals.user.id);
-        pbFormData.append('data', data)
+        // pbFormData.append('data', data)
+        pbFormData.append('dataFile', dataFile)
 
 
-        // await locals.pb.collection('nodeEditorProjects').update(id, {
-        //     'files': null,
-        // });
+        await locals.pb.collection('nodeEditorProjects').update(id, {
+            'dataFile': null,
+        });
 
         record = await locals.pb.collection('nodeEditorProjects').update(id, pbFormData)
 

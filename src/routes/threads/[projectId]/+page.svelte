@@ -12,7 +12,7 @@
 		templates,
 		loginPanelState
 	} from '$lib/store';
-	import { generateUUID, initialCodeFiles } from '$lib/utils';
+	import { arrayToJSModule, generateUUID, initialCodeFiles } from '$lib/utils';
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 
@@ -56,6 +56,8 @@
 		$elements = [];
 	}
 
+	console.log(data)
+
 	function addElement(elements: any = [], type = 'text') {
 		if (type === 'code') {
 			elements.push({
@@ -97,14 +99,25 @@
 			const formData = new FormData();
 			formData.append('name', name);
 			formData.append('id', id);
-			formData.append('data', JSON.stringify(elements));
-			console.log(`saving: ${formData}`);
-			const response = await fetch('/api/threads/save', { method: 'POST', body: formData, signal: AbortSignal.timeout(180000) });
+			// formData.append('data', JSON.stringify(elements));
+
+			// Convert elements to JSON and create a Blob
+			const jsonData = JSON.stringify(elements, null, 2);
+			const blob = new Blob([jsonData], { type: 'text/plain' });
+			formData.append('dataFile', blob, 'data.txt');
+
+			//console.log(`saving: ${formData}`);
+			const response = await fetch('/api/threads/save', {
+				method: 'POST',
+				body: formData,
+				signal: AbortSignal.timeout(180000)
+			});
 			const responseData = await response.json();
 			$isSavingThread = false;
 			// console.log(responseData);
 		} catch (err) {
 			console.log(err);
+			$isSavingThread = false;
 		}
 	}
 
@@ -187,14 +200,16 @@
 						class="descriptionButton"
 						style="width: 100%; max-width: 800px; display: flex; flex-direction: column; flex-wrap: wrap;"
 					>
-						<p style='margin: 0;'>Continue with a prompt, upload an image or .glb file, click 'Tips' for more.</p>
+						<p style="margin: 0;">
+							Continue with a prompt, upload an image or .glb file, click 'Tips' for more.
+						</p>
 						<ul>
 							<li>For images, start with 'An image of'.</li>
 							<li>Use reference images to control the composition.</li>
 							<li>For videos, start with 'A video of'.</li>
 							<li>For 3D models, provide a reference image and type 'Make this a 3D model'.</li>
 						</ul>
-						<p style='margin-top: 0;'>Or:</p>
+						<p style="margin-top: 0;">Or:</p>
 						<div
 							style="width: 100%; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap;"
 						>

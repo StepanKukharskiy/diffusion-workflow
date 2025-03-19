@@ -30,7 +30,7 @@ export async function GET({ request, locals, fetch }) {
             threads: threadsData
         }
 
-        console.log(response)
+        // console.log(response)
     } catch (err) {
         response = {
             message: `Something went wrong: ${err}`,
