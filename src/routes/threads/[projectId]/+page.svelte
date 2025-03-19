@@ -99,7 +99,7 @@
 			formData.append('id', id);
 			formData.append('data', JSON.stringify(elements));
 			console.log(`saving: ${formData}`);
-			const response = await fetch('/api/threads/save', { method: 'POST', body: formData });
+			const response = await fetch('/api/threads/save', { method: 'POST', body: formData, signal: AbortSignal.timeout(180000) });
 			const responseData = await response.json();
 			$isSavingThread = false;
 			// console.log(responseData);
