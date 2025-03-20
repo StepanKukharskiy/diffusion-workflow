@@ -34,6 +34,7 @@
 	import Simple3dViewer from '$lib/Simple3dViewer.svelte';
 	import SimpleChatPanel from '$lib/SimpleChatPanel.svelte';
 	import SimpleP5Sketch from '$lib/SimpleP5Sketch.svelte';
+	import SimpleMap from '$lib/SimpleMap.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -56,7 +57,7 @@
 		$elements = [];
 	}
 
-	console.log(data)
+	console.log(data);
 
 	function addElement(elements: any = [], type = 'text') {
 		if (type === 'code') {
@@ -192,7 +193,9 @@
 						/>
 					{:else if element.type === '3dViewer' || element.type === 'model'}
 						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} options={showOptions} />
-					{/if}
+					{:else if element.type === 'map'}
+						<SimpleMap uuid={element.uuid} options={showOptions} />
+						{/if}
 				{/each}
 
 				{#if showOptions && $elements.length < 55}
@@ -226,6 +229,14 @@
 								onclick={() => {
 									$templates = true;
 								}}>Add a code template</button
+							>
+							<button
+								class="tertiaryButton"
+								style="text-decoration: underline; padding-left: 0;"
+								onclick={() => {
+									addElement($elements, 'map');
+									$elements = $elements
+								}}>Add a map</button
 							>
 						</div>
 					</div>
