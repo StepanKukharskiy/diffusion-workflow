@@ -23,8 +23,10 @@
 	let is3DModel = $state(false);
 	let isTakingScreenshot = $state(false);
 	let showTexture: any = $state(true);
-	let originalMaterials: any = $state({});
+	let originalMaterials: any = $state([]);
 	let currentMaterialIndex: any = $state(0);
+	let originalMesh:any = $state()
+	let segmentedMeshes: any = $state([])
 	// console.log(
 	// 	`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 	// );
@@ -42,8 +44,8 @@
 
 	function loadModel(url: string) {
 		const extension = url.split('.').pop()?.toLowerCase(); // Get the file extension
-		console.log(extension);
-		console.log(url);
+		// console.log(extension);
+		// console.log(url);
 		if (extension === 'glb' || extension === 'gltf') {
 			loadGLBFile(url); // Load GLB file
 		} else if (extension === 'obj') {
@@ -107,11 +109,13 @@
 		renderer.outputEncoding = THREE.sRGBEncoding;
 		// object.rotation.x = -Math.PI/2
 		if (object.children[0].children[0] != undefined) {
-			object.children[0].children[0].material.metalness = 0;
+			originalMesh = object.children[0].children[0]
 		} else {
-			object.children[0].material.metalness = 0;
+			originalMesh = object.children[0]
 		}
-		console.log(object);
+		originalMesh.material.metalness = 0;
+		createSegmentedMesh(originalMesh)
+		// console.log(object);
 		scene.add(object);
 		camera.position.z = 1;
 
@@ -166,37 +170,105 @@
 
 	function switchMaterials(value: any) {
 		if (scene) {
-			scene.traverse((node: any) => {
-
-				if (node.isMesh) {
-					if (!originalMaterials[node.uuid]) {
-						originalMaterials[node.uuid] = node.material.clone();
-					}
-
-					if (value === 0) {
-						node.material = originalMaterials[node.uuid].clone();
+			originalMaterials.push(originalMesh.material.clone())
+			if (value === 0) {
+						originalMesh.material = originalMaterials[0];
+						originalMesh.visible = true
+						for(let mesh of segmentedMeshes){
+							mesh.visible = false
+						}
 					} else if (value === 1) {
 						const newMaterial = new THREE.MeshStandardMaterial({
 							color: 'lightgrey'
 						});
-						node.geometry.computeVertexNormals();
-						node.material = newMaterial;
+						
+						originalMesh.material = newMaterial;
+						originalMesh.visible = true
+						for(let mesh of segmentedMeshes){
+							mesh.visible = false
+						}
 					} else if (value === 2) {
 						const newMaterial = new THREE.MeshNormalMaterial({});
-						node.geometry.computeVertexNormals();
-						node.material = newMaterial;
+						
+						originalMesh.material = newMaterial;
+						originalMesh.visible = true
+						for(let mesh of segmentedMeshes){
+							mesh.visible = false
+						}
 					} else if (value === 3) {
 						const newMaterial = new THREE.MeshStandardMaterial({
 							color: 'black',
 							wireframe: true
 						});
-						node.geometry.computeVertexNormals();
-						node.material = newMaterial;
+						
+						originalMesh.material = newMaterial;
+						originalMesh.visible = true
+						for(let mesh of segmentedMeshes){
+							mesh.visible = false
+						}
+					}
+					else if (value === 4) {
+						originalMesh.visible = false
+						for(let mesh of segmentedMeshes){
+							mesh.visible = true
+						}
 					}
 
-					node.material.needsUpdate = true;
-				}
-			});
+					originalMesh.geometry.computeVertexNormals();
+					originalMesh.material.needsUpdate = true;
+			// scene.traverse((node: any) => {
+			// 	if (node.isMesh) {
+			// 		if (!originalMaterials[node.uuid]) {
+			// 			originalMaterials[node.uuid] = originalMesh.material.clone();
+			// 		}
+
+				// 	if (value === 0) {
+				// 		originalMesh.material = originalMaterials[node.uuid].clone();
+				// 		originalMesh.visible = true
+				// 		for(let mesh of segmentedMeshes){
+				// 			mesh.visible = false
+				// 		}
+				// 	} else if (value === 1) {
+				// 		const newMaterial = new THREE.MeshStandardMaterial({
+				// 			color: 'lightgrey'
+				// 		});
+						
+				// 		originalMesh.material = newMaterial;
+				// 		originalMesh.visible = true
+				// 		for(let mesh of segmentedMeshes){
+				// 			mesh.visible = false
+				// 		}
+				// 	} else if (value === 2) {
+				// 		const newMaterial = new THREE.MeshNormalMaterial({});
+						
+				// 		originalMesh.material = newMaterial;
+				// 		originalMesh.visible = true
+				// 		for(let mesh of segmentedMeshes){
+				// 			mesh.visible = false
+				// 		}
+				// 	} else if (value === 3) {
+				// 		const newMaterial = new THREE.MeshStandardMaterial({
+				// 			color: 'black',
+				// 			wireframe: true
+				// 		});
+						
+				// 		originalMesh.material = newMaterial;
+				// 		originalMesh.visible = true
+				// 		for(let mesh of segmentedMeshes){
+				// 			mesh.visible = false
+				// 		}
+				// 	}
+				// 	else if (value === 4) {
+				// 		originalMesh.visible = false
+				// 		for(let mesh of segmentedMeshes){
+				// 			mesh.visible = true
+				// 		}
+				// 	}
+
+				// 	node.geometry.computeVertexNormals();
+				// 	node.material.needsUpdate = true;
+				// }
+			// });
 		}
 	}
 
@@ -243,6 +315,249 @@
 			});
 		}
 	}
+
+	function createSegmentedMesh(mesh:any) {
+		// let mesh;
+		// scene.traverse((node: any) => {
+		// 	if (node.isMesh) {
+		// 		mesh = node;
+		// 	}
+		// });
+		const geometry = mesh.geometry;
+
+		// Get the number of triangles (polygons)
+		const triangleCount = geometry.index
+			? geometry.index.count / 3
+			: geometry.attributes.position.count / 3;
+
+		console.log(`Total triangles: ${triangleCount}`);
+
+		const polygonsPerMesh = 300;
+
+		// Compute bounding box
+		const boundingBox = new THREE.Box3().setFromObject(mesh);
+		const size = new THREE.Vector3();
+		boundingBox.getSize(size);
+
+		// Determine how many divisions we need in each axis to get roughly 20 polygons per mesh
+		const totalVolume = size.x * size.y * size.z;
+		const volumePerMesh = totalVolume / (triangleCount / polygonsPerMesh);
+		const divisionLength = Math.pow(volumePerMesh, 1 / 3);
+
+		const divisionsX = Math.max(1, Math.ceil(size.x / divisionLength));
+		const divisionsY = Math.max(1, Math.ceil(size.y / divisionLength));
+		const divisionsZ = Math.max(1, Math.ceil(size.z / divisionLength));
+
+		// Create an array to hold polygons for each cell
+		const cells = Array(divisionsX * divisionsY * divisionsZ)
+			.fill()
+			.map(() => []);
+
+		// Assign each polygon to a cell based on its centroid
+		const positionAttr = geometry.attributes.position;
+		const indices = geometry.index ? geometry.index.array : null;
+
+		for (let i = 0; i < triangleCount; i++) {
+			// Get the three vertices of this triangle
+			let v1, v2, v3;
+
+			if (indices) {
+				const idx1 = indices[i * 3] * 3;
+				const idx2 = indices[i * 3 + 1] * 3;
+				const idx3 = indices[i * 3 + 2] * 3;
+
+				v1 = new THREE.Vector3(
+					positionAttr.array[idx1],
+					positionAttr.array[idx1 + 1],
+					positionAttr.array[idx1 + 2]
+				);
+
+				v2 = new THREE.Vector3(
+					positionAttr.array[idx2],
+					positionAttr.array[idx2 + 1],
+					positionAttr.array[idx2 + 2]
+				);
+
+				v3 = new THREE.Vector3(
+					positionAttr.array[idx3],
+					positionAttr.array[idx3 + 1],
+					positionAttr.array[idx3 + 2]
+				);
+			} else {
+				const idx = i * 9;
+
+				v1 = new THREE.Vector3(
+					positionAttr.array[idx],
+					positionAttr.array[idx + 1],
+					positionAttr.array[idx + 2]
+				);
+
+				v2 = new THREE.Vector3(
+					positionAttr.array[idx + 3],
+					positionAttr.array[idx + 4],
+					positionAttr.array[idx + 5]
+				);
+
+				v3 = new THREE.Vector3(
+					positionAttr.array[idx + 6],
+					positionAttr.array[idx + 7],
+					positionAttr.array[idx + 8]
+				);
+			}
+
+			// Apply mesh transformation
+			v1.applyMatrix4(mesh.matrixWorld);
+			v2.applyMatrix4(mesh.matrixWorld);
+			v3.applyMatrix4(mesh.matrixWorld);
+
+			// Calculate centroid
+			const centroid = new THREE.Vector3().add(v1).add(v2).add(v3).divideScalar(3);
+
+			// Determine which cell this triangle belongs to
+			const cellX = Math.min(
+				divisionsX - 1,
+				Math.max(0, Math.floor(((centroid.x - boundingBox.min.x) / size.x) * divisionsX))
+			);
+			const cellY = Math.min(
+				divisionsY - 1,
+				Math.max(0, Math.floor(((centroid.y - boundingBox.min.y) / size.y) * divisionsY))
+			);
+			const cellZ = Math.min(
+				divisionsZ - 1,
+				Math.max(0, Math.floor(((centroid.z - boundingBox.min.z) / size.z) * divisionsZ))
+			);
+
+			const cellIndex = cellX + cellY * divisionsX + cellZ * divisionsX * divisionsY;
+			cells[cellIndex].push(i);
+		}
+
+		// Create meshes for each non-empty cell
+		const smallMeshes = [];
+
+		for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
+			const triangles = cells[cellIndex];
+
+			if (triangles.length === 0) continue;
+
+			// Create a new geometry for this cell
+			const cellGeometry = new THREE.BufferGeometry();
+
+			if (indices) {
+				// For indexed geometries
+				const newIndices = [];
+				const vertexMap = new Map();
+				let nextIndex = 0;
+
+				for (const triangleIndex of triangles) {
+					for (let j = 0; j < 3; j++) {
+						const originalIndex = indices[triangleIndex * 3 + j];
+
+						if (!vertexMap.has(originalIndex)) {
+							vertexMap.set(originalIndex, nextIndex++);
+						}
+
+						newIndices.push(vertexMap.get(originalIndex));
+					}
+				}
+
+				// Create new attribute arrays
+				const newAttributes: any = {};
+				for (const name in geometry.attributes) {
+					const attribute = geometry.attributes[name];
+					const itemSize = attribute.itemSize;
+					const array = attribute.array;
+					const newArray = new Float32Array(vertexMap.size * itemSize);
+
+					for (const [originalIndex, newIndex] of vertexMap.entries()) {
+						for (let k = 0; k < itemSize; k++) {
+							newArray[newIndex * itemSize + k] = array[originalIndex * itemSize + k];
+						}
+					}
+
+					newAttributes[name] = new THREE.BufferAttribute(newArray, itemSize);
+				}
+
+				// Set attributes and indices
+				for (const name in newAttributes) {
+					cellGeometry.setAttribute(name, newAttributes[name]);
+				}
+
+				cellGeometry.setIndex(newIndices);
+			} else {
+				// For non-indexed geometries
+				const newPositions = [];
+
+				// Copy other attribute arrays if needed
+				const newAttributes: any = {};
+				for (const name in geometry.attributes) {
+					newAttributes[name] = [];
+				}
+
+				for (const triangleIndex of triangles) {
+					const baseIndex = triangleIndex * 9;
+
+					// Copy position data for this triangle
+					for (let j = 0; j < 9; j++) {
+						newPositions.push(positionAttr.array[baseIndex + j]);
+					}
+
+					// Copy other attribute data
+					for (const name in geometry.attributes) {
+						if (name === 'position') continue;
+
+						const attribute = geometry.attributes[name];
+						const itemSize = attribute.itemSize;
+						const vertexBaseIndex = triangleIndex * 3 * itemSize;
+
+						for (let j = 0; j < 3 * itemSize; j++) {
+							newAttributes[name].push(attribute.array[vertexBaseIndex + j]);
+						}
+					}
+				}
+
+				// Set position attribute
+				cellGeometry.setAttribute(
+					'position',
+					new THREE.BufferAttribute(new Float32Array(newPositions), 3)
+				);
+
+				// Set other attributes
+				for (const name in newAttributes) {
+					if (name === 'position') continue;
+
+					const attribute = geometry.attributes[name];
+					cellGeometry.setAttribute(
+						name,
+						new THREE.BufferAttribute(new Float32Array(newAttributes[name]), attribute.itemSize)
+					);
+				}
+			}
+
+			// Create a color based on the cell index using HSL
+			const hue = (cellIndex * 137.5) % 360; // Golden angle approximation for good distribution
+			const saturation = 0.75;
+			const lightness = 0.6;
+			const color = new THREE.Color().setHSL(hue / 360, saturation, lightness);
+
+			const cellMaterial = new THREE.MeshStandardMaterial({
+				color: color,
+				metalness: 0.1,
+				roughness: 0.7
+			});
+
+			// Create a new mesh
+			const cellMesh = new THREE.Mesh(cellGeometry,cellMaterial);
+			cellMesh.geometry.computeVertexNormals();
+			cellMesh.material.needsUpdate = true;
+
+			cellMesh.visible = false;
+			smallMeshes.push(cellMesh);
+			segmentedMeshes.push(cellMesh);
+			scene.add(cellMesh);
+		}
+		// console.log(scene);
+	}
+
 </script>
 
 <div class="canvasContainer">
@@ -263,12 +578,18 @@
 			oninput={(e: any) => updateLightIntensity(parseFloat(e.target.value))}
 		/>
 		<div style="margin-top: 10px;">
-			<label for="{uuid}-materialType">Material Type:</label>
-			<select id="{uuid}-materialType" onchange={(e:any)=>{switchMaterials(parseInt(e.target.value))}}>
+			<label for="{uuid}-materialType">View:</label>
+			<select
+				id="{uuid}-materialType"
+				onchange={(e: any) => {
+					switchMaterials(parseInt(e.target.value));
+				}}
+			>
 				<option value="0">Textured</option>
 				<option value="1">White</option>
 				<option value="2">Normal</option>
 				<option value="3">Wireframe</option>
+				<option value="4">Segment</option>
 			</select>
 		</div>
 	</div>
