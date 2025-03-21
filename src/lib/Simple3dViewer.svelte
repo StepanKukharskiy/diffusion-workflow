@@ -22,21 +22,23 @@
 	let sun: any = $state();
 	let is3DModel = $state(false);
 	let isTakingScreenshot = $state(false);
-	console.log(
-		`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
-	);
+	let showTexture: any = $state(true);
+	let originalMaterials: any = $state({});
+	let currentMaterialIndex: any = $state(0);
+	// console.log(
+	// 	`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
+	// );
 
 	onMount(() => {
-		console.log('hi')
+		console.log('hi');
 		// Canvas is guaranteed to be available here
-		setTimeout(()=>{
-		console.log(appCanvas);
-		loadModel(
-			`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
-		);
-		}, 1000)
+		setTimeout(() => {
+			console.log(appCanvas);
+			loadModel(
+				`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
+			);
+		}, 1000);
 	});
-
 
 	function loadModel(url: string) {
 		const extension = url.split('.').pop()?.toLowerCase(); // Get the file extension
@@ -98,11 +100,11 @@
 		renderer = new THREE.WebGLRenderer({ canvas: appCanvas, antialias: true, alpha: true });
 		renderer.setSize(appCanvas.clientWidth, appCanvas.clientHeight);
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-		// renderer.shadowMap.enabled = true;
+		renderer.shadowMap.enabled = true;
 		// renderer.outputEncoding = THREE.sRGBEncoding;
 		renderer.toneMapping = THREE.LinearToneMapping;
 		renderer.toneMappingExposure = 1;
-		// renderer.outputEncoding = THREE.sRGBEncoding;
+		renderer.outputEncoding = THREE.sRGBEncoding;
 		// object.rotation.x = -Math.PI/2
 		if (object.children[0].children[0] != undefined) {
 			object.children[0].children[0].material.metalness = 0;
@@ -133,6 +135,9 @@
 		// scene.add(lights, sun);
 		scene.add(lights);
 
+		const ambientLight = new THREE.AmbientLight(0x404040, 2);
+		scene.add(ambientLight);
+
 		controls = new OrbitControls(camera, renderer.domElement);
 		controls.enableDamping = true; // Enable damping (inertia)
 		controls.dampingFactor = 0.25; // Damping factor
@@ -159,8 +164,44 @@
 		}
 	}
 
+	function switchMaterials(value: any) {
+		if (scene) {
+			scene.traverse((node: any) => {
+
+				if (node.isMesh) {
+					if (!originalMaterials[node.uuid]) {
+						originalMaterials[node.uuid] = node.material.clone();
+					}
+
+					if (value === 0) {
+						node.material = originalMaterials[node.uuid].clone();
+					} else if (value === 1) {
+						const newMaterial = new THREE.MeshStandardMaterial({
+							color: 'lightgrey'
+						});
+						node.geometry.computeVertexNormals();
+						node.material = newMaterial;
+					} else if (value === 2) {
+						const newMaterial = new THREE.MeshNormalMaterial({});
+						node.geometry.computeVertexNormals();
+						node.material = newMaterial;
+					} else if (value === 3) {
+						const newMaterial = new THREE.MeshStandardMaterial({
+							color: 'black',
+							wireframe: true
+						});
+						node.geometry.computeVertexNormals();
+						node.material = newMaterial;
+					}
+
+					node.material.needsUpdate = true;
+				}
+			});
+		}
+	}
+
 	async function getCanvasScreenshotUrl(canvas: any) {
-		isTakingScreenshot = true
+		isTakingScreenshot = true;
 		if (canvas) {
 			renderer.render(scene, camera);
 			const dataURL = canvas.toDataURL('image/jpeg'); // Convert canvas to image
@@ -211,7 +252,7 @@
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
 	<div class="canvasMenuContainer">
-		<label for="{uuid}-lightIntencity">Light Intencity</label>
+		<label for="{uuid}-lightIntencity">Light Intencity: </label>
 		<input
 			type="number"
 			id="{uuid}-lightIntencity"
@@ -221,6 +262,15 @@
 			value={lightIntensity}
 			oninput={(e: any) => updateLightIntensity(parseFloat(e.target.value))}
 		/>
+		<div style="margin-top: 10px;">
+			<label for="{uuid}-materialType">Material Type:</label>
+			<select id="{uuid}-materialType" onchange={(e:any)=>{switchMaterials(parseInt(e.target.value))}}>
+				<option value="0">Textured</option>
+				<option value="1">White</option>
+				<option value="2">Normal</option>
+				<option value="3">Wireframe</option>
+			</select>
+		</div>
 	</div>
 	{#if options}
 		{#if !isTakingScreenshot}
