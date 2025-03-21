@@ -578,7 +578,7 @@
 			oninput={(e: any) => updateLightIntensity(parseFloat(e.target.value))}
 		/>
 		<div style="margin-top: 10px;">
-			<label for="{uuid}-materialType">View:</label>
+			<label for="{uuid}-materialType">View: </label>
 			<select
 				id="{uuid}-materialType"
 				onchange={(e: any) => {
