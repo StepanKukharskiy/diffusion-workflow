@@ -240,10 +240,10 @@
 				for (let mesh of segmentedMeshes) {
 					mesh.visible = true;
 				}
-
+			}
 				originalMesh.geometry.computeVertexNormals();
 				originalMesh.material.needsUpdate = true;
-			}
+			
 		}
 	}
 
