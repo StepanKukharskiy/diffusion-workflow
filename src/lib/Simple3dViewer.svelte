@@ -35,6 +35,7 @@
 	let gridDivisionsX = $state(4);
 	let gridDivisionsY = $state(4);
 	let gridDivisionsZ = $state(4);
+	let voronoiPointCount = $state(5);
 
 	// console.log(
 	// 	`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
@@ -217,6 +218,16 @@
 				}
 			} else if (value === 4) {
 				originalMesh.visible = false;
+				clearSegmentedMeshes();
+				createSegmentedMesh(originalMesh);
+				for (let mesh of segmentedMeshes) {
+					mesh.visible = true;
+				}
+			} else if (value === 5) {
+				// Voronoi segmentation
+				originalMesh.visible = false;
+				clearSegmentedMeshes();
+				createVoronoiSegmentation(originalMesh);
 				for (let mesh of segmentedMeshes) {
 					mesh.visible = true;
 				}
@@ -555,6 +566,255 @@
 		segmentedMeshes = [];
 	}
 
+	function generateRandomPointsInBoundingBox(boundingBox, numPoints) {
+		const points = [];
+		const min = boundingBox.min;
+		const max = boundingBox.max;
+
+		for (let i = 0; i < numPoints; i++) {
+			const point = new THREE.Vector3(
+				min.x + Math.random() * (max.x - min.x),
+				min.y + Math.random() * (max.y - min.y),
+				min.z + Math.random() * (max.z - min.z)
+			);
+			points.push(point);
+		}
+
+		return points;
+	}
+
+	function createVoronoiSegmentation(mesh: any) {
+		// Clear previous segmented meshes
+		clearSegmentedMeshes();
+		isProcessingMesh = true;
+
+		const geometry = mesh.geometry;
+		const positionAttr = geometry.attributes.position;
+		const indices = geometry.index ? geometry.index.array : null;
+
+		// Get the bounding box
+		const boundingBox = new THREE.Box3().setFromObject(mesh);
+
+		// Generate random points for Voronoi cells
+		const voronoiPoints = generateRandomPointsInBoundingBox(boundingBox, voronoiPointCount);
+
+		// Create cells for each Voronoi point
+		const cells = Array(voronoiPoints.length)
+			.fill()
+			.map(() => []);
+
+		// Get triangle count
+		const triangleCount = geometry.index
+			? geometry.index.count / 3
+			: geometry.attributes.position.count / 3;
+
+		totalTrianglesAmount = triangleCount;
+
+		// Assign each triangle to the closest Voronoi point
+		for (let i = 0; i < triangleCount; i++) {
+			// Get the three vertices of this triangle
+			let v1, v2, v3;
+
+			if (indices) {
+				const idx1 = indices[i * 3] * 3;
+				const idx2 = indices[i * 3 + 1] * 3;
+				const idx3 = indices[i * 3 + 2] * 3;
+
+				v1 = new THREE.Vector3(
+					positionAttr.array[idx1],
+					positionAttr.array[idx1 + 1],
+					positionAttr.array[idx1 + 2]
+				);
+
+				v2 = new THREE.Vector3(
+					positionAttr.array[idx2],
+					positionAttr.array[idx2 + 1],
+					positionAttr.array[idx2 + 2]
+				);
+
+				v3 = new THREE.Vector3(
+					positionAttr.array[idx3],
+					positionAttr.array[idx3 + 1],
+					positionAttr.array[idx3 + 2]
+				);
+			} else {
+				const idx = i * 9;
+
+				v1 = new THREE.Vector3(
+					positionAttr.array[idx],
+					positionAttr.array[idx + 1],
+					positionAttr.array[idx + 2]
+				);
+
+				v2 = new THREE.Vector3(
+					positionAttr.array[idx + 3],
+					positionAttr.array[idx + 4],
+					positionAttr.array[idx + 5]
+				);
+
+				v3 = new THREE.Vector3(
+					positionAttr.array[idx + 6],
+					positionAttr.array[idx + 7],
+					positionAttr.array[idx + 8]
+				);
+			}
+
+			// Apply mesh transformation
+			v1.applyMatrix4(mesh.matrixWorld);
+			v2.applyMatrix4(mesh.matrixWorld);
+			v3.applyMatrix4(mesh.matrixWorld);
+
+			// Calculate centroid
+			const centroid = new THREE.Vector3().add(v1).add(v2).add(v3).divideScalar(3);
+
+			// Find closest Voronoi point
+			let minDist = Infinity;
+			let closestPointIndex = 0;
+
+			for (let j = 0; j < voronoiPoints.length; j++) {
+				const dist = centroid.distanceTo(voronoiPoints[j]);
+				if (dist < minDist) {
+					minDist = dist;
+					closestPointIndex = j;
+				}
+			}
+
+			// Assign triangle to the cell of the closest point
+			cells[closestPointIndex].push(i);
+		}
+
+		// Create meshes for each non-empty cell (reusing your existing code)
+		// This is where we reuse the existing mesh creation logic
+		const smallMeshes = [];
+
+		for (let cellIndex = 0; cellIndex < cells.length; cellIndex++) {
+			const triangles = cells[cellIndex];
+
+			if (triangles.length === 0) continue;
+
+			// Create a new geometry for this cell
+			const cellGeometry = new THREE.BufferGeometry();
+
+			if (indices) {
+				// For indexed geometries
+				const newIndices = [];
+				const vertexMap = new Map();
+				let nextIndex = 0;
+
+				for (const triangleIndex of triangles) {
+					for (let j = 0; j < 3; j++) {
+						const originalIndex = indices[triangleIndex * 3 + j];
+
+						if (!vertexMap.has(originalIndex)) {
+							vertexMap.set(originalIndex, nextIndex++);
+						}
+
+						newIndices.push(vertexMap.get(originalIndex));
+					}
+				}
+
+				// Create new attribute arrays
+				const newAttributes: any = {};
+				for (const name in geometry.attributes) {
+					const attribute = geometry.attributes[name];
+					const itemSize = attribute.itemSize;
+					const array = attribute.array;
+					const newArray = new Float32Array(vertexMap.size * itemSize);
+
+					for (const [originalIndex, newIndex] of vertexMap.entries()) {
+						for (let k = 0; k < itemSize; k++) {
+							newArray[newIndex * itemSize + k] = array[originalIndex * itemSize + k];
+						}
+					}
+
+					newAttributes[name] = new THREE.BufferAttribute(newArray, itemSize);
+				}
+
+				// Set attributes and indices
+				for (const name in newAttributes) {
+					cellGeometry.setAttribute(name, newAttributes[name]);
+				}
+
+				cellGeometry.setIndex(newIndices);
+			} else {
+				// For non-indexed geometries
+				const newPositions = [];
+
+				// Copy other attribute arrays if needed
+				const newAttributes: any = {};
+				for (const name in geometry.attributes) {
+					newAttributes[name] = [];
+				}
+
+				for (const triangleIndex of triangles) {
+					const baseIndex = triangleIndex * 9;
+
+					// Copy position data for this triangle
+					for (let j = 0; j < 9; j++) {
+						newPositions.push(positionAttr.array[baseIndex + j]);
+					}
+
+					// Copy other attribute data
+					for (const name in geometry.attributes) {
+						if (name === 'position') continue;
+
+						const attribute = geometry.attributes[name];
+						const itemSize = attribute.itemSize;
+						const vertexBaseIndex = triangleIndex * 3 * itemSize;
+
+						for (let j = 0; j < 3 * itemSize; j++) {
+							newAttributes[name].push(attribute.array[vertexBaseIndex + j]);
+						}
+					}
+				}
+
+				// Set position attribute
+				cellGeometry.setAttribute(
+					'position',
+					new THREE.BufferAttribute(new Float32Array(newPositions), 3)
+				);
+
+				// Set other attributes
+				for (const name in newAttributes) {
+					if (name === 'position') continue;
+
+					const attribute = geometry.attributes[name];
+					cellGeometry.setAttribute(
+						name,
+						new THREE.BufferAttribute(new Float32Array(newAttributes[name]), attribute.itemSize)
+					);
+				}
+			}
+
+			// Create a color based on the cell index using HSL
+			const hue = (cellIndex * 137.5) % 360; // Golden angle approximation for good distribution
+			const saturation = 0.85;
+			const lightness = 0.5;
+			const color = new THREE.Color().setHSL(hue / 360, saturation, lightness);
+
+			const cellMaterial = new THREE.MeshStandardMaterial({
+				color: color,
+				metalness: 0.1,
+				roughness: 0.7
+			});
+
+			// Create a new mesh
+			const cellMesh = new THREE.Mesh(cellGeometry, cellMaterial);
+			cellMesh.geometry.computeVertexNormals();
+			cellMesh.material.needsUpdate = true;
+
+			if (viewType != 5) {
+				cellMesh.visible = false;
+			}
+
+			smallMeshes.push(cellMesh);
+			segmentedMeshes.push(cellMesh);
+			scene.add(cellMesh);
+		}
+
+		isProcessingMesh = false;
+	}
+
 	function exportSegmentedMeshes() {
 		// Create a new scene containing only the segmented meshes
 		const exportScene = new THREE.Scene();
@@ -639,91 +899,103 @@
 				<option value="1">White</option>
 				<option value="2">Normal</option>
 				<option value="3">Wireframe</option>
-				<option value="4">Segment</option>
+				<option value="4">Grid Segment</option>
+				<option value="5">Voronoi Segment</option>
 			</select>
 		</div>
 		{#if viewType === 4}
-			{#if viewType === 4}
-				<div style="margin-top: 10px;">
-					<label for="{uuid}-gridDivisions">Grid divisions: </label>
-					<div style="display: flex; gap: 5px; align-items: center; margin-top: 5px;">
-						<label for="{uuid}-gridX">X:</label>
-						<input
-							type="number"
-							id="{uuid}-gridX"
-							min="1"
-							max="20"
-							step="1"
-							value={gridDivisionsX}
-							oninput={(e: any) => {
-								gridDivisionsX = parseInt(e.target.value);
-								if (originalMesh) {
-									clearSegmentedMeshes();
-									createSegmentedMesh(originalMesh);
-								}
-							}}
-							style="width: 50px;"
-						/>
+			<div style="margin-top: 10px;">
+				<label for="{uuid}-gridDivisions">Grid divisions: </label>
+				<div style="display: flex; gap: 5px; align-items: center; margin-top: 5px;">
+					<label for="{uuid}-gridX">X:</label>
+					<input
+						type="number"
+						id="{uuid}-gridX"
+						min="1"
+						max="20"
+						step="1"
+						value={gridDivisionsX}
+						oninput={(e: any) => {
+							gridDivisionsX = parseInt(e.target.value);
+							if (originalMesh) {
+								clearSegmentedMeshes();
+								createSegmentedMesh(originalMesh);
+							}
+						}}
+						style="width: 50px;"
+					/>
 
-						<label for="{uuid}-gridY">Y:</label>
-						<input
-							type="number"
-							id="{uuid}-gridY"
-							min="1"
-							max="20"
-							step="1"
-							value={gridDivisionsY}
-							oninput={(e: any) => {
-								gridDivisionsY = parseInt(e.target.value);
-								if (originalMesh) {
-									clearSegmentedMeshes();
-									createSegmentedMesh(originalMesh);
-								}
-							}}
-							style="width: 50px;"
-						/>
+					<label for="{uuid}-gridY">Y:</label>
+					<input
+						type="number"
+						id="{uuid}-gridY"
+						min="1"
+						max="20"
+						step="1"
+						value={gridDivisionsY}
+						oninput={(e: any) => {
+							gridDivisionsY = parseInt(e.target.value);
+							if (originalMesh) {
+								clearSegmentedMeshes();
+								createSegmentedMesh(originalMesh);
+							}
+						}}
+						style="width: 50px;"
+					/>
 
-						<label for="{uuid}-gridZ">Z:</label>
-						<input
-							type="number"
-							id="{uuid}-gridZ"
-							min="1"
-							max="20"
-							step="1"
-							value={gridDivisionsZ}
-							oninput={(e: any) => {
-								gridDivisionsZ = parseInt(e.target.value);
-								if (originalMesh) {
-									clearSegmentedMeshes();
-									createSegmentedMesh(originalMesh);
-								}
-							}}
-							style="width: 50px;"
-						/>
-					</div>
+					<label for="{uuid}-gridZ">Z:</label>
+					<input
+						type="number"
+						id="{uuid}-gridZ"
+						min="1"
+						max="20"
+						step="1"
+						value={gridDivisionsZ}
+						oninput={(e: any) => {
+							gridDivisionsZ = parseInt(e.target.value);
+							if (originalMesh) {
+								clearSegmentedMeshes();
+								createSegmentedMesh(originalMesh);
+							}
+						}}
+						style="width: 50px;"
+					/>
 				</div>
-			{/if}
-
-			<!-- <div style="margin-top: 10px;">
-				<label for="{uuid}-polygonsPerMesh">Polygons per segment: </label>
+			</div>
+		{/if}
+		{#if viewType === 5}
+			<div style="margin-top: 10px;">
+				<label for="{uuid}-voronoiPoints">Number of Voronoi points: </label>
 				<input
 					type="number"
-					id="{uuid}-polygonsPerMesh"
-					min="50"
-					max="10000"
-					step="50"
-					value={polygonsPerMesh}
+					id="{uuid}-voronoiPoints"
+					min="2"
+					max="20"
+					step="1"
+					value={voronoiPointCount}
 					oninput={(e: any) => {
-						polygonsPerMesh = parseInt(e.target.value);
+						voronoiPointCount = parseInt(e.target.value);
 						if (originalMesh) {
-							// Clear previous segmented meshes
 							clearSegmentedMeshes();
-							// Recreate with new polygon count
-							createSegmentedMesh(originalMesh);
+							createVoronoiSegmentation(originalMesh);
 						}
 					}}
 				/>
-			</div> -->
+				<button
+					onclick={() => {
+						if (originalMesh) {
+							clearSegmentedMeshes();
+							createVoronoiSegmentation(originalMesh);
+						}
+					}}
+					class="tertiaryButton"
+					style="padding: 0; margin-top: 10px;"
+				>
+					Regenerate Points
+				</button>
+			</div>
+		{/if}
+		{#if viewType === 4 || viewType === 5}
 			<div style="margin-top: 10px;">
 				<button onclick={exportSegmentedMeshes} class="tertiaryButton" style="padding: 0;"
 					>Export Segments</button
@@ -731,7 +1003,6 @@
 			</div>
 		{/if}
 	</div>
-	<div class="modelDataContainer"></div>
 	{#if options}
 		{#if !isTakingScreenshot}
 			<div style="display: flex; flex-wrap: wrap;">
@@ -799,14 +1070,5 @@
 		left: 10px;
 		z-index: 2;
 		margin-right: 10px;
-	}
-	.modelDataContainer {
-		position: absolute;
-		bottom: 30px;
-		left: 10px;
-		z-index: 2;
-		margin-right: 10px;
-		display: flex;
-		align-items: center;
 	}
 </style>
