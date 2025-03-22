@@ -10,6 +10,7 @@
 	import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 	import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'; // Import OBJLoader
 	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+	import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 	import { generateUUID } from './utils';
 
 	let { uuid = '', modelUrl = '', options = false } = $props(); // Added textureUrl prop
@@ -25,8 +26,12 @@
 	let showTexture: any = $state(true);
 	let originalMaterials: any = $state([]);
 	let currentMaterialIndex: any = $state(0);
-	let originalMesh:any = $state()
-	let segmentedMeshes: any = $state([])
+	let viewType: any = $state(0);
+	let originalMesh: any = $state();
+	let segmentedMeshes: any = $state([]);
+	let polygonsPerMesh = $state(300);
+	let isProcessingMesh = $state(true);
+	let totalTrianglesAmount = $state(0);
 	// console.log(
 	// 	`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 	// );
@@ -109,12 +114,12 @@
 		renderer.outputEncoding = THREE.sRGBEncoding;
 		// object.rotation.x = -Math.PI/2
 		if (object.children[0].children[0] != undefined) {
-			originalMesh = object.children[0].children[0]
+			originalMesh = object.children[0].children[0];
 		} else {
-			originalMesh = object.children[0]
+			originalMesh = object.children[0];
 		}
 		originalMesh.material.metalness = 0;
-		createSegmentedMesh(originalMesh)
+		createSegmentedMesh(originalMesh);
 		// console.log(object);
 		scene.add(object);
 		camera.position.z = 1;
@@ -170,105 +175,51 @@
 
 	function switchMaterials(value: any) {
 		if (scene) {
-			originalMaterials.push(originalMesh.material.clone())
+			originalMaterials.push(originalMesh.material.clone());
 			if (value === 0) {
-						originalMesh.material = originalMaterials[0];
-						originalMesh.visible = true
-						for(let mesh of segmentedMeshes){
-							mesh.visible = false
-						}
-					} else if (value === 1) {
-						const newMaterial = new THREE.MeshStandardMaterial({
-							color: 'lightgrey'
-						});
-						
-						originalMesh.material = newMaterial;
-						originalMesh.visible = true
-						for(let mesh of segmentedMeshes){
-							mesh.visible = false
-						}
-					} else if (value === 2) {
-						const newMaterial = new THREE.MeshNormalMaterial({});
-						
-						originalMesh.material = newMaterial;
-						originalMesh.visible = true
-						for(let mesh of segmentedMeshes){
-							mesh.visible = false
-						}
-					} else if (value === 3) {
-						const newMaterial = new THREE.MeshStandardMaterial({
-							color: 'black',
-							wireframe: true
-						});
-						
-						originalMesh.material = newMaterial;
-						originalMesh.visible = true
-						for(let mesh of segmentedMeshes){
-							mesh.visible = false
-						}
-					}
-					else if (value === 4) {
-						originalMesh.visible = false
-						for(let mesh of segmentedMeshes){
-							mesh.visible = true
-						}
-					}
+				originalMesh.material = originalMaterials[0];
+				originalMesh.visible = true;
+				for (let mesh of segmentedMeshes) {
+					mesh.visible = false;
+				}
+			} else if (value === 1) {
+				const newMaterial = new THREE.MeshStandardMaterial({
+					color: 'lightgrey'
+				});
 
-					originalMesh.geometry.computeVertexNormals();
-					originalMesh.material.needsUpdate = true;
-			// scene.traverse((node: any) => {
-			// 	if (node.isMesh) {
-			// 		if (!originalMaterials[node.uuid]) {
-			// 			originalMaterials[node.uuid] = originalMesh.material.clone();
-			// 		}
+				originalMesh.material = newMaterial;
+				originalMesh.visible = true;
+				for (let mesh of segmentedMeshes) {
+					mesh.visible = false;
+				}
+			} else if (value === 2) {
+				const newMaterial = new THREE.MeshNormalMaterial({});
 
-				// 	if (value === 0) {
-				// 		originalMesh.material = originalMaterials[node.uuid].clone();
-				// 		originalMesh.visible = true
-				// 		for(let mesh of segmentedMeshes){
-				// 			mesh.visible = false
-				// 		}
-				// 	} else if (value === 1) {
-				// 		const newMaterial = new THREE.MeshStandardMaterial({
-				// 			color: 'lightgrey'
-				// 		});
-						
-				// 		originalMesh.material = newMaterial;
-				// 		originalMesh.visible = true
-				// 		for(let mesh of segmentedMeshes){
-				// 			mesh.visible = false
-				// 		}
-				// 	} else if (value === 2) {
-				// 		const newMaterial = new THREE.MeshNormalMaterial({});
-						
-				// 		originalMesh.material = newMaterial;
-				// 		originalMesh.visible = true
-				// 		for(let mesh of segmentedMeshes){
-				// 			mesh.visible = false
-				// 		}
-				// 	} else if (value === 3) {
-				// 		const newMaterial = new THREE.MeshStandardMaterial({
-				// 			color: 'black',
-				// 			wireframe: true
-				// 		});
-						
-				// 		originalMesh.material = newMaterial;
-				// 		originalMesh.visible = true
-				// 		for(let mesh of segmentedMeshes){
-				// 			mesh.visible = false
-				// 		}
-				// 	}
-				// 	else if (value === 4) {
-				// 		originalMesh.visible = false
-				// 		for(let mesh of segmentedMeshes){
-				// 			mesh.visible = true
-				// 		}
-				// 	}
+				originalMesh.material = newMaterial;
+				originalMesh.visible = true;
+				for (let mesh of segmentedMeshes) {
+					mesh.visible = false;
+				}
+			} else if (value === 3) {
+				const newMaterial = new THREE.MeshStandardMaterial({
+					color: 'black',
+					wireframe: true
+				});
 
-				// 	node.geometry.computeVertexNormals();
-				// 	node.material.needsUpdate = true;
-				// }
-			// });
+				originalMesh.material = newMaterial;
+				originalMesh.visible = true;
+				for (let mesh of segmentedMeshes) {
+					mesh.visible = false;
+				}
+			} else if (value === 4) {
+				originalMesh.visible = false;
+				for (let mesh of segmentedMeshes) {
+					mesh.visible = true;
+				}
+			}
+
+			originalMesh.geometry.computeVertexNormals();
+			originalMesh.material.needsUpdate = true;
 		}
 	}
 
@@ -316,7 +267,8 @@
 		}
 	}
 
-	function createSegmentedMesh(mesh:any) {
+	function createSegmentedMesh(mesh: any) {
+		isProcessingMesh = true;
 		// let mesh;
 		// scene.traverse((node: any) => {
 		// 	if (node.isMesh) {
@@ -330,16 +282,16 @@
 			? geometry.index.count / 3
 			: geometry.attributes.position.count / 3;
 
-		console.log(`Total triangles: ${triangleCount}`);
+		totalTrianglesAmount = triangleCount;
 
-		const polygonsPerMesh = 300;
+		// const polygonsPerMesh = polygonsPerMesh;
 
 		// Compute bounding box
 		const boundingBox = new THREE.Box3().setFromObject(mesh);
 		const size = new THREE.Vector3();
 		boundingBox.getSize(size);
 
-		// Determine how many divisions we need in each axis to get roughly 20 polygons per mesh
+		// Determine how many divisions we need in each axis to get roughly the amount of polygons per mesh
 		const totalVolume = size.x * size.y * size.z;
 		const volumePerMesh = totalVolume / (triangleCount / polygonsPerMesh);
 		const divisionLength = Math.pow(volumePerMesh, 1 / 3);
@@ -535,8 +487,8 @@
 
 			// Create a color based on the cell index using HSL
 			const hue = (cellIndex * 137.5) % 360; // Golden angle approximation for good distribution
-			const saturation = 0.75;
-			const lightness = 0.6;
+			const saturation = 0.85;
+			const lightness = 0.5;
 			const color = new THREE.Color().setHSL(hue / 360, saturation, lightness);
 
 			const cellMaterial = new THREE.MeshStandardMaterial({
@@ -546,18 +498,92 @@
 			});
 
 			// Create a new mesh
-			const cellMesh = new THREE.Mesh(cellGeometry,cellMaterial);
+			const cellMesh = new THREE.Mesh(cellGeometry, cellMaterial);
 			cellMesh.geometry.computeVertexNormals();
 			cellMesh.material.needsUpdate = true;
 
-			cellMesh.visible = false;
+			if (viewType != 4) {
+				cellMesh.visible = false;
+			}
 			smallMeshes.push(cellMesh);
 			segmentedMeshes.push(cellMesh);
 			scene.add(cellMesh);
 		}
 		// console.log(scene);
+		isProcessingMesh = false;
 	}
 
+	function clearSegmentedMeshes() {
+		// Loop through all segmented meshes
+		for (let mesh of segmentedMeshes) {
+			// Remove from scene
+			scene.remove(mesh);
+
+			// Dispose of geometry
+			if (mesh.geometry) {
+				mesh.geometry.dispose();
+			}
+
+			// Dispose of material
+			if (mesh.material) {
+				// Handle array of materials
+				if (Array.isArray(mesh.material)) {
+					for (let material of mesh.material) {
+						material.dispose();
+					}
+				} else {
+					// Handle single material
+					mesh.material.dispose();
+				}
+			}
+		}
+
+		// Clear the array
+		segmentedMeshes = [];
+	}
+
+	function exportSegmentedMeshes() {
+		// Create a new scene containing only the segmented meshes
+		const exportScene = new THREE.Scene();
+
+		// Add all segmented meshes to the export scene
+		for (let mesh of segmentedMeshes) {
+			// Create a clone to avoid modifying the original
+			const clonedMesh = mesh.clone();
+			// Make sure it's visible for export
+			clonedMesh.visible = true;
+			exportScene.add(clonedMesh);
+		}
+
+		// Create a new exporter
+		const exporter = new GLTFExporter();
+
+		// Parse the scene to generate the GLB file
+		exporter.parse(
+			exportScene,
+			function (result) {
+				// Create a blob from the result
+				const blob = new Blob([result], { type: 'application/octet-stream' });
+
+				// Create a download link
+				const link = document.createElement('a');
+				link.href = URL.createObjectURL(blob);
+				link.download = 'segmented-model.glb';
+
+				// Trigger the download
+				document.body.appendChild(link);
+				link.click();
+
+				// Clean up
+				document.body.removeChild(link);
+				setTimeout(() => URL.revokeObjectURL(link.href), 100);
+			},
+			function (error) {
+				console.error('An error occurred during export:', error);
+			},
+			{ binary: true } // Set to true for GLB format, false for GLTF
+		);
+	}
 </script>
 
 <div class="canvasContainer">
@@ -567,21 +593,32 @@
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
 	<div class="canvasMenuContainer">
-		<label for="{uuid}-lightIntencity">Light Intencity: </label>
-		<input
-			type="number"
-			id="{uuid}-lightIntencity"
-			min="0"
-			max="20"
-			step="1"
-			value={lightIntensity}
-			oninput={(e: any) => updateLightIntensity(parseFloat(e.target.value))}
-		/>
+		<div style="display: flex; align-items: center;">
+			{#if isProcessingMesh}
+				<div class="loader" style="margin: 0 10px;"></div>
+				<p style="margin: 0;">Processing mesh...</p>
+			{:else}
+				<p style="margin: 0;">Total triangles: {totalTrianglesAmount}</p>
+			{/if}
+		</div>
+		<div style="margin-top: 10px;">
+			<label for="{uuid}-lightIntencity">Light intencity: </label>
+			<input
+				type="number"
+				id="{uuid}-lightIntencity"
+				min="0"
+				max="20"
+				step="1"
+				value={lightIntensity}
+				oninput={(e: any) => updateLightIntensity(parseFloat(e.target.value))}
+			/>
+		</div>
 		<div style="margin-top: 10px;">
 			<label for="{uuid}-materialType">View: </label>
 			<select
 				id="{uuid}-materialType"
 				onchange={(e: any) => {
+					viewType = parseInt(e.target.value);
 					switchMaterials(parseInt(e.target.value));
 				}}
 			>
@@ -592,7 +629,33 @@
 				<option value="4">Segment</option>
 			</select>
 		</div>
+		{#if viewType === 4}
+			<div style="margin-top: 10px;">
+				<label for="{uuid}-polygonsPerMesh">Polygons per segment: </label>
+				<input
+					type="number"
+					id="{uuid}-polygonsPerMesh"
+					min="50"
+					max="10000"
+					step="50"
+					value={polygonsPerMesh}
+					oninput={(e: any) => {
+						polygonsPerMesh = parseInt(e.target.value);
+						if (originalMesh) {
+							// Clear previous segmented meshes
+							clearSegmentedMeshes();
+							// Recreate with new polygon count
+							createSegmentedMesh(originalMesh);
+						}
+					}}
+				/>
+			</div>
+			<div style="margin-top: 10px;">
+				<button onclick={exportSegmentedMeshes} class="tertiaryButton" style='padding: 0;'>Export Segments</button>
+			</div>
+		{/if}
 	</div>
+	<div class="modelDataContainer"></div>
 	{#if options}
 		{#if !isTakingScreenshot}
 			<div style="display: flex; flex-wrap: wrap;">
@@ -660,5 +723,14 @@
 		left: 10px;
 		z-index: 2;
 		margin-right: 10px;
+	}
+	.modelDataContainer {
+		position: absolute;
+		bottom: 30px;
+		left: 10px;
+		z-index: 2;
+		margin-right: 10px;
+		display: flex;
+		align-items: center;
 	}
 </style>
