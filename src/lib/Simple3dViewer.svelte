@@ -32,6 +32,10 @@
 	let polygonsPerMesh = $state(300);
 	let isProcessingMesh = $state(true);
 	let totalTrianglesAmount = $state(0);
+	let gridDivisionsX = $state(4);
+	let gridDivisionsY = $state(4);
+	let gridDivisionsZ = $state(4);
+
 	// console.log(
 	// 	`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 	// );
@@ -296,9 +300,18 @@
 		const volumePerMesh = totalVolume / (triangleCount / polygonsPerMesh);
 		const divisionLength = Math.pow(volumePerMesh, 1 / 3);
 
-		const divisionsX = Math.max(1, Math.ceil(size.x / divisionLength));
-		const divisionsY = Math.max(1, Math.ceil(size.y / divisionLength));
-		const divisionsZ = Math.max(1, Math.ceil(size.z / divisionLength));
+		// const divisionsX = Math.max(1, Math.ceil(size.x / divisionLength));
+		// const divisionsY = Math.max(1, Math.ceil(size.y / divisionLength));
+		// const divisionsZ = Math.max(1, Math.ceil(size.z / divisionLength));
+
+		// // Create an array to hold polygons for each cell
+		// const cells = Array(divisionsX * divisionsY * divisionsZ)
+		// 	.fill()
+		// 	.map(() => []);
+		// Use the user-specified grid divisions
+		const divisionsX = gridDivisionsX;
+		const divisionsY = gridDivisionsY;
+		const divisionsZ = gridDivisionsZ;
 
 		// Create an array to hold polygons for each cell
 		const cells = Array(divisionsX * divisionsY * divisionsZ)
@@ -630,7 +643,68 @@
 			</select>
 		</div>
 		{#if viewType === 4}
-			<div style="margin-top: 10px;">
+			{#if viewType === 4}
+				<div style="margin-top: 10px;">
+					<label for="{uuid}-gridDivisions">Grid divisions: </label>
+					<div style="display: flex; gap: 5px; align-items: center; margin-top: 5px;">
+						<label for="{uuid}-gridX">X:</label>
+						<input
+							type="number"
+							id="{uuid}-gridX"
+							min="1"
+							max="20"
+							step="1"
+							value={gridDivisionsX}
+							oninput={(e: any) => {
+								gridDivisionsX = parseInt(e.target.value);
+								if (originalMesh) {
+									clearSegmentedMeshes();
+									createSegmentedMesh(originalMesh);
+								}
+							}}
+							style="width: 50px;"
+						/>
+
+						<label for="{uuid}-gridY">Y:</label>
+						<input
+							type="number"
+							id="{uuid}-gridY"
+							min="1"
+							max="20"
+							step="1"
+							value={gridDivisionsY}
+							oninput={(e: any) => {
+								gridDivisionsY = parseInt(e.target.value);
+								if (originalMesh) {
+									clearSegmentedMeshes();
+									createSegmentedMesh(originalMesh);
+								}
+							}}
+							style="width: 50px;"
+						/>
+
+						<label for="{uuid}-gridZ">Z:</label>
+						<input
+							type="number"
+							id="{uuid}-gridZ"
+							min="1"
+							max="20"
+							step="1"
+							value={gridDivisionsZ}
+							oninput={(e: any) => {
+								gridDivisionsZ = parseInt(e.target.value);
+								if (originalMesh) {
+									clearSegmentedMeshes();
+									createSegmentedMesh(originalMesh);
+								}
+							}}
+							style="width: 50px;"
+						/>
+					</div>
+				</div>
+			{/if}
+
+			<!-- <div style="margin-top: 10px;">
 				<label for="{uuid}-polygonsPerMesh">Polygons per segment: </label>
 				<input
 					type="number"
@@ -649,9 +723,11 @@
 						}
 					}}
 				/>
-			</div>
+			</div> -->
 			<div style="margin-top: 10px;">
-				<button onclick={exportSegmentedMeshes} class="tertiaryButton" style='padding: 0;'>Export Segments</button>
+				<button onclick={exportSegmentedMeshes} class="tertiaryButton" style="padding: 0;"
+					>Export Segments</button
+				>
 			</div>
 		{/if}
 	</div>
