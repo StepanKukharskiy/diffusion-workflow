@@ -30,15 +30,15 @@
 	let originalMesh: any = $state();
 	let segmentedMeshes: any = $state([]);
 	let polygonsPerMesh = $state(300);
-	let isProcessingMesh = $state(true);
+	let isProcessingMesh = $state(false);
 	let totalTrianglesAmount = $state(0);
 	let gridDivisionsX = $state(4);
 	let gridDivisionsY = $state(4);
 	let gridDivisionsZ = $state(4);
 	let voronoiPointCount = $state(5);
 	let hexPolygonCount = $state(1000); // Default to 1000 polygons per hexagon
-	let stripePolygonCount = $state(1000); 
-
+	let stripePolygonCount = $state(1000);
+	
 	// console.log(
 	// 	`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 	// );
@@ -241,8 +241,8 @@
 				for (let mesh of segmentedMeshes) {
 					mesh.visible = true;
 				}
-			}  else if (value === 7) {
-				// Hexagonal segmentation
+			} else if (value === 7) {
+				// Strip segmentation
 				originalMesh.visible = false;
 				clearSegmentedMeshes();
 				createStripedSegmentation(originalMesh);
@@ -1152,369 +1152,369 @@
 	}
 
 	function createStripedSegmentation(mesh: any) {
-  clearSegmentedMeshes();
-  isProcessingMesh = true;
+		clearSegmentedMeshes();
+		isProcessingMesh = true;
 
-  const geometry = mesh.geometry;
-  const positionAttr = geometry.attributes.position;
-  const indices = geometry.index ? geometry.index.array : null;
+		const geometry = mesh.geometry;
+		const positionAttr = geometry.attributes.position;
+		const indices = geometry.index ? geometry.index.array : null;
 
-  // Get triangle count
-  const triangleCount = geometry.index
-    ? geometry.index.count / 3
-    : geometry.attributes.position.count / 3;
+		// Get triangle count
+		const triangleCount = geometry.index
+			? geometry.index.count / 3
+			: geometry.attributes.position.count / 3;
 
-  totalTrianglesAmount = triangleCount;
+		totalTrianglesAmount = triangleCount;
 
-  // Build adjacency information
-  const adjacencyList = buildAdjacencyList(geometry);
+		// Build adjacency information
+		const adjacencyList = buildAdjacencyList(geometry);
 
-  // Calculate triangle centroids for distance calculations
-  const triangleCentroids = [];
-  for (let i = 0; i < triangleCount; i++) {
-    let v1, v2, v3;
+		// Calculate triangle centroids for distance calculations
+		const triangleCentroids = [];
+		for (let i = 0; i < triangleCount; i++) {
+			let v1, v2, v3;
 
-    if (indices) {
-      const idx1 = indices[i * 3] * 3;
-      const idx2 = indices[i * 3 + 1] * 3;
-      const idx3 = indices[i * 3 + 2] * 3;
+			if (indices) {
+				const idx1 = indices[i * 3] * 3;
+				const idx2 = indices[i * 3 + 1] * 3;
+				const idx3 = indices[i * 3 + 2] * 3;
 
-      v1 = new THREE.Vector3(
-        positionAttr.array[idx1],
-        positionAttr.array[idx1 + 1],
-        positionAttr.array[idx1 + 2]
-      );
+				v1 = new THREE.Vector3(
+					positionAttr.array[idx1],
+					positionAttr.array[idx1 + 1],
+					positionAttr.array[idx1 + 2]
+				);
 
-      v2 = new THREE.Vector3(
-        positionAttr.array[idx2],
-        positionAttr.array[idx2 + 1],
-        positionAttr.array[idx2 + 2]
-      );
+				v2 = new THREE.Vector3(
+					positionAttr.array[idx2],
+					positionAttr.array[idx2 + 1],
+					positionAttr.array[idx2 + 2]
+				);
 
-      v3 = new THREE.Vector3(
-        positionAttr.array[idx3],
-        positionAttr.array[idx3 + 1],
-        positionAttr.array[idx3 + 2]
-      );
-    } else {
-      const idx = i * 9;
+				v3 = new THREE.Vector3(
+					positionAttr.array[idx3],
+					positionAttr.array[idx3 + 1],
+					positionAttr.array[idx3 + 2]
+				);
+			} else {
+				const idx = i * 9;
 
-      v1 = new THREE.Vector3(
-        positionAttr.array[idx],
-        positionAttr.array[idx + 1],
-        positionAttr.array[idx + 2]
-      );
+				v1 = new THREE.Vector3(
+					positionAttr.array[idx],
+					positionAttr.array[idx + 1],
+					positionAttr.array[idx + 2]
+				);
 
-      v2 = new THREE.Vector3(
-        positionAttr.array[idx + 3],
-        positionAttr.array[idx + 4],
-        positionAttr.array[idx + 5]
-      );
+				v2 = new THREE.Vector3(
+					positionAttr.array[idx + 3],
+					positionAttr.array[idx + 4],
+					positionAttr.array[idx + 5]
+				);
 
-      v3 = new THREE.Vector3(
-        positionAttr.array[idx + 6],
-        positionAttr.array[idx + 7],
-        positionAttr.array[idx + 8]
-      );
-    }
+				v3 = new THREE.Vector3(
+					positionAttr.array[idx + 6],
+					positionAttr.array[idx + 7],
+					positionAttr.array[idx + 8]
+				);
+			}
 
-    // Apply mesh transformation
-    v1.applyMatrix4(mesh.matrixWorld);
-    v2.applyMatrix4(mesh.matrixWorld);
-    v3.applyMatrix4(mesh.matrixWorld);
+			// Apply mesh transformation
+			v1.applyMatrix4(mesh.matrixWorld);
+			v2.applyMatrix4(mesh.matrixWorld);
+			v3.applyMatrix4(mesh.matrixWorld);
 
-    // Calculate centroid
-    const centroid = new THREE.Vector3().add(v1).add(v2).add(v3).divideScalar(3);
-    triangleCentroids.push(centroid);
-  }
+			// Calculate centroid
+			const centroid = new THREE.Vector3().add(v1).add(v2).add(v3).divideScalar(3);
+			triangleCentroids.push(centroid);
+		}
 
-  // Keep track of which triangles have been processed
-  const processedTriangles = new Set();
+		// Keep track of which triangles have been processed
+		const processedTriangles = new Set();
 
-  // Create hexagonal groups
-  const hexGroups = [];
+		// Create hexagonal groups
+		const hexGroups = [];
 
-  // Calculate the target number of segments based on total triangles and hexPolygonCount
-  const targetSegmentCount = Math.max(1, Math.ceil(triangleCount / hexPolygonCount));
-  console.log(
-    `Target segment count: ${targetSegmentCount}, Total triangles: ${triangleCount}, Polygons per segment: ${hexPolygonCount}`
-  );
+		// Calculate the target number of segments based on total triangles and hexPolygonCount
+		const targetSegmentCount = Math.max(1, Math.ceil(triangleCount / stripePolygonCount));
+		console.log(
+			`Target segment count: ${targetSegmentCount}, Total triangles: ${triangleCount}, Polygons per segment: ${stripePolygonCount}`
+		);
 
-  // Sort triangles by height (y-coordinate) to start from the top
-  const trianglesByHeight = [];
-  for (let i = 0; i < triangleCount; i++) {
-    trianglesByHeight.push({
-      index: i,
-      y: triangleCentroids[i].y
-    });
-  }
-  trianglesByHeight.sort((a, b) => b.y - a.y); // Sort in descending order (highest first)
+		// Sort triangles by height (y-coordinate) to start from the top
+		const trianglesByHeight = [];
+		for (let i = 0; i < triangleCount; i++) {
+			trianglesByHeight.push({
+				index: i,
+				y: triangleCentroids[i].y
+			});
+		}
+		trianglesByHeight.sort((a, b) => b.y - a.y); // Sort in descending order (highest first)
 
-  // Process triangles to form segments in a top-to-bottom flow
-  while (processedTriangles.size < triangleCount) {
-    // Find the highest unprocessed triangle
-    let startTriangle = -1;
-    for (const triangle of trianglesByHeight) {
-      if (!processedTriangles.has(triangle.index)) {
-        startTriangle = triangle.index;
-        break;
-      }
-    }
+		// Process triangles to form segments in a top-to-bottom flow
+		while (processedTriangles.size < triangleCount) {
+			// Find the highest unprocessed triangle
+			let startTriangle = -1;
+			for (const triangle of trianglesByHeight) {
+				if (!processedTriangles.has(triangle.index)) {
+					startTriangle = triangle.index;
+					break;
+				}
+			}
 
-    if (startTriangle === -1) break; // No more unprocessed triangles
+			if (startTriangle === -1) break; // No more unprocessed triangles
 
-    // Start a new segment with this triangle
-    const hexGroup = [startTriangle];
-    processedTriangles.add(startTriangle);
-    
-    // Keep track of the current triangle
-    let currentTriangle = startTriangle;
-    let currentY = triangleCentroids[currentTriangle].y;
+			// Start a new segment with this triangle
+			const hexGroup = [startTriangle];
+			processedTriangles.add(startTriangle);
 
-    // Continue adding triangles until we reach the desired size
-    while (hexGroup.length < stripePolygonCount) {
-      // Find adjacent triangles that are lower than the current one
-      const lowerNeighbors = [];
-      for (const neighbor of adjacencyList[currentTriangle]) {
-        if (!processedTriangles.has(neighbor)) {
-          const neighborY = triangleCentroids[neighbor].y;
-          if (neighborY < currentY) {
-            lowerNeighbors.push({
-              index: neighbor,
-              y: neighborY,
-              distance: triangleCentroids[currentTriangle].distanceTo(triangleCentroids[neighbor])
-            });
-          }
-        }
-      }
+			// Keep track of the current triangle
+			let currentTriangle = startTriangle;
+			let currentY = triangleCentroids[currentTriangle].y;
 
-      // If no lower neighbors, try any unprocessed adjacent neighbors
-      if (lowerNeighbors.length === 0) {
-        for (const neighbor of adjacencyList[currentTriangle]) {
-          if (!processedTriangles.has(neighbor)) {
-            lowerNeighbors.push({
-              index: neighbor,
-              y: triangleCentroids[neighbor].y,
-              distance: triangleCentroids[currentTriangle].distanceTo(triangleCentroids[neighbor])
-            });
-          }
-        }
-      }
+			// Continue adding triangles until we reach the desired size
+			while (hexGroup.length < stripePolygonCount) {
+				// Find adjacent triangles that are lower than the current one
+				const lowerNeighbors = [];
+				for (const neighbor of adjacencyList[currentTriangle]) {
+					if (!processedTriangles.has(neighbor)) {
+						const neighborY = triangleCentroids[neighbor].y;
+						if (neighborY < currentY) {
+							lowerNeighbors.push({
+								index: neighbor,
+								y: neighborY,
+								distance: triangleCentroids[currentTriangle].distanceTo(triangleCentroids[neighbor])
+							});
+						}
+					}
+				}
 
-      // If still no neighbors, find the closest unprocessed triangle
-      if (lowerNeighbors.length === 0) {
-        let closestUnprocessed = null;
-        let minDistance = Infinity;
-        
-        for (let i = 0; i < triangleCount; i++) {
-          if (!processedTriangles.has(i)) {
-            const dist = triangleCentroids[currentTriangle].distanceTo(triangleCentroids[i]);
-            if (dist < minDistance) {
-              minDistance = dist;
-              closestUnprocessed = i;
-            }
-          }
-        }
-        
-        if (closestUnprocessed !== null) {
-          lowerNeighbors.push({
-            index: closestUnprocessed,
-            y: triangleCentroids[closestUnprocessed].y,
-            distance: minDistance
-          });
-        } else {
-          // No more triangles to process
-          break;
-        }
-      }
+				// If no lower neighbors, try any unprocessed adjacent neighbors
+				if (lowerNeighbors.length === 0) {
+					for (const neighbor of adjacencyList[currentTriangle]) {
+						if (!processedTriangles.has(neighbor)) {
+							lowerNeighbors.push({
+								index: neighbor,
+								y: triangleCentroids[neighbor].y,
+								distance: triangleCentroids[currentTriangle].distanceTo(triangleCentroids[neighbor])
+							});
+						}
+					}
+				}
 
-      // Sort neighbors by y-coordinate (lowest first) and then by distance (closest first)
-      lowerNeighbors.sort((a, b) => {
-        // Prioritize lower triangles
-        if (a.y !== b.y) {
-          return a.y - b.y;
-        }
-        // If same height, prioritize closest
-        return a.distance - b.distance;
-      });
+				// If still no neighbors, find the closest unprocessed triangle
+				if (lowerNeighbors.length === 0) {
+					let closestUnprocessed = null;
+					let minDistance = Infinity;
 
-      // Add the best neighbor to our group
-      const nextTriangle = lowerNeighbors[0].index;
-      hexGroup.push(nextTriangle);
-      processedTriangles.add(nextTriangle);
-      
-      // Update current triangle and its y-coordinate
-      currentTriangle = nextTriangle;
-      currentY = triangleCentroids[currentTriangle].y;
-      
-      // If we've reached the target size, break out
-      if (hexGroup.length >= stripePolygonCount) {
-        break;
-      }
-    }
+					for (let i = 0; i < triangleCount; i++) {
+						if (!processedTriangles.has(i)) {
+							const dist = triangleCentroids[currentTriangle].distanceTo(triangleCentroids[i]);
+							if (dist < minDistance) {
+								minDistance = dist;
+								closestUnprocessed = i;
+							}
+						}
+					}
 
-    // Only add non-empty groups
-    if (hexGroup.length > 0) {
-      hexGroups.push(hexGroup);
-    }
+					if (closestUnprocessed !== null) {
+						lowerNeighbors.push({
+							index: closestUnprocessed,
+							y: triangleCentroids[closestUnprocessed].y,
+							distance: minDistance
+						});
+					} else {
+						// No more triangles to process
+						break;
+					}
+				}
 
-    // If we've created enough segments, continue but don't break out
-    // This ensures we process all triangles
-  }
+				// Sort neighbors by y-coordinate (lowest first) and then by distance (closest first)
+				lowerNeighbors.sort((a, b) => {
+					// Prioritize lower triangles
+					if (a.y !== b.y) {
+						return a.y - b.y;
+					}
+					// If same height, prioritize closest
+					return a.distance - b.distance;
+				});
 
-  // If there are still unprocessed triangles, add them to the last group or create new groups
-  if (processedTriangles.size < triangleCount) {
-    const remainingTriangles = [];
-    for (let i = 0; i < triangleCount; i++) {
-      if (!processedTriangles.has(i)) {
-        remainingTriangles.push(i);
-      }
-    }
-    
-    // Create new groups with the remaining triangles
-    while (remainingTriangles.length > 0) {
-      const newGroup = [];
-      const groupSize = Math.min(hexPolygonCount, remainingTriangles.length);
-      
-      for (let i = 0; i < groupSize; i++) {
-        newGroup.push(remainingTriangles.shift());
-      }
-      
-      hexGroups.push(newGroup);
-    }
-  }
+				// Add the best neighbor to our group
+				const nextTriangle = lowerNeighbors[0].index;
+				hexGroup.push(nextTriangle);
+				processedTriangles.add(nextTriangle);
 
-  console.log(
-    `Created ${hexGroups.length} segments with an average of ${processedTriangles.size / hexGroups.length} triangles per segment`
-  );
+				// Update current triangle and its y-coordinate
+				currentTriangle = nextTriangle;
+				currentY = triangleCentroids[currentTriangle].y;
 
-  // Create meshes for each hexagon group
-  for (let groupIndex = 0; groupIndex < hexGroups.length; groupIndex++) {
-    const triangles = hexGroups[groupIndex];
+				// If we've reached the target size, break out
+				if (hexGroup.length >= stripePolygonCount) {
+					break;
+				}
+			}
 
-    if (triangles.length === 0) continue;
+			// Only add non-empty groups
+			if (hexGroup.length > 0) {
+				hexGroups.push(hexGroup);
+			}
 
-    // Create a new geometry for this hexagon
-    const hexGeometry = new THREE.BufferGeometry();
+			// If we've created enough segments, continue but don't break out
+			// This ensures we process all triangles
+		}
 
-    if (indices) {
-      // For indexed geometries
-      const newIndices = [];
-      const vertexMap = new Map();
-      let nextIndex = 0;
+		// If there are still unprocessed triangles, add them to the last group or create new groups
+		if (processedTriangles.size < triangleCount) {
+			const remainingTriangles = [];
+			for (let i = 0; i < triangleCount; i++) {
+				if (!processedTriangles.has(i)) {
+					remainingTriangles.push(i);
+				}
+			}
 
-      for (const triangleIndex of triangles) {
-        for (let j = 0; j < 3; j++) {
-          const originalIndex = indices[triangleIndex * 3 + j];
+			// Create new groups with the remaining triangles
+			while (remainingTriangles.length > 0) {
+				const newGroup = [];
+				const groupSize = Math.min(stripePolygonCount, remainingTriangles.length);
 
-          if (!vertexMap.has(originalIndex)) {
-            vertexMap.set(originalIndex, nextIndex++);
-          }
+				for (let i = 0; i < groupSize; i++) {
+					newGroup.push(remainingTriangles.shift());
+				}
 
-          newIndices.push(vertexMap.get(originalIndex));
-        }
-      }
+				hexGroups.push(newGroup);
+			}
+		}
 
-      // Create new attribute arrays
-      const newAttributes: any = {};
-      for (const name in geometry.attributes) {
-        const attribute = geometry.attributes[name];
-        const itemSize = attribute.itemSize;
-        const array = attribute.array;
-        const newArray = new Float32Array(vertexMap.size * itemSize);
+		console.log(
+			`Created ${hexGroups.length} segments with an average of ${processedTriangles.size / hexGroups.length} triangles per segment`
+		);
 
-        for (const [originalIndex, newIndex] of vertexMap.entries()) {
-          for (let k = 0; k < itemSize; k++) {
-            newArray[newIndex * itemSize + k] = array[originalIndex * itemSize + k];
-          }
-        }
+		// Create meshes for each hexagon group
+		for (let groupIndex = 0; groupIndex < hexGroups.length; groupIndex++) {
+			const triangles = hexGroups[groupIndex];
 
-        newAttributes[name] = new THREE.BufferAttribute(newArray, itemSize);
-      }
+			if (triangles.length === 0) continue;
 
-      // Set attributes and indices
-      for (const name in newAttributes) {
-        hexGeometry.setAttribute(name, newAttributes[name]);
-      }
+			// Create a new geometry for this hexagon
+			const hexGeometry = new THREE.BufferGeometry();
 
-      hexGeometry.setIndex(newIndices);
-    } else {
-      // For non-indexed geometries
-      const newPositions = [];
+			if (indices) {
+				// For indexed geometries
+				const newIndices = [];
+				const vertexMap = new Map();
+				let nextIndex = 0;
 
-      // Copy other attribute arrays if needed
-      const newAttributes: any = {};
-      for (const name in geometry.attributes) {
-        newAttributes[name] = [];
-      }
+				for (const triangleIndex of triangles) {
+					for (let j = 0; j < 3; j++) {
+						const originalIndex = indices[triangleIndex * 3 + j];
 
-      for (const triangleIndex of triangles) {
-        const baseIndex = triangleIndex * 9;
+						if (!vertexMap.has(originalIndex)) {
+							vertexMap.set(originalIndex, nextIndex++);
+						}
 
-        // Copy position data for this triangle
-        for (let j = 0; j < 9; j++) {
-          newPositions.push(positionAttr.array[baseIndex + j]);
-        }
+						newIndices.push(vertexMap.get(originalIndex));
+					}
+				}
 
-        // Copy other attribute data
-        for (const name in geometry.attributes) {
-          if (name === 'position') continue;
+				// Create new attribute arrays
+				const newAttributes: any = {};
+				for (const name in geometry.attributes) {
+					const attribute = geometry.attributes[name];
+					const itemSize = attribute.itemSize;
+					const array = attribute.array;
+					const newArray = new Float32Array(vertexMap.size * itemSize);
 
-          const attribute = geometry.attributes[name];
-          const itemSize = attribute.itemSize;
-          const vertexBaseIndex = triangleIndex * 3 * itemSize;
+					for (const [originalIndex, newIndex] of vertexMap.entries()) {
+						for (let k = 0; k < itemSize; k++) {
+							newArray[newIndex * itemSize + k] = array[originalIndex * itemSize + k];
+						}
+					}
 
-          for (let j = 0; j < 3 * itemSize; j++) {
-            newAttributes[name].push(attribute.array[vertexBaseIndex + j]);
-          }
-        }
-      }
+					newAttributes[name] = new THREE.BufferAttribute(newArray, itemSize);
+				}
 
-      // Set position attribute
-      hexGeometry.setAttribute(
-        'position',
-        new THREE.BufferAttribute(new Float32Array(newPositions), 3)
-      );
+				// Set attributes and indices
+				for (const name in newAttributes) {
+					hexGeometry.setAttribute(name, newAttributes[name]);
+				}
 
-      // Set other attributes
-      for (const name in newAttributes) {
-        if (name === 'position') continue;
+				hexGeometry.setIndex(newIndices);
+			} else {
+				// For non-indexed geometries
+				const newPositions = [];
 
-        const attribute = geometry.attributes[name];
-        hexGeometry.setAttribute(
-          name,
-          new THREE.BufferAttribute(new Float32Array(newAttributes[name]), attribute.itemSize)
-        );
-      }
-    }
+				// Copy other attribute arrays if needed
+				const newAttributes: any = {};
+				for (const name in geometry.attributes) {
+					newAttributes[name] = [];
+				}
 
-    // Create a color based on the group index
-    const hue = (groupIndex * 137.5) % 360; // Golden angle for good distribution
-    const saturation = 0.85;
-    const lightness = 0.5;
-    const color = new THREE.Color().setHSL(hue / 360, saturation, lightness);
+				for (const triangleIndex of triangles) {
+					const baseIndex = triangleIndex * 9;
 
-    const hexMaterial = new THREE.MeshStandardMaterial({
-      color: color,
-      metalness: 0.1,
-      roughness: 0.7
-    });
+					// Copy position data for this triangle
+					for (let j = 0; j < 9; j++) {
+						newPositions.push(positionAttr.array[baseIndex + j]);
+					}
 
-    // Create a new mesh
-    const hexMesh = new THREE.Mesh(hexGeometry, hexMaterial);
-    hexMesh.geometry.computeVertexNormals();
-    hexMesh.material.needsUpdate = true;
+					// Copy other attribute data
+					for (const name in geometry.attributes) {
+						if (name === 'position') continue;
 
-    if (viewType != 7) {
-      hexMesh.visible = false;
-    }
+						const attribute = geometry.attributes[name];
+						const itemSize = attribute.itemSize;
+						const vertexBaseIndex = triangleIndex * 3 * itemSize;
 
-    segmentedMeshes.push(hexMesh);
-    scene.add(hexMesh);
-  }
+						for (let j = 0; j < 3 * itemSize; j++) {
+							newAttributes[name].push(attribute.array[vertexBaseIndex + j]);
+						}
+					}
+				}
 
-  isProcessingMesh = false;
-}
+				// Set position attribute
+				hexGeometry.setAttribute(
+					'position',
+					new THREE.BufferAttribute(new Float32Array(newPositions), 3)
+				);
+
+				// Set other attributes
+				for (const name in newAttributes) {
+					if (name === 'position') continue;
+
+					const attribute = geometry.attributes[name];
+					hexGeometry.setAttribute(
+						name,
+						new THREE.BufferAttribute(new Float32Array(newAttributes[name]), attribute.itemSize)
+					);
+				}
+			}
+
+			// Create a color based on the group index
+			const hue = (groupIndex * 137.5) % 360; // Golden angle for good distribution
+			const saturation = 0.85;
+			const lightness = 0.5;
+			const color = new THREE.Color().setHSL(hue / 360, saturation, lightness);
+
+			const hexMaterial = new THREE.MeshStandardMaterial({
+				color: color,
+				metalness: 0.1,
+				roughness: 0.7
+			});
+
+			// Create a new mesh
+			const hexMesh = new THREE.Mesh(hexGeometry, hexMaterial);
+			hexMesh.geometry.computeVertexNormals();
+			hexMesh.material.needsUpdate = true;
+
+			if (viewType != 7) {
+				hexMesh.visible = false;
+			}
+
+			segmentedMeshes.push(hexMesh);
+			scene.add(hexMesh);
+		}
+
+		isProcessingMesh = false;
+	}
 
 
 
@@ -1633,7 +1633,7 @@
 			{/if}
 		</div>
 		<div style="margin-top: 10px;">
-			<label for="{uuid}-lightIntencity">Light intencity: </label>
+			<label for="{uuid}-lightIntencity">Light intensity: </label>
 			<input
 				type="number"
 				id="{uuid}-lightIntencity"
@@ -1777,7 +1777,7 @@
 			<div style="margin-top: 10px;">
 				<button
 					class="tertiaryButton"
-					style='padding: 0;'
+					style="padding: 0;"
 					onclick={(e: any) => {
 						// hexPolygonCount = parseInt(e.target.value) < 100 ? 100 : parseInt(e.target.value);
 
@@ -1809,7 +1809,7 @@
 		{/if}
 		{#if viewType === 4 || viewType === 5 || viewType === 6 || viewType === 7}
 			<div style="margin-top: 10px; display: flex; align-items: center;">
-				<label for="{uuid}-segmentsAmount">Segments amount: </label>
+				<label for="{uuid}-segmentsAmount">Number of segments: </label>
 				<p id="{uuid}-segmentsAmount" style="margin: 0;">&nbsp;{segmentedMeshes.length}</p>
 			</div>
 			<div style="margin-top: 10px;">
