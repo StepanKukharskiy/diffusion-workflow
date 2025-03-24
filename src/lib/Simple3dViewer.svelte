@@ -38,7 +38,9 @@
 	let voronoiPointCount = $state(5);
 	let hexPolygonCount = $state(1000); // Default to 1000 polygons per hexagon
 	let stripePolygonCount = $state(1000);
-	
+
+	let showMenu = $state(true);
+
 	// console.log(
 	// 	`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 	// );
@@ -301,12 +303,6 @@
 
 	function createSegmentedMesh(mesh: any) {
 		isProcessingMesh = true;
-		// let mesh;
-		// scene.traverse((node: any) => {
-		// 	if (node.isMesh) {
-		// 		mesh = node;
-		// 	}
-		// });
 		const geometry = mesh.geometry;
 
 		// Get the number of triangles (polygons)
@@ -328,15 +324,6 @@
 		const volumePerMesh = totalVolume / (triangleCount / polygonsPerMesh);
 		const divisionLength = Math.pow(volumePerMesh, 1 / 3);
 
-		// const divisionsX = Math.max(1, Math.ceil(size.x / divisionLength));
-		// const divisionsY = Math.max(1, Math.ceil(size.y / divisionLength));
-		// const divisionsZ = Math.max(1, Math.ceil(size.z / divisionLength));
-
-		// // Create an array to hold polygons for each cell
-		// const cells = Array(divisionsX * divisionsY * divisionsZ)
-		// 	.fill()
-		// 	.map(() => []);
-		// Use the user-specified grid divisions
 		const divisionsX = gridDivisionsX;
 		const divisionsY = gridDivisionsY;
 		const divisionsZ = gridDivisionsZ;
@@ -423,6 +410,8 @@
 			const cellIndex = cellX + cellY * divisionsX + cellZ * divisionsX * divisionsY;
 			cells[cellIndex].push(i);
 		}
+
+		//smoothSegmentEdges(cells, geometry, 3);
 
 		// Create meshes for each non-empty cell
 		const smallMeshes = [];
@@ -1516,8 +1505,6 @@
 		isProcessingMesh = false;
 	}
 
-
-
 	function buildAdjacencyList(geometry) {
 		const indices = geometry.index ? geometry.index.array : null;
 		const triangleCount = indices
@@ -1623,202 +1610,249 @@
 		id="{uuid}-canvas"
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
-	<div class="canvasMenuContainer">
-		<div style="display: flex; align-items: center;">
-			{#if isProcessingMesh}
-				<div class="loader" style="margin: 0 10px;"></div>
-				<p style="margin: 0;">Processing mesh...</p>
-			{:else}
-				<p style="margin: 0;">Total triangles: {totalTrianglesAmount}</p>
-			{/if}
-		</div>
-		<div style="margin-top: 10px;">
-			<label for="{uuid}-lightIntencity">Light intensity: </label>
-			<input
-				type="number"
-				id="{uuid}-lightIntencity"
-				min="0"
-				max="20"
-				step="1"
-				value={lightIntensity}
-				oninput={(e: any) => updateLightIntensity(parseFloat(e.target.value))}
-			/>
-		</div>
-		<div style="margin-top: 10px;">
-			<label for="{uuid}-materialType">View: </label>
-			<select
-				id="{uuid}-materialType"
-				onchange={(e: any) => {
-					viewType = parseInt(e.target.value);
-					switchMaterials(parseInt(e.target.value));
-				}}
-			>
-				<option value="0">Textured</option>
-				<option value="1">White</option>
-				<option value="2">Normal</option>
-				<option value="3">Wireframe</option>
-				<option value="4">Grid Segment</option>
-				<option value="5">Voronoi Segment</option>
-				<option value="6">Abstract Segment</option>
-				<option value="7">Strip Segment</option>
-			</select>
-		</div>
-		{#if viewType === 4}
-			<div style="margin-top: 10px;">
-				<label for="{uuid}-gridDivisions">Grid divisions: </label>
-				<div style="display: flex; gap: 5px; align-items: center; margin-top: 5px;">
-					<label for="{uuid}-gridX">X:</label>
-					<input
-						type="number"
-						id="{uuid}-gridX"
-						min="1"
-						max="20"
-						step="1"
-						value={gridDivisionsX}
-						oninput={(e: any) => {
-							gridDivisionsX = parseInt(e.target.value);
-							if (originalMesh) {
-								clearSegmentedMeshes();
-								createSegmentedMesh(originalMesh);
-							}
-						}}
-						style="width: 50px;"
-					/>
-
-					<label for="{uuid}-gridY">Y:</label>
-					<input
-						type="number"
-						id="{uuid}-gridY"
-						min="1"
-						max="20"
-						step="1"
-						value={gridDivisionsY}
-						oninput={(e: any) => {
-							gridDivisionsY = parseInt(e.target.value);
-							if (originalMesh) {
-								clearSegmentedMeshes();
-								createSegmentedMesh(originalMesh);
-							}
-						}}
-						style="width: 50px;"
-					/>
-
-					<label for="{uuid}-gridZ">Z:</label>
-					<input
-						type="number"
-						id="{uuid}-gridZ"
-						min="1"
-						max="20"
-						step="1"
-						value={gridDivisionsZ}
-						oninput={(e: any) => {
-							gridDivisionsZ = parseInt(e.target.value);
-							if (originalMesh) {
-								clearSegmentedMeshes();
-								createSegmentedMesh(originalMesh);
-							}
-						}}
-						style="width: 50px;"
-					/>
-				</div>
+	{#if showMenu}
+		<div class="canvasMenuContainer">
+			<div style="display: flex; align-items: center;">
+				{#if isProcessingMesh}
+					<div class="loader" style="margin: 0 10px;"></div>
+					<p style="margin: 0;">Processing mesh...</p>
+				{:else}
+					<p style="margin: 0;">Total triangles: {totalTrianglesAmount}</p>
+				{/if}
 			</div>
-		{/if}
-		{#if viewType === 5}
 			<div style="margin-top: 10px;">
-				<label for="{uuid}-voronoiPoints">Number of Voronoi points: </label>
+				<label for="{uuid}-lightIntencity">Light intensity: </label>
 				<input
 					type="number"
-					id="{uuid}-voronoiPoints"
-					min="2"
+					id="{uuid}-lightIntencity"
+					min="0"
 					max="20"
 					step="1"
-					value={voronoiPointCount}
-					oninput={(e: any) => {
-						voronoiPointCount = parseInt(e.target.value);
-						if (originalMesh) {
-							clearSegmentedMeshes();
-							createVoronoiSegmentation(originalMesh);
-						}
-					}}
+					value={lightIntensity}
+					oninput={(e: any) => updateLightIntensity(parseFloat(e.target.value))}
 				/>
-				<button
-					onclick={() => {
-						if (originalMesh) {
-							clearSegmentedMeshes();
-							createVoronoiSegmentation(originalMesh);
-						}
-					}}
-					class="tertiaryButton"
-					style="padding: 0; margin-top: 10px;"
-				>
-					Regenerate Points
-				</button>
 			</div>
-		{/if}
-		{#if viewType === 6}
 			<div style="margin-top: 10px;">
-				<label for="{uuid}-hexPolygonCount">Polygons per segment: </label>
-				<input
-					type="number"
-					id="{uuid}-hexPolygonCount"
-					min="10"
-					max="5000"
-					step="10"
-					value={hexPolygonCount}
-					oninput={(e: any) => {
-						hexPolygonCount = parseInt(e.target.value) < 100 ? 100 : parseInt(e.target.value);
-						if (originalMesh) {
+				<label for="{uuid}-materialType">View: </label>
+				<select
+					id="{uuid}-materialType"
+					onchange={(e: any) => {
+						viewType = parseInt(e.target.value);
+						switchMaterials(parseInt(e.target.value));
+					}}
+				>
+					<option value="0">Textured</option>
+					<option value="1">White</option>
+					<option value="2">Normal</option>
+					<option value="3">Wireframe</option>
+					<option value="4">Grid Segment</option>
+					<option value="5">Voronoi Segment</option>
+					<option value="6">Abstract Segment</option>
+					<option value="7">Strip Segment</option>
+				</select>
+			</div>
+			{#if viewType === 4}
+				<div style="margin-top: 10px;">
+					<label for="{uuid}-gridDivisions">Grid divisions: </label>
+					<div style="display: flex; gap: 5px; align-items: center; margin-top: 5px;">
+						<label for="{uuid}-gridX">X:</label>
+						<input
+							type="number"
+							id="{uuid}-gridX"
+							min="1"
+							max="20"
+							step="1"
+							value={gridDivisionsX}
+							oninput={(e: any) => {
+								gridDivisionsX = parseInt(e.target.value);
+								if (originalMesh) {
+									clearSegmentedMeshes();
+									createSegmentedMesh(originalMesh);
+								}
+							}}
+							style="width: 50px;"
+						/>
+
+						<label for="{uuid}-gridY">Y:</label>
+						<input
+							type="number"
+							id="{uuid}-gridY"
+							min="1"
+							max="20"
+							step="1"
+							value={gridDivisionsY}
+							oninput={(e: any) => {
+								gridDivisionsY = parseInt(e.target.value);
+								if (originalMesh) {
+									clearSegmentedMeshes();
+									createSegmentedMesh(originalMesh);
+								}
+							}}
+							style="width: 50px;"
+						/>
+
+						<label for="{uuid}-gridZ">Z:</label>
+						<input
+							type="number"
+							id="{uuid}-gridZ"
+							min="1"
+							max="20"
+							step="1"
+							value={gridDivisionsZ}
+							oninput={(e: any) => {
+								gridDivisionsZ = parseInt(e.target.value);
+								if (originalMesh) {
+									clearSegmentedMeshes();
+									createSegmentedMesh(originalMesh);
+								}
+							}}
+							style="width: 50px;"
+						/>
+					</div>
+				</div>
+			{/if}
+			{#if viewType === 5}
+				<div style="margin-top: 10px;">
+					<label for="{uuid}-voronoiPoints">Number of Voronoi points: </label>
+					<input
+						type="number"
+						id="{uuid}-voronoiPoints"
+						min="2"
+						max="20"
+						step="1"
+						value={voronoiPointCount}
+						oninput={(e: any) => {
+							voronoiPointCount = parseInt(e.target.value);
+							if (originalMesh) {
+								clearSegmentedMeshes();
+								createVoronoiSegmentation(originalMesh);
+							}
+						}}
+					/>
+					<button
+						onclick={() => {
+							if (originalMesh) {
+								clearSegmentedMeshes();
+								createVoronoiSegmentation(originalMesh);
+							}
+						}}
+						class="tertiaryButton"
+						style="padding: 0; margin-top: 10px;"
+					>
+						Regenerate Points
+					</button>
+				</div>
+			{/if}
+			{#if viewType === 6}
+				<div style="margin-top: 10px;">
+					<label for="{uuid}-hexPolygonCount">Polygons per segment: </label>
+					<input
+						type="number"
+						id="{uuid}-hexPolygonCount"
+						min="10"
+						max="5000"
+						step="10"
+						value={hexPolygonCount}
+						oninput={(e: any) => {
+							hexPolygonCount = parseInt(e.target.value) < 100 ? 100 : parseInt(e.target.value);
+							if (originalMesh) {
+								clearSegmentedMeshes();
+								createHexagonalSegmentation(originalMesh);
+							}
+						}}
+					/>
+				</div>
+				<div style="margin-top: 10px;">
+					<button
+						class="tertiaryButton"
+						style="padding: 0;"
+						onclick={(e: any) => {
+							// hexPolygonCount = parseInt(e.target.value) < 100 ? 100 : parseInt(e.target.value);
+
 							clearSegmentedMeshes();
 							createHexagonalSegmentation(originalMesh);
-						}
-					}}
-				/>
-			</div>
-			<div style="margin-top: 10px;">
-				<button
-					class="tertiaryButton"
-					style="padding: 0;"
-					onclick={(e: any) => {
-						// hexPolygonCount = parseInt(e.target.value) < 100 ? 100 : parseInt(e.target.value);
+						}}>Retry</button
+					>
+				</div>
+			{/if}
+			{#if viewType === 7}
+				<div style="margin-top: 10px;">
+					<label for="{uuid}-hexPolygonCount">Polygons per segment: </label>
+					<input
+						type="number"
+						id="{uuid}-hexPolygonCount"
+						min="10"
+						max="5000"
+						step="10"
+						value={stripePolygonCount}
+						oninput={(e: any) => {
+							stripePolygonCount = parseInt(e.target.value) < 100 ? 100 : parseInt(e.target.value);
+							if (originalMesh) {
+								clearSegmentedMeshes();
+								createStripedSegmentation(originalMesh);
+							}
+						}}
+					/>
+				</div>
+			{/if}
 
-						clearSegmentedMeshes();
-						createHexagonalSegmentation(originalMesh);
-					}}>Retry</button
-				>
-			</div>
-		{/if}
-		{#if viewType === 7}
-			<div style="margin-top: 10px;">
-				<label for="{uuid}-hexPolygonCount">Polygons per segment: </label>
-				<input
-					type="number"
-					id="{uuid}-hexPolygonCount"
-					min="10"
-					max="5000"
-					step="10"
-					value={stripePolygonCount}
-					oninput={(e: any) => {
-						stripePolygonCount = parseInt(e.target.value) < 100 ? 100 : parseInt(e.target.value);
-						if (originalMesh) {
-							clearSegmentedMeshes();
-							createStripedSegmentation(originalMesh);
-						}
-					}}
-				/>
-			</div>
-		{/if}
-		{#if viewType === 4 || viewType === 5 || viewType === 6 || viewType === 7}
-			<div style="margin-top: 10px; display: flex; align-items: center;">
-				<label for="{uuid}-segmentsAmount">Number of segments: </label>
-				<p id="{uuid}-segmentsAmount" style="margin: 0;">&nbsp;{segmentedMeshes.length}</p>
-			</div>
-			<div style="margin-top: 10px;">
-				<button onclick={exportSegmentedMeshes} class="tertiaryButton" style="padding: 0;"
-					>Export Segments</button
-				>
-			</div>
-		{/if}
-	</div>
+			{#if viewType === 4 || viewType === 5 || viewType === 6 || viewType === 7}
+				<div style="margin-top: 10px; display: flex; align-items: center;">
+					<label for="{uuid}-segmentsAmount">Number of segments: </label>
+					<p id="{uuid}-segmentsAmount" style="margin: 0;">&nbsp;{segmentedMeshes.length}</p>
+				</div>
+				<div style="margin-top: 10px;">
+					<button onclick={exportSegmentedMeshes} class="tertiaryButton" style="padding: 0;"
+						>Export Segments</button
+					>
+				</div>
+			{/if}
+			<button
+				class="controlsMenuButton"
+				onclick={() => {
+					showMenu = !showMenu;
+				}}
+				><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
+					><title>icon_quit</title><line
+						x1="0.5"
+						y1="0.5"
+						x2="18.52"
+						y2="18.52"
+						style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+					/><line
+						x1="0.5"
+						y1="18.52"
+						x2="18.52"
+						y2="0.5"
+						style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+					/></svg
+				></button
+			>
+		</div>
+	{:else}
+		<button
+			class="controlsMenuButton"
+			style="position: absolute; top: 30px; left: 0;"
+			onclick={() => {
+				showMenu = !showMenu;
+			}}
+			><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
+				><title>icon_quit</title><line
+					x1="0.5"
+					y1="0.5"
+					x2="18.52"
+					y2="9.52"
+					style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+				/><line
+					x1="18.52"
+					y1="9.52"
+					x2="0.5"
+					y2="18.52"
+					style="fill:none;stroke: hsl({$textColor});stroke-linecap:round;stroke-linejoin:round; stroke-width: 3;"
+				/></svg
+			></button
+		>
+	{/if}
 	{#if options}
 		{#if !isTakingScreenshot}
 			<div style="display: flex; flex-wrap: wrap;">
@@ -1884,7 +1918,24 @@
 		position: absolute;
 		top: 20px;
 		left: 10px;
-		z-index: 2;
 		margin-right: 10px;
+		padding: 10px;
+		border-radius: 10px;
+		box-shadow: 0 0 10px hsla(0, 0%, 5%, 0.1);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+	}
+	.controlsMenuButton {
+		width: 30px;
+		height: 30px;
+		position: absolute;
+		top: 10px;
+		right: -30px;
+		background-color: hsl(0, 0%, 95%);
+		border: 1px solid hsla(0, 0%, 5%, 20%);
+		border-radius: 0 10px 10px 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>
