@@ -38,6 +38,7 @@
 	let voronoiPointCount = $state(5);
 	let hexPolygonCount = $state(1000); // Default to 1000 polygons per hexagon
 	let stripePolygonCount = $state(1000);
+	let angleThreshold = $state(20)
 
 	let showMenu = $state(true);
 
@@ -251,6 +252,14 @@
 				for (let mesh of segmentedMeshes) {
 					mesh.visible = true;
 				}
+			}  else if (value === 8) {
+				// Strip segmentation
+				originalMesh.visible = false;
+				clearSegmentedMeshes();
+				createNormalBasedSegmentation(originalMesh, angleThreshold);
+				for (let mesh of segmentedMeshes) {
+					mesh.visible = true;
+				}
 			}
 			originalMesh.geometry.computeVertexNormals();
 			originalMesh.material.needsUpdate = true;
@@ -304,6 +313,7 @@
 	function createSegmentedMesh(mesh: any) {
 		isProcessingMesh = true;
 		const geometry = mesh.geometry;
+		console.log(geometry);
 
 		// Get the number of triangles (polygons)
 		const triangleCount = geometry.index
@@ -1560,6 +1570,342 @@
 		return adjacencyList;
 	}
 
+	function createNormalBasedSegmentation(mesh, angleThreshold = 20) {
+		isProcessingMesh = true;
+		const geometry = mesh.geometry;
+
+		// Get the number of triangles
+		const triangleCount = geometry.index
+			? geometry.index.count / 3
+			: geometry.attributes.position.count / 3;
+
+		totalTrianglesAmount = triangleCount;
+
+		// Build adjacency list
+		const adjacencyList = buildAdjacencyList(geometry);
+
+		// Calculate normals for each triangle
+		const triangleNormals = calculateTriangleNormals(geometry);
+
+		// Convert angle threshold to radians
+		const thresholdRadians = (angleThreshold * Math.PI) / 180;
+
+		// Create regions by merging triangles with similar normals
+		const regions = [];
+		const assignedTriangles = new Set();
+
+		// Iterative triangle merging
+		for (let i = 0; i < triangleCount; i++) {
+			if (assignedTriangles.has(i)) continue;
+
+			// Start a new region with this triangle
+			const region = [i];
+			assignedTriangles.add(i);
+
+			// Use a queue for region growing
+			const queue = [i];
+
+			while (queue.length > 0) {
+				const currentTriangle = queue.shift();
+				const currentNormal = triangleNormals[currentTriangle];
+
+				// Check all adjacent triangles
+				for (const adjacentTriangle of adjacencyList[currentTriangle]) {
+					if (assignedTriangles.has(adjacentTriangle)) continue;
+
+					const adjacentNormal = triangleNormals[adjacentTriangle];
+
+					// Calculate angle between normals
+					const angle = Math.acos(Math.min(1, Math.max(-1, currentNormal.dot(adjacentNormal))));
+
+					// If angle is below threshold, add to region
+					if (angle < thresholdRadians) {
+						region.push(adjacentTriangle);
+						assignedTriangles.add(adjacentTriangle);
+						queue.push(adjacentTriangle);
+					}
+				}
+			}
+
+			regions.push(region);
+		}
+
+		// Merge regions to prevent over-segmentation
+		// const mergedRegions = mergeRegions(regions, triangleNormals, angleThreshold, adjacencyList);
+
+		if (viewType === 8) {
+			// Create meshes for each region
+			segmentedMeshes = createMeshesFromRegions(mesh, geometry, regions);
+		}
+
+		isProcessingMesh = false;
+		return regions;
+	}
+
+	// Helper function to calculate triangle normals
+	function calculateTriangleNormals(geometry) {
+		const positionAttr = geometry.attributes.position;
+		const indices = geometry.index ? geometry.index.array : null;
+		const triangleCount = indices ? indices.length / 3 : positionAttr.count / 3;
+
+		const normals = [];
+
+		for (let i = 0; i < triangleCount; i++) {
+			let v1, v2, v3;
+
+			if (indices) {
+				const idx1 = indices[i * 3] * 3;
+				const idx2 = indices[i * 3 + 1] * 3;
+				const idx3 = indices[i * 3 + 2] * 3;
+
+				v1 = new THREE.Vector3(
+					positionAttr.array[idx1],
+					positionAttr.array[idx1 + 1],
+					positionAttr.array[idx1 + 2]
+				);
+
+				v2 = new THREE.Vector3(
+					positionAttr.array[idx2],
+					positionAttr.array[idx2 + 1],
+					positionAttr.array[idx2 + 2]
+				);
+
+				v3 = new THREE.Vector3(
+					positionAttr.array[idx3],
+					positionAttr.array[idx3 + 1],
+					positionAttr.array[idx3 + 2]
+				);
+			} else {
+				const idx = i * 9;
+
+				v1 = new THREE.Vector3(
+					positionAttr.array[idx],
+					positionAttr.array[idx + 1],
+					positionAttr.array[idx + 2]
+				);
+
+				v2 = new THREE.Vector3(
+					positionAttr.array[idx + 3],
+					positionAttr.array[idx + 4],
+					positionAttr.array[idx + 5]
+				);
+
+				v3 = new THREE.Vector3(
+					positionAttr.array[idx + 6],
+					positionAttr.array[idx + 7],
+					positionAttr.array[idx + 8]
+				);
+			}
+
+			// Calculate triangle normal
+			const edge1 = new THREE.Vector3().subVectors(v2, v1);
+			const edge2 = new THREE.Vector3().subVectors(v3, v1);
+			const normal = new THREE.Vector3().crossVectors(edge1, edge2).normalize();
+
+			normals.push(normal);
+		}
+
+		return normals;
+	}
+
+	// Function to create meshes from regions
+	function createMeshesFromRegions(mesh, geometry, regions) {
+		const segmentedMeshes = [];
+		const positionAttr = geometry.attributes.position;
+		const indices = geometry.index ? geometry.index.array : null;
+
+		regions.forEach((triangles, regionIndex) => {
+			// Create a new geometry for this region
+			const regionGeometry = new THREE.BufferGeometry();
+
+			if (indices) {
+				// For indexed geometries
+				const newIndices = [];
+				const vertexMap = new Map();
+				let nextIndex = 0;
+
+				for (const triangleIndex of triangles) {
+					for (let j = 0; j < 3; j++) {
+						const originalIndex = indices[triangleIndex * 3 + j];
+
+						if (!vertexMap.has(originalIndex)) {
+							vertexMap.set(originalIndex, nextIndex++);
+						}
+
+						newIndices.push(vertexMap.get(originalIndex));
+					}
+				}
+
+				// Create new attribute arrays
+				const newAttributes = {};
+				for (const name in geometry.attributes) {
+					const attribute = geometry.attributes[name];
+					const itemSize = attribute.itemSize;
+					const array = attribute.array;
+					const newArray = new Float32Array(vertexMap.size * itemSize);
+
+					for (const [originalIndex, newIndex] of vertexMap.entries()) {
+						for (let k = 0; k < itemSize; k++) {
+							newArray[newIndex * itemSize + k] = array[originalIndex * itemSize + k];
+						}
+					}
+
+					newAttributes[name] = new THREE.BufferAttribute(newArray, itemSize);
+				}
+
+				// Set attributes and indices
+				for (const name in newAttributes) {
+					regionGeometry.setAttribute(name, newAttributes[name]);
+				}
+
+				regionGeometry.setIndex(newIndices);
+			} else {
+				// For non-indexed geometries
+				const newPositions = [];
+
+				// Copy other attribute arrays if needed
+				const newAttributes = {};
+				for (const name in geometry.attributes) {
+					newAttributes[name] = [];
+				}
+
+				for (const triangleIndex of triangles) {
+					const baseIndex = triangleIndex * 9;
+
+					// Copy position data for this triangle
+					for (let j = 0; j < 9; j++) {
+						newPositions.push(positionAttr.array[baseIndex + j]);
+					}
+
+					// Copy other attribute data
+					for (const name in geometry.attributes) {
+						if (name === 'position') continue;
+
+						const attribute = geometry.attributes[name];
+						const itemSize = attribute.itemSize;
+						const vertexBaseIndex = triangleIndex * 3 * itemSize;
+
+						for (let j = 0; j < 3 * itemSize; j++) {
+							newAttributes[name].push(attribute.array[vertexBaseIndex + j]);
+						}
+					}
+				}
+
+				// Set position attribute
+				regionGeometry.setAttribute(
+					'position',
+					new THREE.BufferAttribute(new Float32Array(newPositions), 3)
+				);
+
+				// Set other attributes
+				for (const name in newAttributes) {
+					if (name === 'position') continue;
+
+					const attribute = geometry.attributes[name];
+					regionGeometry.setAttribute(
+						name,
+						new THREE.BufferAttribute(new Float32Array(newAttributes[name]), attribute.itemSize)
+					);
+				}
+			}
+
+			// Create a color based on the region index using HSL
+			const hue = (regionIndex * 137.5) % 360; // Golden angle for good distribution
+			const saturation = 0.85;
+			const lightness = 0.5;
+			const color = new THREE.Color().setHSL(hue / 360, saturation, lightness);
+
+			const regionMaterial = new THREE.MeshStandardMaterial({
+				color: color,
+				metalness: 0.1,
+				roughness: 0.7
+			});
+
+			// Create a new mesh
+			const regionMesh = new THREE.Mesh(regionGeometry, regionMaterial);
+			regionMesh.geometry.computeVertexNormals();
+			regionMesh.material.needsUpdate = true;
+
+			segmentedMeshes.push(regionMesh);
+			scene.add(regionMesh);
+		});
+
+		return segmentedMeshes;
+	}
+
+	function mergeRegions(regions, triangleNormals, angleThreshold, adjacencyList) {
+		const mergedRegions = [...regions];
+		let changed = true;
+		const thresholdRadians = (angleThreshold * Math.PI) / 180;
+
+		// Calculate average normal for each region
+		const regionNormals = mergedRegions.map((region) => {
+			const avgNormal = new THREE.Vector3();
+			region.forEach((triangleIndex) => {
+				avgNormal.add(triangleNormals[triangleIndex]);
+			});
+			return avgNormal.normalize();
+		});
+
+		// Iteratively merge regions
+		while (changed) {
+			changed = false;
+
+			// Find adjacent regions
+			for (let i = 0; i < mergedRegions.length; i++) {
+				if (!mergedRegions[i] || mergedRegions[i].length === 0) continue;
+
+				for (let j = i + 1; j < mergedRegions.length; j++) {
+					if (!mergedRegions[j] || mergedRegions[j].length === 0) continue;
+
+					// Check if regions are adjacent
+					const areAdjacent = checkRegionsAdjacency(
+						mergedRegions[i],
+						mergedRegions[j],
+						adjacencyList
+					);
+
+					if (areAdjacent) {
+						// Calculate angle between region normals
+						const angle = Math.acos(
+							Math.min(1, Math.max(-1, regionNormals[i].dot(regionNormals[j])))
+						);
+
+						// If angle is below threshold, merge regions
+						if (angle < thresholdRadians) {
+							// Merge j into i
+							mergedRegions[i] = [...mergedRegions[i], ...mergedRegions[j]];
+							mergedRegions[j] = [];
+
+							// Recalculate normal for region i
+							const avgNormal = new THREE.Vector3();
+							mergedRegions[i].forEach((triangleIndex) => {
+								avgNormal.add(triangleNormals[triangleIndex]);
+							});
+							regionNormals[i] = avgNormal.normalize();
+
+							changed = true;
+						}
+					}
+				}
+			}
+		}
+
+		// Filter out empty regions
+		return mergedRegions.filter((region) => region.length > 0);
+	}
+
+	function checkRegionsAdjacency(region1, region2, adjacencyList) {
+		for (const triangle1 of region1) {
+			for (const triangle2 of region2) {
+				if (adjacencyList[triangle1].includes(triangle2)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	function exportSegmentedMeshes() {
 		// Create a new scene containing only the segmented meshes
 		const exportScene = new THREE.Scene();
@@ -1645,10 +1991,11 @@
 					<option value="1">White</option>
 					<option value="2">Normal</option>
 					<option value="3">Wireframe</option>
-					<option value="4">Grid Segment</option>
-					<option value="5">Voronoi Segment</option>
-					<option value="6">Abstract Segment</option>
-					<option value="7">Strip Segment</option>
+					<option value="4">Grid Segmentation</option>
+					<option value="5">Voronoi Segmentation</option>
+					<option value="6">Abstract Segmentation</option>
+					<option value="7">Strip Segmentation</option>
+					<option value="8">Normal Segmentation</option>
 				</select>
 			</div>
 			{#if viewType === 4}
@@ -1704,6 +2051,7 @@
 								if (originalMesh) {
 									clearSegmentedMeshes();
 									createSegmentedMesh(originalMesh);
+									// segmentByNormals(originalMesh)
 								}
 							}}
 							style="width: 50px;"
@@ -1726,6 +2074,7 @@
 							if (originalMesh) {
 								clearSegmentedMeshes();
 								createVoronoiSegmentation(originalMesh);
+								// createNormalBasedSegmentation(originalMesh);
 							}
 						}}
 					/>
@@ -1795,8 +2144,28 @@
 					/>
 				</div>
 			{/if}
+			{#if viewType === 8}
+			<div style="margin-top: 10px;">
+				<label for="{uuid}-angleThreshold">Angle threshold: </label>
+				<input
+					type="number"
+					id="{uuid}-angleTheshold"
+					min="1"
+					max="180"
+					step="1"
+					value={angleThreshold}
+					oninput={(e: any) => {
+						angleThreshold = parseInt(e.target.value)
+						if (originalMesh) {
+							clearSegmentedMeshes();
+							createNormalBasedSegmentation(originalMesh, angleThreshold);
+						}
+					}}
+				/>
+			</div>
+			{/if}
 
-			{#if viewType === 4 || viewType === 5 || viewType === 6 || viewType === 7}
+			{#if viewType === 4 || viewType === 5 || viewType === 6 || viewType === 7 || viewType === 8}
 				<div style="margin-top: 10px; display: flex; align-items: center;">
 					<label for="{uuid}-segmentsAmount">Number of segments: </label>
 					<p id="{uuid}-segmentsAmount" style="margin: 0;">&nbsp;{segmentedMeshes.length}</p>
