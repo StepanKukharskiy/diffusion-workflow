@@ -38,7 +38,13 @@
 	let voronoiPointCount = $state(5);
 	let hexPolygonCount = $state(1000); // Default to 1000 polygons per hexagon
 	let stripePolygonCount = $state(1000);
-	let angleThreshold = $state(20)
+	let angleThreshold = $state(20);
+	let textureCanvas: any = $state();
+	let textureCanvasHeight:any = $state(400)
+	let showMeshTexture: boolean = $state(true);
+	let showMeshPolygonsOnTexture: boolean = $state(true);
+	let isShowingTexture: any = $state('none');
+	let textureUrl:any = $state();
 
 	let showMenu = $state(true);
 
@@ -51,6 +57,8 @@
 		// Canvas is guaranteed to be available here
 		setTimeout(() => {
 			console.log(appCanvas);
+			textureCanvasHeight = appCanvas.clientHeight;
+			console.log(textureCanvasHeight)
 			loadModel(
 				`${$page.url.origin}/api/get-file/${$page.params.projectId}/${modelUrl.split('/')[7]}`
 			);
@@ -129,6 +137,7 @@
 			originalMesh = object.children[0];
 		}
 		originalMesh.material.metalness = 0;
+		originalMaterials.push(originalMesh.material.clone())
 		createSegmentedMesh(originalMesh);
 		// console.log(object);
 		scene.add(object);
@@ -185,14 +194,16 @@
 
 	function switchMaterials(value: any) {
 		if (scene) {
-			originalMaterials.push(originalMesh.material.clone());
+			// originalMaterials.push(originalMesh.material.clone());
 			if (value === 0) {
+				isShowingTexture = 'none';
 				originalMesh.material = originalMaterials[0];
 				originalMesh.visible = true;
 				for (let mesh of segmentedMeshes) {
 					mesh.visible = false;
 				}
 			} else if (value === 1) {
+				isShowingTexture = 'none';
 				const newMaterial = new THREE.MeshStandardMaterial({
 					color: 'lightgrey'
 				});
@@ -203,6 +214,7 @@
 					mesh.visible = false;
 				}
 			} else if (value === 2) {
+				isShowingTexture = 'none';
 				const newMaterial = new THREE.MeshNormalMaterial({});
 
 				originalMesh.material = newMaterial;
@@ -211,6 +223,7 @@
 					mesh.visible = false;
 				}
 			} else if (value === 3) {
+				isShowingTexture = 'none';
 				const newMaterial = new THREE.MeshStandardMaterial({
 					color: 'black',
 					wireframe: true
@@ -222,6 +235,7 @@
 					mesh.visible = false;
 				}
 			} else if (value === 4) {
+				isShowingTexture = 'none';
 				originalMesh.visible = false;
 				clearSegmentedMeshes();
 				createSegmentedMesh(originalMesh);
@@ -230,6 +244,7 @@
 				}
 			} else if (value === 5) {
 				// Voronoi segmentation
+				isShowingTexture = 'none';
 				originalMesh.visible = false;
 				clearSegmentedMeshes();
 				createVoronoiSegmentation(originalMesh);
@@ -238,6 +253,7 @@
 				}
 			} else if (value === 6) {
 				// Hexagonal segmentation
+				isShowingTexture = 'none';
 				originalMesh.visible = false;
 				clearSegmentedMeshes();
 				createHexagonalSegmentation(originalMesh);
@@ -246,21 +262,49 @@
 				}
 			} else if (value === 7) {
 				// Strip segmentation
+				isShowingTexture = 'none';
 				originalMesh.visible = false;
 				clearSegmentedMeshes();
 				createStripedSegmentation(originalMesh);
 				for (let mesh of segmentedMeshes) {
 					mesh.visible = true;
 				}
-			}  else if (value === 8) {
+			} else if (value === 8) {
 				// Strip segmentation
+				isShowingTexture = 'none';
 				originalMesh.visible = false;
 				clearSegmentedMeshes();
 				createNormalBasedSegmentation(originalMesh, angleThreshold);
 				for (let mesh of segmentedMeshes) {
 					mesh.visible = true;
 				}
+			} else if (value === 9) {
+				isShowingTexture = 'block';
+				originalMesh.material = originalMaterials[0];
+
+				drawMeshTextureToCanvas(originalMesh, textureCanvas, {
+					resolution: 2048,
+					wireframe: true,
+					fillColor: 'rgba(220, 220, 220, 0.3)',
+					wireframeColor: 'rgba(30, 30, 30, 0.7)',
+					wireframeWidth: 0.5,
+					background: 'white',
+					showTexture: true
+				});
+			} else if (value === 10) {
+				// UV segmentation
+				isShowingTexture = 'none';
+				originalMesh.visible = false;
+				originalMesh.material = originalMaterials[0];
+				clearSegmentedMeshes();
+				segmentedMeshes = createSegmentedMeshByUVIslands(originalMesh)
+				console.log(segmentedMeshes)
+				for (let mesh of segmentedMeshes) {
+					scene.add(mesh)
+					mesh.visible = true;
+				}
 			}
+
 			originalMesh.geometry.computeVertexNormals();
 			originalMesh.material.needsUpdate = true;
 		}
@@ -1906,6 +1950,474 @@
 		return false;
 	}
 
+	function drawMeshTextureToCanvas(
+		mesh: THREE.Mesh,
+		canvasElement: HTMLCanvasElement,
+		options = {
+			resolution: 1024,
+			wireframe: true,
+			fillColor: 'rgba(200, 200, 200, 0.2)',
+			wireframeColor: 'rgba(0, 0, 0, 0.8)',
+			wireframeWidth: 1,
+			background: 'white',
+			showTexture: true
+		}
+	) {
+		// Make sure the mesh has UV coordinates
+		const geometry = mesh.geometry;
+		if (!geometry.attributes.uv) {
+			console.error('Mesh does not have UV coordinates');
+			return;
+		}
+
+		// Set up the canvas
+		const canvas = canvasElement;
+		const ctx = canvas.getContext('2d');
+		if (!ctx) {
+			console.error('Could not get 2D context from canvas');
+			return;
+		}
+
+		// Set canvas dimensions
+		canvas.width = options.resolution;
+		canvas.height = options.resolution;
+
+		// Clear canvas with background color
+		ctx.fillStyle = options.background;
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+		// First, try to render the texture if it exists and option is enabled
+		let textureRendered = false;
+		if (options.showTexture && mesh.material) {
+			let material: THREE.Material;
+
+			// Handle array of materials
+			if (Array.isArray(mesh.material)) {
+				material = mesh.material[0];
+			} else {
+				material = mesh.material;
+			}
+
+			// Check for texture map in various material types
+			let textureMap = null;
+			if ('map' in material && material.map) {
+				textureMap = material.map;
+			}
+
+			if (textureMap && textureMap.image) {
+				// Create a temporary canvas to draw the texture
+				const tempCanvas = document.createElement('canvas');
+				tempCanvas.width = options.resolution;
+				tempCanvas.height = options.resolution;
+				const tempCtx = tempCanvas.getContext('2d');
+
+				if (tempCtx) {
+					// Flip the texture vertically before drawing it
+					tempCtx.translate(0, tempCanvas.height);
+					tempCtx.scale(1, -1);
+
+					// Draw the texture to the temporary canvas (now flipped)
+					tempCtx.drawImage(
+						textureMap.image,
+						0,
+						0,
+						textureMap.image.width,
+						textureMap.image.height,
+						0,
+						0,
+						tempCanvas.width,
+						tempCanvas.height
+					);
+
+					// Reset transformation
+					tempCtx.setTransform(1, 0, 0, 1, 0, 0);
+
+					// Copy the texture to our main canvas
+					ctx.drawImage(tempCanvas, 0, 0);
+					textureRendered = true;
+				}
+			}
+		}
+
+		// If no texture was rendered, fill with background
+		if (!textureRendered && options.background) {
+			ctx.fillStyle = options.background;
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+		}
+
+		// Get UV coordinates and indices
+		const uvAttribute = geometry.attributes.uv;
+		const indices = geometry.index ? geometry.index.array : null;
+		const triangleCount = indices ? indices.length / 3 : geometry.attributes.position.count / 3;
+
+		// Draw triangles in UV space
+		ctx.strokeStyle = options.wireframeColor;
+		ctx.lineWidth = options.wireframeWidth;
+
+		for (let i = 0; i < triangleCount; i++) {
+			let idx1, idx2, idx3;
+
+			if (indices) {
+				// Indexed geometry
+				idx1 = indices[i * 3];
+				idx2 = indices[i * 3 + 1];
+				idx3 = indices[i * 3 + 2];
+			} else {
+				// Non-indexed geometry
+				idx1 = i * 3;
+				idx2 = i * 3 + 1;
+				idx3 = i * 3 + 2;
+			}
+
+			// Get UV coordinates for each vertex of the triangle
+			const u1 = uvAttribute.array[idx1 * 2];
+			const v1 = uvAttribute.array[idx1 * 2 + 1];
+			const u2 = uvAttribute.array[idx2 * 2];
+			const v2 = uvAttribute.array[idx2 * 2 + 1];
+			const u3 = uvAttribute.array[idx3 * 2];
+			const v3 = uvAttribute.array[idx3 * 2 + 1];
+
+			// Convert UV coordinates to canvas coordinates
+			// Keep the original UV mapping for polygon islands
+			const x1 = u1 * canvas.width;
+			const y1 = (1 - v1) * canvas.height; // Flip Y to match canvas coordinates
+			const x2 = u2 * canvas.width;
+			const y2 = (1 - v2) * canvas.height;
+			const x3 = u3 * canvas.width;
+			const y3 = (1 - v3) * canvas.height;
+
+			// Draw the triangle
+			ctx.beginPath();
+			ctx.moveTo(x1, y1);
+			ctx.lineTo(x2, y2);
+			ctx.lineTo(x3, y3);
+			ctx.closePath();
+
+			// Fill the triangle with semi-transparent color if needed
+			if (options.fillColor) {
+				ctx.fillStyle = options.fillColor;
+				ctx.fill();
+			}
+
+			// Draw wireframe if enabled
+			if (options.wireframe) {
+				ctx.stroke();
+			}
+		}
+		return canvas;
+	}
+
+	function createSegmentedMeshByUVIslands(mesh: THREE.Mesh) {
+  const geometry = mesh.geometry;
+  
+  // Ensure we have UV coordinates
+  if (!geometry.attributes.uv) {
+    console.error("Mesh does not have UV coordinates");
+    return null;
+  }
+  
+  // Get the necessary attributes
+  const positionAttr = geometry.attributes.position;
+  const uvAttr = geometry.attributes.uv;
+  const indices = geometry.index ? geometry.index.array : null;
+  
+  // Calculate the number of triangles
+  const triangleCount = indices
+    ? indices.length / 3
+    : positionAttr.count / 3;
+  
+  // Create a map to track which polygons belong to which UV island
+  const islandMap = new Map();
+  let currentIslandId = 0;
+  
+  // Create an edge map to track connectivity in UV space
+  const edgeMap = new Map();
+  
+  // Define a small epsilon for floating-point comparison
+  const epsilon = 1e-6;
+  
+  // Helper function to check if two UV points are the same
+  const isSameUV = (a, b) => {
+    return Math.abs(a[0] - b[0]) < epsilon && Math.abs(a[1] - b[1]) < epsilon;
+  };
+  
+  // Helper function to get a unique key for an edge in UV space
+  const getEdgeKey = (a, b) => {
+    // Ensure consistent ordering
+    if (a[0] < b[0] || (a[0] === b[0] && a[1] < b[1])) {
+      return `${a[0]},${a[1]}_${b[0]},${b[1]}`;
+    }
+    return `${b[0]},${b[1]}_${a[0]},${a[1]}`;
+  };
+  
+  // First pass: build the edge connectivity in UV space
+  for (let i = 0; i < triangleCount; i++) {
+    let idx1, idx2, idx3;
+    
+    if (indices) {
+      idx1 = indices[i * 3];
+      idx2 = indices[i * 3 + 1];
+      idx3 = indices[i * 3 + 2];
+    } else {
+      idx1 = i * 3;
+      idx2 = i * 3 + 1;
+      idx3 = i * 3 + 2;
+    }
+    
+    // Get UV coordinates for each vertex
+    const uv1 = [uvAttr.array[idx1 * 2], uvAttr.array[idx1 * 2 + 1]];
+    const uv2 = [uvAttr.array[idx2 * 2], uvAttr.array[idx2 * 2 + 1]];
+    const uv3 = [uvAttr.array[idx3 * 2], uvAttr.array[idx3 * 2 + 1]];
+    
+    // Add triangle edges to the edge map
+    const edge1Key = getEdgeKey(uv1, uv2);
+    const edge2Key = getEdgeKey(uv2, uv3);
+    const edge3Key = getEdgeKey(uv3, uv1);
+    
+    if (!edgeMap.has(edge1Key)) edgeMap.set(edge1Key, []);
+    if (!edgeMap.has(edge2Key)) edgeMap.set(edge2Key, []);
+    if (!edgeMap.has(edge3Key)) edgeMap.set(edge3Key, []);
+    
+    edgeMap.get(edge1Key).push(i);
+    edgeMap.get(edge2Key).push(i);
+    edgeMap.get(edge3Key).push(i);
+  }
+  
+  // Second pass: use a flood-fill algorithm to identify islands
+  const visitedTriangles = new Set();
+  
+  for (let i = 0; i < triangleCount; i++) {
+    if (visitedTriangles.has(i)) continue;
+    
+    // Start a new island
+    const islandId = currentIslandId++;
+    const queue = [i];
+    visitedTriangles.add(i);
+    islandMap.set(i, islandId);
+    
+    // Process all connected triangles
+    while (queue.length > 0) {
+      const triangleIdx = queue.shift();
+      
+      // Get the triangle's vertices
+      let idx1, idx2, idx3;
+      
+      if (indices) {
+        idx1 = indices[triangleIdx * 3];
+        idx2 = indices[triangleIdx * 3 + 1];
+        idx3 = indices[triangleIdx * 3 + 2];
+      } else {
+        idx1 = triangleIdx * 3;
+        idx2 = triangleIdx * 3 + 1;
+        idx3 = triangleIdx * 3 + 2;
+      }
+      
+      // Get UV coordinates
+      const uv1 = [uvAttr.array[idx1 * 2], uvAttr.array[idx1 * 2 + 1]];
+      const uv2 = [uvAttr.array[idx2 * 2], uvAttr.array[idx2 * 2 + 1]];
+      const uv3 = [uvAttr.array[idx3 * 2], uvAttr.array[idx3 * 2 + 1]];
+      
+      // Check all edges of this triangle
+      const edge1Key = getEdgeKey(uv1, uv2);
+      const edge2Key = getEdgeKey(uv2, uv3);
+      const edge3Key = getEdgeKey(uv3, uv1);
+      
+      const processEdge = (edgeKey) => {
+        const connectedTriangles = edgeMap.get(edgeKey);
+        for (const connectedIdx of connectedTriangles) {
+          if (!visitedTriangles.has(connectedIdx)) {
+            visitedTriangles.add(connectedIdx);
+            islandMap.set(connectedIdx, islandId);
+            queue.push(connectedIdx);
+          }
+        }
+      };
+      
+      processEdge(edge1Key);
+      processEdge(edge2Key);
+      processEdge(edge3Key);
+    }
+  }
+  
+  // Create a map to group triangles by island
+  const islands = new Map();
+  for (let i = 0; i < triangleCount; i++) {
+    const islandId = islandMap.get(i);
+    if (!islands.has(islandId)) {
+      islands.set(islandId, []);
+    }
+    islands.get(islandId).push(i);
+  }
+  
+  // Create separate meshes for each island
+  const segmentedMeshes = [];
+  
+  islands.forEach((triangles, islandId) => {
+    // Create a new geometry for this island
+    const islandGeometry = new THREE.BufferGeometry();
+    
+    if (indices) {
+      // For indexed geometries
+      const newIndices = [];
+      const vertexMap = new Map();
+      let nextIndex = 0;
+      
+      for (const triangleIndex of triangles) {
+        for (let j = 0; j < 3; j++) {
+          const originalIndex = indices[triangleIndex * 3 + j];
+          
+          if (!vertexMap.has(originalIndex)) {
+            vertexMap.set(originalIndex, nextIndex++);
+          }
+          
+          newIndices.push(vertexMap.get(originalIndex));
+        }
+      }
+      
+      // Create new attribute arrays
+      const newAttributes = {};
+      for (const name in geometry.attributes) {
+        const attribute = geometry.attributes[name];
+        const itemSize = attribute.itemSize;
+        const array = attribute.array;
+        const newArray = new Float32Array(vertexMap.size * itemSize);
+        
+        for (const [originalIndex, newIndex] of vertexMap.entries()) {
+          for (let k = 0; k < itemSize; k++) {
+            newArray[newIndex * itemSize + k] = array[originalIndex * itemSize + k];
+          }
+        }
+        
+        newAttributes[name] = new THREE.BufferAttribute(newArray, itemSize);
+      }
+      
+      // Set attributes and indices
+      for (const name in newAttributes) {
+        islandGeometry.setAttribute(name, newAttributes[name]);
+      }
+      
+      islandGeometry.setIndex(newIndices);
+    } else {
+      // For non-indexed geometries
+      const newPositions = [];
+      
+      // Copy other attribute arrays if needed
+      const newAttributes = {};
+      for (const name in geometry.attributes) {
+        newAttributes[name] = [];
+      }
+      
+      for (const triangleIndex of triangles) {
+        const baseIndex = triangleIndex * 9;
+        
+        // Copy position data for this triangle
+        for (let j = 0; j < 9; j++) {
+          newPositions.push(positionAttr.array[baseIndex + j]);
+        }
+        
+        // Copy other attribute data
+        for (const name in geometry.attributes) {
+          if (name === 'position') continue;
+          
+          const attribute = geometry.attributes[name];
+          const itemSize = attribute.itemSize;
+          const vertexBaseIndex = triangleIndex * 3 * itemSize;
+          
+          for (let j = 0; j < 3 * itemSize; j++) {
+            newAttributes[name].push(attribute.array[vertexBaseIndex + j]);
+          }
+        }
+      }
+      
+      // Set position attribute
+      islandGeometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(new Float32Array(newPositions), 3)
+      );
+      
+      // Set other attributes
+      for (const name in newAttributes) {
+        if (name === 'position') continue;
+        
+        const attribute = geometry.attributes[name];
+        islandGeometry.setAttribute(
+          name,
+          new THREE.BufferAttribute(new Float32Array(newAttributes[name]), attribute.itemSize)
+        );
+      }
+    }
+    
+    // Create a color based on the island ID using HSL
+    const hue = (islandId * 137.5) % 360; // Golden angle for good distribution
+    const saturation = 0.85;
+    const lightness = 0.5;
+    const color = new THREE.Color().setHSL(hue / 360, saturation, lightness);
+    
+    const islandMaterial = new THREE.MeshStandardMaterial({
+      color: color,
+      metalness: 0.1,
+      roughness: 0.7
+    });
+    
+    // Create a new mesh
+    const islandMesh = new THREE.Mesh(islandGeometry, islandMaterial);
+    islandMesh.geometry.computeVertexNormals();
+    islandMesh.material.needsUpdate = true;
+    
+    segmentedMeshes.push(islandMesh);
+  });
+  
+  return segmentedMeshes;
+}
+
+  
+  function applyTexture(mesh) {
+	let errorMessage = '';
+    if (!textureUrl) {
+      errorMessage = 'Please enter a texture URL';
+      return;
+    }
+    
+    isProcessingMesh = true;
+    errorMessage = '';
+    
+    // Create a texture loader
+    const textureLoader = new THREE.TextureLoader();
+    
+    // Set cross-origin if loading from external domain
+    textureLoader.crossOrigin = 'anonymous';
+    
+    // Load the texture
+    textureLoader.load(
+      textureUrl,
+      (texture) => {
+        // Successfully loaded texture
+        if (mesh) {
+          // Handle array of materials
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach(mat => {
+              mat.map = texture;
+              mat.needsUpdate = true;
+            });
+          } else {
+            mesh.material.map = texture;
+            mesh.material.needsUpdate = true;
+          }
+        }
+        isProcessingMesh = false;
+      },
+      // Progress callback (optional)
+      undefined,
+      // Error callback
+      (error) => {
+        console.error('Error loading texture:', error);
+        errorMessage = 'Failed to load texture. Please check the URL.';
+        isProcessingMesh = false;
+      }
+    );
+  }
+
+
 	function exportSegmentedMeshes() {
 		// Create a new scene containing only the segmented meshes
 		const exportScene = new THREE.Scene();
@@ -1956,6 +2468,12 @@
 		id="{uuid}-canvas"
 		style="margin-top: 10px; border-radius: 10px; width: 100%; height: 100%;"
 	></canvas>
+	<div
+		style="display: {isShowingTexture}; position: absolute; top: 10px; left: 0; max-height: {textureCanvasHeight}px; overflow: scroll;"
+	>
+		<canvas bind:this={textureCanvas} id="{uuid}-texture-canvas" style="width: 100%; height: 100%;"
+		></canvas>
+	</div>
 	{#if showMenu}
 		<div class="canvasMenuContainer">
 			<div style="display: flex; align-items: center;">
@@ -1991,13 +2509,28 @@
 					<option value="1">White</option>
 					<option value="2">Normal</option>
 					<option value="3">Wireframe</option>
+					<option value="9">UV</option>
 					<option value="4">Grid Segmentation</option>
 					<option value="5">Voronoi Segmentation</option>
 					<option value="6">Abstract Segmentation</option>
 					<option value="7">Strip Segmentation</option>
 					<option value="8">Normal Segmentation</option>
+					<option value="10">UV Segmentation</option>
 				</select>
 			</div>
+			{#if viewType === 0}
+			<div style="margin-top: 10px;">
+				<label for="{uuid}-textureInput">Update texture: </label>
+				<input id="{uuid}-textureInput" bind:value={textureUrl} placeholder='Enter URL'/>
+				<button class='tertiaryButton' style='padding-left: 0;' onclick={()=>{
+					applyTexture(originalMesh)
+				}}>Update</button>
+				<button class='tertiaryButton' style='padding-left: 0; padding-top: 0;' onclick={()=>{
+					originalMesh.material = originalMaterials[0].clone()
+					originalMesh.material.needsUpdate = true;
+				}}>Restore original texture</button>
+			</div>
+			{/if}
 			{#if viewType === 4}
 				<div style="margin-top: 10px;">
 					<label for="{uuid}-gridDivisions">Grid divisions: </label>
@@ -2145,27 +2678,60 @@
 				</div>
 			{/if}
 			{#if viewType === 8}
-			<div style="margin-top: 10px;">
-				<label for="{uuid}-angleThreshold">Angle threshold: </label>
-				<input
-					type="number"
-					id="{uuid}-angleTheshold"
-					min="1"
-					max="180"
-					step="1"
-					value={angleThreshold}
-					oninput={(e: any) => {
-						angleThreshold = parseInt(e.target.value)
-						if (originalMesh) {
-							clearSegmentedMeshes();
-							createNormalBasedSegmentation(originalMesh, angleThreshold);
-						}
-					}}
-				/>
-			</div>
+				<div style="margin-top: 10px;">
+					<label for="{uuid}-angleThreshold">Angle threshold: </label>
+					<input
+						type="number"
+						id="{uuid}-angleTheshold"
+						min="1"
+						max="180"
+						step="1"
+						value={angleThreshold}
+						oninput={(e: any) => {
+							angleThreshold = parseInt(e.target.value);
+							if (originalMesh) {
+								clearSegmentedMeshes();
+								createNormalBasedSegmentation(originalMesh, angleThreshold);
+							}
+						}}
+					/>
+				</div>
+			{/if}
+			{#if viewType === 9}
+				<div style="margin-top: 10px;">
+					<button class='tertiaryButton' style='padding-left: 0;' onclick={async () => {
+						showMeshTexture = !showMeshTexture
+						drawMeshTextureToCanvas(originalMesh, textureCanvas, {
+					resolution: 2048,
+					wireframe: true,
+					fillColor: showMeshPolygonsOnTexture ? 'rgba(220, 220, 220, 0.3)' : 'rgba(220, 220, 220, 0)',
+					wireframeColor: showMeshPolygonsOnTexture ? 'rgba(30, 30, 30, 0.7)' : 'rgba(30, 30, 30, 0)',
+					wireframeWidth: 0.5,
+					background: 'white',
+					showTexture: showMeshTexture
+				});
+					}}>{showMeshTexture === true ? 'Hide texture' : 'Show texture'}</button>
+					<button class='tertiaryButton' style='padding-left: 0;' onclick={async () => {
+						showMeshPolygonsOnTexture = !showMeshPolygonsOnTexture
+						drawMeshTextureToCanvas(originalMesh, textureCanvas, {
+					resolution: 2048,
+					wireframe: true,
+					fillColor: showMeshPolygonsOnTexture ? 'rgba(220, 220, 220, 0.3)' : 'rgba(220, 220, 220, 0)',
+					wireframeColor: showMeshPolygonsOnTexture ? 'rgba(30, 30, 30, 0.7)' : 'rgba(30, 30, 30, 0)',
+					wireframeWidth: 0.5,
+					background: 'white',
+					showTexture: showMeshTexture
+				});
+					}}>{showMeshPolygonsOnTexture === true ? 'Hide polygons' : 'Show polygons'}</button>
+					<button class='tertiaryButton' style='padding-left: 0;' onclick={async () => {
+						const screenshotUrl = await getCanvasScreenshotUrl(textureCanvas);
+						addElement($elements, 'image', 'screenshot', screenshotUrl);
+						$elements = $elements;
+					}}>Export texture</button>
+				</div>
 			{/if}
 
-			{#if viewType === 4 || viewType === 5 || viewType === 6 || viewType === 7 || viewType === 8}
+			{#if viewType === 4 || viewType === 5 || viewType === 6 || viewType === 7 || viewType === 8 || viewType === 10}
 				<div style="margin-top: 10px; display: flex; align-items: center;">
 					<label for="{uuid}-segmentsAmount">Number of segments: </label>
 					<p id="{uuid}-segmentsAmount" style="margin: 0;">&nbsp;{segmentedMeshes.length}</p>
@@ -2181,7 +2747,7 @@
 				onclick={() => {
 					showMenu = !showMenu;
 				}}
-				><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
+				><svg xmlns="http://www.w3.org/2000/svg" style='width: 10px;' width="10" height="10" viewBox="0 0 19.02 19.02"
 					><title>icon_quit</title><line
 						x1="0.5"
 						y1="0.5"
@@ -2205,7 +2771,7 @@
 			onclick={() => {
 				showMenu = !showMenu;
 			}}
-			><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 19.02 19.02"
+			><svg xmlns="http://www.w3.org/2000/svg" style='width: 10px;' width="10" height="10" viewBox="0 0 19.02 19.02"
 				><title>icon_quit</title><line
 					x1="0.5"
 					y1="0.5"
@@ -2293,6 +2859,7 @@
 		box-shadow: 0 0 10px hsla(0, 0%, 5%, 0.1);
 		backdrop-filter: blur(20px);
 		-webkit-backdrop-filter: blur(20px);
+		background: linear-gradient(45deg, hsla(0, 0%, 95%, 0%), hsla(0, 0%, 95%, 70%));
 	}
 	.controlsMenuButton {
 		width: 30px;
@@ -2306,5 +2873,16 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+	label{
+		color: hsl(0, 0%, 5%);
+	}
+	input, select{
+		padding: 5px;
+		font-size: 1.2rem;
+		border-radius: 10px;
+		border: 1px solid hsl(0, 0%, 80%);
+		background: hsl(0, 0%, 95%);
+		color: hsl(0, 0%, 5%);
 	}
 </style>
