@@ -118,6 +118,7 @@
 		renderer.toneMapping = THREE.LinearToneMapping;
 		renderer.toneMappingExposure = 1;
 		renderer.outputEncoding = THREE.sRGBEncoding;
+		renderer.outputColorSpace = THREE.SRGBColorSpace;
 		// object.rotation.x = -Math.PI/2
 		if (object.children[0].children[0] != undefined) {
 			originalMesh = object.children[0].children[0];
@@ -2658,6 +2659,7 @@
 				// Set flipY to false to maintain UV alignment
 				texture.flipY = false;
 				texture.encoding = THREE.sRGBEncoding;
+				texture.colorSpace = THREE.SRGBColorSpace;
 				texture.generateMipmaps = false;
 				texture.minFilter = THREE.LinearFilter;
 				texture.magFilter = THREE.LinearFilter;
