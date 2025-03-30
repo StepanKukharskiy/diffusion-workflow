@@ -25,7 +25,7 @@
 	let isTakingScreenshot = $state(false);
 	let showTexture: any = $state(true);
 	let originalMaterials: any = $state([]);
-	let originalMaterialTexture:any = $state();
+	let originalMaterialTexture: any = $state();
 	let currentMaterialIndex: any = $state(0);
 	let viewType: any = $state(0);
 	let originalMesh: any = $state();
@@ -98,20 +98,6 @@
 		});
 	}
 
-	// function applyTexture(object: THREE.Object3D) {
-	//     if (textureUrl) {
-	//         const textureLoader = new THREE.TextureLoader();
-	//         textureLoader.load(textureUrl, (texture) => {
-	//             object.traverse((child) => {
-	//                 if (child.isMesh) {
-	//                     child.material.map = texture; // Assign the texture to the material
-	//                     child.material.needsUpdate = true; // Notify Three.js to update the material
-	//                 }
-	//             });
-	//         });
-	//     }
-	// }
-
 	function setupScene(object: THREE.Object3D) {
 		scene = new THREE.Scene();
 		scene.background = null;
@@ -139,8 +125,9 @@
 			originalMesh = object.children[0];
 		}
 		originalMesh.material.metalness = 0;
-		originalMaterials.push(originalMesh.material.clone())
-		originalMaterialTexture = originalMesh.material.map.clone()
+		originalMesh.material.roughness = 1;
+		originalMaterials.push(originalMesh.material.clone());
+		originalMaterialTexture = originalMesh.material.map.clone();
 		// Store both material and its texture separately
 		// originalMaterials.push({
 		// 	material: originalMesh.material.clone(),
@@ -290,9 +277,9 @@
 				}
 			} else if (value === 9) {
 				isShowingTexture = 'block';
-				originalMesh.material = originalMaterials[0];
-				originalMesh.material.map = originalMaterialTexture.clone()
-				originalMesh.material.needsUpdate = true;
+				// originalMesh.material = originalMaterials[0];
+				// originalMesh.material.map = originalMaterialTexture.clone()
+				// originalMesh.material.needsUpdate = true;
 
 				drawMeshTextureToCanvas(originalMesh, textureCanvas, {
 					resolution: 2048,
@@ -307,9 +294,9 @@
 				// UV segmentation
 				isShowingTexture = 'none';
 				originalMesh.visible = false;
-				originalMesh.material = originalMaterials[0];
-				originalMesh.material.map = originalMaterialTexture.clone()
-				originalMesh.material.needsUpdate = true;
+				// originalMesh.material = originalMaterials[0];
+				// originalMesh.material.map = originalMaterialTexture.clone()
+				// originalMesh.material.needsUpdate = true;
 				clearSegmentedMeshes();
 				segmentedMeshes = createSegmentedMeshByUVIslands(originalMesh);
 				for (let mesh of segmentedMeshes) {
@@ -2670,6 +2657,10 @@
 			(texture) => {
 				// Set flipY to false to maintain UV alignment
 				texture.flipY = false;
+				texture.encoding = THREE.sRGBEncoding;
+				texture.generateMipmaps = false;
+				texture.minFilter = THREE.LinearFilter;
+				texture.magFilter = THREE.LinearFilter;
 
 				// Successfully loaded texture
 				if (mesh) {
@@ -2815,7 +2806,7 @@
 						onclick={() => {
 							// Create a new material based on the original
 							const originalMaterial = originalMaterials[0].clone();
-							originalMaterial.map = originalMaterialTexture.clone()
+							originalMaterial.map = originalMaterialTexture.clone();
 							// // Explicitly set the texture from our saved original
 							// if (originalMaterials[0].texture) {
 							// 	originalMaterial.map = originalMaterials[0].texture.clone();
@@ -2830,8 +2821,6 @@
 							// 	originalMesh.material = originalMaterial;
 							// }
 							originalMesh.material = originalMaterial;
-							console.log(`this is the sourse: ${originalMesh.material.map.source}`);
-							console.log(originalMaterials[0]);
 							originalMesh.material.needsUpdate = true;
 						}}>Restore original texture</button
 					>
