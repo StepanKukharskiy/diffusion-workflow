@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { elements, referenceImageUrl, textColor, chatPanelMode, user, maskImageUrl } from './store';
-	import { generateUUID, generateVideo, deleteBlock, generateModel, updateCredits } from './utils';
+	import { generateUUID, generateVideo, deleteBlock, generateModel, updateCredits, addElement } from './utils';
 	import SimpleTextCard from './SimpleTextCard.svelte';
 	let { imageUrl = '', query = '', uuid = '', options = false } = $props();
 
@@ -54,41 +54,73 @@
 		});
 	}
 
+	function addImageElement(elements:any, newImageUrl:any) {
+		console.log(newImageUrl)
+		elements.push({
+			uuid: generateUUID(),
+			type: 'image',
+			query: 'Upscaled image',
+			imageUrl: newImageUrl
+		});
+	}
+
 	let isGenerating = $state(false),
 		modelOption = $state('flux-schnell'),
 		refImageUrl = $state(''),
 		generatedImageUrl = $state('');
 
-	async function generateImage() {
+	// async function generateImage() {
+	// 	isGenerating = true;
+	// 	// if (maskImageUrl != '') {
+	// 	// 	modelOption = 'flux-dev-inpaint';
+	// 	// }
+	// 	if (maskImageUrl != '') {
+	// 		modelOption = 'flux-dev-inpaint';
+	// 	}
+	// 	if ($referenceImageUrl != '') {
+	// 		// modelOption = 'sdxl-controlnet-canny';
+	// 		modelOption = 'flux-dev-controlnet-depth';
+	// 	}
+	// 	console.log('query: ' + query);
+	// 	const message = await fetch(`${$page.url.origin}/api/image-generation`, {
+	// 		method: 'POST',
+	// 		headers: {
+	// 			'Content-Type': 'application/json'
+	// 		},
+	// 		body: JSON.stringify({
+	// 			refImageUrl: $referenceImageUrl,
+	// 			maskUrl: maskImageUrl,
+	// 			prompt: query,
+	// 			model: modelOption,
+	// 			projectId: $page.params.projectId
+	// 		})
+	// 	});
+	// 	console.log(message);
+	// 	const messageObject = await message.json();
+	// 	generatedImageUrl = messageObject.imageUrl;
+	// 	console.log(`api response: ${messageObject}`);
+	// 	isGenerating = false;
+	// 	return generatedImageUrl;
+	// }
+
+	async function upscaleImage(){
 		isGenerating = true;
-		// if (maskImageUrl != '') {
-		// 	modelOption = 'flux-dev-inpaint';
-		// }
-		if (maskImageUrl != '') {
-			modelOption = 'flux-dev-inpaint';
-		}
-		if ($referenceImageUrl != '') {
-			// modelOption = 'sdxl-controlnet-canny';
-			modelOption = 'flux-dev-controlnet-depth';
-		}
-		console.log('query: ' + query);
-		const message = await fetch(`${$page.url.origin}/api/image-generation`, {
+		const message = await fetch(`${$page.url.origin}/api/ai/response`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				refImageUrl: $referenceImageUrl,
-				maskUrl: maskImageUrl,
-				prompt: query,
-				model: modelOption,
+				referenceImage: imageUrl,
+				query: 'An image I need to UPSCALE',
+				imageModel: 'recraft-crisp-upscale',
 				projectId: $page.params.projectId
 			})
 		});
-		console.log(message);
 		const messageObject = await message.json();
-		generatedImageUrl = messageObject.imageUrl;
+		generatedImageUrl = messageObject.url;
 		console.log(`api response: ${messageObject}`);
+		console.log(`api response image: ${generatedImageUrl}`);
 		isGenerating = false;
 		return generatedImageUrl;
 	}
@@ -119,7 +151,17 @@
 				<button
 					class="tertiaryButton"
 					onclick={async () => {
+						const imageUrl = await upscaleImage()
+						console.log(imageUrl)
+						addImageElement($elements, imageUrl)
+						$elements = $elements
+					}}>Upscale</button
+				>
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
 						addSketchElement($elements);
+						$elements = $elements
 					}}>Sketch</button
 				>
 				<button

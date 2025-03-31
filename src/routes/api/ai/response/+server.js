@@ -29,7 +29,6 @@ export async function POST({ request, locals }) {
         if(locals.user.requests > 0){
         let response
         let requestType = await analyseRequest(query.query)
-        
         if(requestType === undefined){
             requestType = 'chat'
         }
@@ -54,6 +53,7 @@ export async function POST({ request, locals }) {
 
         if (requestType?.trim() === 'image') {
             console.log('getting image agent response')
+            console.log(query.imageModel)
             let model = query.imageModel
             if(query.referenceImage != ''){
                 model = query.imageCompositionReferenceModel
@@ -61,6 +61,10 @@ export async function POST({ request, locals }) {
             if(query.query.includes("CITYGRAPHIC")){
                 model = 'flux-graphic-city'
             }
+            if(query.query.includes("UPSCALE")){
+                model = 'recraft-crisp-upscale'
+            }
+
             console.log(model)
             const imageResponseData = await imageResponse(model, query.query, query.referenceImage, query.maskImage)
             const imageResponseDataUrl = await imageResponseData?.json()

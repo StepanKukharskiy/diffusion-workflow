@@ -8,6 +8,9 @@ const replicate = new Replicate({
 
 
 export async function imageResponse(model = '', query = '', referenceCompositionImageUrl = '', maskImageUrl = '') {
+    console.log(`model: ${model}`)
+    console.log(`query: ${query}`)
+    console.log(`ref: ${referenceCompositionImageUrl}`)
     try {
         let response
         let analysePromptResult = await analysePrompt(query)
@@ -90,6 +93,16 @@ export async function imageResponse(model = '', query = '', referenceComposition
                     prompt_upsampling: false
                 }
                 const output = await replicate.run("black-forest-labs/flux-depth-pro", { input });
+                const imageUrl = output.url().href;
+                response = {
+                    imageUrl: imageUrl
+                }
+            } else if (referenceCompositionImageUrl != '' && maskImageUrl === '' && model === 'recraft-crisp-upscale') {
+                console.log('using upscale model')
+                const input = {
+                    image: referenceCompositionImageUrl,
+                }
+                const output = await replicate.run("recraft-ai/recraft-crisp-upscale", { input });
                 const imageUrl = output.url().href;
                 response = {
                     imageUrl: imageUrl

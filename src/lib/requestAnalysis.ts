@@ -3,6 +3,7 @@ import { TOGETHER_API_TOKEN } from '$env/static/private';
 
 export async function analyseRequest(query = '') {
 
+    console.log('request query')
     console.log(query)
     try {
 
@@ -19,7 +20,7 @@ export async function analyseRequest(query = '') {
 
                     If it is a question or requires a text output respond 'chat'.
 
-                    If it starts with 'an image', 'I need an image', or similar words respond 'image'.
+                    If it starts with 'an image', 'I need an image', 'Upscale', or similar words respond 'image'.
                     
                     If it starts with 'a video', 'I need a video', or similar words respond 'video'.
 
