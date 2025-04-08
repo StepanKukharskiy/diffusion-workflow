@@ -17,6 +17,7 @@
 		errorMessage = '';
 		isLoggingIn = true;
 		const formData = new FormData();
+		formData.append('authType', 'email');
 		formData.append('email', email);
 		formData.append('password', password);
 		const response = await fetch('/api/user/login', { method: 'POST', body: formData });
@@ -59,6 +60,46 @@
 			errorMessage = responseObject.message;
 		}
 	}
+
+	async function handleGoogleSignup() {
+		const formData = new FormData();
+		formData.append('authType', 'google');
+
+		const response = await fetch('/api/user/register', {
+			method: 'POST',
+			body: formData
+		});
+
+		const data = await response.json();
+
+		if (data.message === 'Redirect') {
+			// Redirect to Google's OAuth page
+			window.location.href = data.authUrl;
+		} else {
+			// Handle error
+			console.error(data.message);
+		}
+	}
+
+	async function handleGoogleLogin() {
+    const formData = new FormData();
+    formData.append('authType', 'google');
+    
+    const response = await fetch('/api/user/login', {
+        method: 'POST',
+        body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (data.message === 'Redirect') {
+        // Redirect to Google's OAuth page
+        window.location.href = data.authUrl;
+    } else {
+        // Handle error
+        console.error(data.message);
+    }
+}
 
 	async function resetUserPassword(email = '') {
 		errorMessage = '';
@@ -121,6 +162,7 @@
 								loginUser(email, password);
 							}}>Log In</button
 						>
+						<!-- <button class='tertiaryButton' onclick={handleGoogleLogin}>Login with Google</button> -->
 					</div>
 				</div>
 			{:else}
@@ -137,16 +179,16 @@
 
 			<div style="display: flex">
 				<button
-							class="smallMenuButton"
-							style="text-decoration: underline; padding-left: 0;"
-							onclick={() => {
-								resetPassword = true;
-								login = false;
-								signUp = false;
-							}}
-						>
-							Reset password
-						</button>
+					class="smallMenuButton"
+					style="text-decoration: underline; padding-left: 0;"
+					onclick={() => {
+						resetPassword = true;
+						login = false;
+						signUp = false;
+					}}
+				>
+					Reset password
+				</button>
 				<p style="margin: 10px 0 0 0;">or</p>
 				<button
 					type="button"
@@ -209,7 +251,7 @@
 					<p><span class="warning"></span>Passwords do not match</p>
 				{/if}
 			</div>
-			
+
 			{#if !isRegistering}
 				<div class="inputContainer">
 					<button
@@ -222,6 +264,8 @@
 						}}>Sign Up</button
 					>
 				</div>
+
+				<button type="button" class="tertiaryButton" onclick={handleGoogleSignup}>Sign in with Google</button>
 			{:else}
 				<div style="display: flex; align-items: center;" transition:slide>
 					<span class="warning"></span>
@@ -233,7 +277,9 @@
 			{#if errorMessage != ''}
 				<p>{errorMessage}</p>
 			{/if}
-			<p>We'll send you an email. Please click <b>Verify</b>. Don't forget to check the Spam folder.</p>
+			<p>
+				We'll send you an email. Please click <b>Verify</b>. Don't forget to check the Spam folder.
+			</p>
 
 			<div style="display: flex">
 				<p style="margin: 10px 0 0 0;">Already have an account?</p>
