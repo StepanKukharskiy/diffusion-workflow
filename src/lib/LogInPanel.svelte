@@ -265,7 +265,7 @@
 					>
 				</div>
 
-				<button type="button" class="tertiaryButton" onclick={handleGoogleSignup}>Sign in with Google</button>
+				<!-- <button type="button" class="tertiaryButton" onclick={handleGoogleSignup}>Sign in with Google</button> -->
 			{:else}
 				<div style="display: flex; align-items: center;" transition:slide>
 					<span class="warning"></span>
