@@ -48,7 +48,8 @@
 	let originalMesh: any = $state();
 	let simplifiedMesh: any = $state();
 	let simplifiedMeshWireframe: any = $state(false);
-	let targetMeshReduction: any = $state(0.5);
+	let targetMeshReduction: any = $state(0.75);
+	let relaxationStrength: any = $state(0.5)
 	let segmentedMeshes: any = $state([]);
 	let polygonsPerMesh = $state(300);
 	let isProcessingMesh = $state(false);
@@ -428,19 +429,21 @@
 				if (simplifiedMesh) {
 					scene.remove(simplifiedMesh);
 				}
-				simplifiedMesh = simplifyMesh(originalMesh, {
-					targetReduction: targetMeshReduction,
-					aggressiveness: 2,
-					preserveGeometryBorders: true,
-					preserveUVs: true,
-					preserveNormals: true
-				});
-				// simplifiedMesh = retopologizeMesh(originalMesh, {
-				// 	targetFaces: 10000,
-				// 	subdivisions: 1,
-				// 	relaxationIterations: 5,
-				// 	projectToOriginal: true
+				// simplifiedMesh = simplifyMesh(originalMesh, {
+				// 	targetReduction: targetMeshReduction,
+				// 	aggressiveness: 2,
+				// 	preserveGeometryBorders: true,
+				// 	preserveUVs: true,
+				// 	preserveNormals: true
 				// });
+				simplifiedMesh = retopologizeMesh(originalMesh, {
+					targetReduction: targetMeshReduction,
+					subdivisions: 0,
+					preserveUVs: true,
+					preserveBorders: true,
+					relaxationIterations: 5,
+					relaxationStrength: relaxationStrength
+				});
 				scene.add(simplifiedMesh);
 				totalTrianglesAmount = getTrianglesNumber(simplifiedMesh);
 
@@ -1050,10 +1053,10 @@
 			{/if}
 			{#if viewType === 12}
 				<div style="margin-top: 10px;">
-					<label for="{uuid}-colorThreshold">Target reduction: </label>
+					<label for="{uuid}-targetMeshReduction">Target reduction: </label>
 					<input
 						type="number"
-						id="{uuid}-targetReduction"
+						id="{uuid}-targetMeshReduction"
 						min="1"
 						max="10"
 						step="1"
@@ -1062,12 +1065,41 @@
 							targetMeshReduction = parseInt(e.target.value) / 10;
 							if (simplifiedMesh) {
 								scene.remove(simplifiedMesh);
-								simplifiedMesh = simplifyMesh(originalMesh, {
+								simplifiedMesh = retopologizeMesh(originalMesh, {
 									targetReduction: targetMeshReduction,
-									aggressiveness: 2,
-									preserveGeometryBorders: true,
+									subdivisions: 0,
 									preserveUVs: true,
-									preserveNormals: true
+									preserveBorders: true,
+									relaxationIterations: 5,
+									relaxationStrength: relaxationStrength
+								});
+								scene.add(simplifiedMesh);
+								totalTrianglesAmount = getTrianglesNumber(simplifiedMesh);
+							}
+						}}
+					/>
+				</div>
+				<div style="margin-top: 10px;">
+					<label for="{uuid}-relaxationStrength">Relaxation strength: </label>
+					<input
+						type="number"
+						id="{uuid}-relaxationStrength"
+						min="1"
+						max="10"
+						step="1"
+						value={relaxationStrength * 10}
+						oninput={(e: any) => {
+							relaxationStrength = parseInt(e.target.value) / 10;
+							if (simplifiedMesh) {
+								scene.remove(simplifiedMesh);
+								simplifiedMesh = null
+								simplifiedMesh = retopologizeMesh(originalMesh, {
+									targetReduction: targetMeshReduction,
+									subdivisions: 0,
+									preserveUVs: true,
+									preserveBorders: true,
+									relaxationIterations: 5,
+									relaxationStrength: relaxationStrength
 								});
 								scene.add(simplifiedMesh);
 								totalTrianglesAmount = getTrianglesNumber(simplifiedMesh);
@@ -1087,6 +1119,19 @@
 						}
 					}}>Toggle Wireframe</button
 				>
+				<!-- <button onclick={()=>{
+					clearSegmentedMeshes();
+								segmentedMeshes = segmentMeshByTextureColor(simplifiedMesh, {
+									resolution: 1024,
+									colorThreshold: colorThreshold,
+									minSegmentSize: 10,
+									simplifySegments: true
+								});
+								simplifiedMesh.visible = false
+								for (let mesh of segmentedMeshes) {
+									scene.add(mesh);
+								}
+				}} >Segment</button> -->
 			{/if}
 
 			{#if viewType === 4 || viewType === 5 || viewType === 6 || viewType === 7 || viewType === 8 || viewType === 10 || viewType === 11}
