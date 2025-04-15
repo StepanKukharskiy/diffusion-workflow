@@ -428,19 +428,19 @@
 				if (simplifiedMesh) {
 					scene.remove(simplifiedMesh);
 				}
-				// simplifiedMesh = simplifyMesh(originalMesh, {
-				// 	targetReduction: targetMeshReduction,
-				// 	aggressiveness: 2,
-				// 	preserveGeometryBorders: true,
-				// 	preserveUVs: true,
-				// 	preserveNormals: true
-				// });
-				simplifiedMesh = retopologizeMesh(originalMesh, {
-					targetFaces: 10000,
-					subdivisions: 1,
-					relaxationIterations: 5,
-					projectToOriginal: true
+				simplifiedMesh = simplifyMesh(originalMesh, {
+					targetReduction: targetMeshReduction,
+					aggressiveness: 2,
+					preserveGeometryBorders: true,
+					preserveUVs: true,
+					preserveNormals: true
 				});
+				// simplifiedMesh = retopologizeMesh(originalMesh, {
+				// 	targetFaces: 10000,
+				// 	subdivisions: 1,
+				// 	relaxationIterations: 5,
+				// 	projectToOriginal: true
+				// });
 				scene.add(simplifiedMesh);
 				totalTrianglesAmount = getTrianglesNumber(simplifiedMesh);
 
