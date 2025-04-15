@@ -44,6 +44,7 @@
 		errorMessage = '';
 		isRegistering = true;
 		const formData = new FormData();
+		formData.append('authType', 'email');
 		formData.append('email', email);
 		formData.append('password', password);
 		formData.append('passwordConfirm', confirmPassword);
