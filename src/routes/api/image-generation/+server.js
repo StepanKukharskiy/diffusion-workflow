@@ -42,7 +42,6 @@ export async function POST({ request, locals, params }) {
         let response, output
 
         const promptAnalysis = await analysePrompt(query.prompt)
-        console.log(typeof promptAnalysis)
         if (promptAnalysis?.trim() === 'ok') {
             if (query.model === 'sdxl-controlnet-canny') {
                 const input = {

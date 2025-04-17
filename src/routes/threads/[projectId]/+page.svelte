@@ -35,6 +35,7 @@
 	import SimpleChatPanel from '$lib/SimpleChatPanel.svelte';
 	import SimpleP5Sketch from '$lib/SimpleP5Sketch.svelte';
 	import SimpleMap from '$lib/SimpleMap.svelte';
+	import SimpleCritique from '$lib/SimpleCritique.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -195,6 +196,8 @@
 						<Simple3dViewer modelUrl={element.modelUrl} uuid={element.uuid} options={showOptions} />
 					{:else if element.type === 'map'}
 						<SimpleMap uuid={element.uuid} options={showOptions} />
+					{:else if element.type === 'critique'}
+					<SimpleCritique uuid={element.uuid} referenceImageUrl={element.referenceImageUrl} answer={element.answer} options={showOptions} />
 					{/if}
 				{/each}
 

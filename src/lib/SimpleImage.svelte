@@ -64,6 +64,16 @@
 		});
 	}
 
+	function addCritiqueElement(elements:any, referenceImageUrl:any, critiqueData: any) {
+		elements.push({
+			uuid: generateUUID(),
+			type: 'critique',
+			referenceImageUrl: referenceImageUrl,
+			answer: critiqueData
+		});
+		console.log(elements)
+	}
+
 	let isGenerating = $state(false),
 		modelOption = $state('flux-schnell'),
 		refImageUrl = $state(''),
@@ -124,6 +134,48 @@
 		isGenerating = false;
 		return generatedImageUrl;
 	}
+
+	async function critiqueImage(){
+		isGenerating = true;
+		const message = await fetch(`${$page.url.origin}/api/ai/critique`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				referenceImage: imageUrl,
+				query: query,
+				projectId: $page.params.projectId,
+				previousAnswers: getContext($elements),
+			})
+		});
+		const messageObject = await message.json();
+		// generatedImageUrl = messageObject.url;
+		console.log(`api response: ${messageObject.generatedText}`);
+		// console.log(`api response image: ${generatedImageUrl}`);
+		isGenerating = false;
+		return { thoughtProcess: messageObject.thoughtProcess, text: messageObject.generatedText, conceptualRefs: messageObject.conceptualRefs, prompt: messageObject.prompt } ;
+	}
+
+	function getContext(elements: any) {
+		let context = [];
+		for (let element of elements) {
+			if (element.type === 'text') {
+				context.push(element.answer);
+			}
+			if (element.type === 'code') {
+				for (let file of element.files) {
+					context.push(
+						JSON.stringify({
+							name: file.fileName,
+							data: file.fileData
+						})
+					);
+				}
+			}
+		}
+		return context;
+	}
 </script>
 
 <div class="imageContainer">
@@ -134,6 +186,19 @@
 				<div style="display: flex; flex-direction: column; width: 100%;">
 					<SimpleTextCard label={'Description'} text={query} />
 				</div>
+				<button
+					class="tertiaryButton"
+					onclick={async () => {
+						const critiqueData = await critiqueImage()
+						console.log(critiqueData)
+						addCritiqueElement($elements, imageUrl, critiqueData)
+						$elements = $elements
+						$user.requests = await updateCredits(
+							'critique',
+							`${$page.url.origin}/api/user/update-credits`
+						);
+					}}>Critique</button
+				>
 				<button
 					class="tertiaryButton"
 					onclick={async () => {
@@ -155,8 +220,13 @@
 						console.log(imageUrl)
 						addImageElement($elements, imageUrl)
 						$elements = $elements
+						$user.requests = await updateCredits(
+							'image',
+							`${$page.url.origin}/api/user/update-credits`
+						);
 					}}>Upscale</button
 				>
+
 				<button
 					class="tertiaryButton"
 					onclick={async () => {

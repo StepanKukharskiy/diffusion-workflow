@@ -16,6 +16,9 @@ export async function POST({ request, locals }) {
                 case 'text':
                     updatedCredits = Math.round((currentCredits - 0.1) * 10) / 10;
                     break;
+                case 'critique':
+                        updatedCredits = Math.round((currentCredits - 5) * 10) / 10;
+                        break;
                 case 'image':
                     updatedCredits = Math.round((currentCredits - 1) * 10) / 10;
                     break

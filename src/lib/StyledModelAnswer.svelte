@@ -4,8 +4,8 @@
 	import { textColor } from './store';
 
 	export let htmlContent = ''; //markdown
-	console.log(`initial markdown: ${htmlContent}`);
-	console.log(splitMarkdownText(htmlContent));
+	// console.log(`initial markdown: ${htmlContent}`);
+	// console.log(splitMarkdownText(htmlContent));
 
 	function splitMarkdownText(markdownText = '') {
 		const chunks = markdownText.split(/```/);
@@ -40,7 +40,7 @@
 		// 	const html = await marked(htmlContent);
 		// 	chunks = splitCodeIntoChunks(html);
 		// }
-		console.log(chunks);
+		// console.log(chunks);
 		return chunks;
 	}
 
