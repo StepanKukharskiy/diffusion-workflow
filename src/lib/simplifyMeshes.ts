@@ -3,40 +3,6 @@ import { SimplifyModifier } from 'three/addons/modifiers/SimplifyModifier.js';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import { LoopSubdivision } from 'three-subdivide';
 
-// function retopologizeMesh(
-//   mesh,
-//   options = {
-//     targetReduction: 0.8,    // Percentage (0-1) of triangles to remove in simplification
-//     subdivisions: 1,         // Number of subdivision iterations
-//     preserveUVs: true,       // Whether to preserve UV coordinates
-//     preserveBorders: true,   // Whether to preserve mesh borders
-//     relaxationIterations: 0  // Optional relaxation between steps (0 to disable)
-//   }
-// ) {
-//   // Step 1: Simplify the mesh using your existing function
-//   const simplifiedMesh = simplifyMesh(mesh, {
-//     targetReduction: options.targetReduction,
-//     aggressiveness: 2,
-//     preserveGeometryBorders: options.preserveBorders,
-//     preserveUVs: options.preserveUVs,
-//     preserveNormals: true
-//   });
-  
-//   // Optional: Apply relaxation to improve triangle quality
-//   let processedMesh = simplifiedMesh;
-//   if (options.relaxationIterations > 0) {
-//     processedMesh = relaxMesh(simplifiedMesh, options.relaxationIterations, options.preserveUVs);
-//   }
-  
-//   // Step 2: Apply loop subdivision to add detail with regular topology
-//   let subdividedMesh = processedMesh;
-//   if (options.subdivisions > 0) {
-//     subdividedMesh = subdivideMesh(processedMesh, options.subdivisions, options.preserveUVs);
-//   }
-  
-//   return subdividedMesh;
-// }
-
 function retopologizeMesh(
   mesh,
   options = {
@@ -48,6 +14,7 @@ function retopologizeMesh(
     relaxationStrength: 0.3   // Added parameter for control
   }
 ) {
+  console.log(options)
   // Step 1: Simplify the mesh using your existing function
   const simplifiedMesh = simplifyMesh(mesh, {
     targetReduction: options.targetReduction,
@@ -64,6 +31,7 @@ function retopologizeMesh(
     processedMesh = relaxMesh(
       simplifiedMesh, 
       options.relaxationIterations, 
+      options.relaxationStrength,
       options.preserveUVs
     );
   }
@@ -271,7 +239,8 @@ function subdivideMesh(mesh, iterations, preserveUVs) {
   
 //   return relaxedMesh;
 // }
-function relaxMesh(mesh, iterations, preserveUVs) {
+function relaxMesh(mesh, iterations, strength, preserveUVs) {
+  console.log(strength)
   // Clone the mesh to avoid modifying the original
   const clonedMesh = mesh.clone();
   const geometry = clonedMesh.geometry;
@@ -316,12 +285,12 @@ function relaxMesh(mesh, iterations, preserveUVs) {
   const tempPositions = new Float32Array(positionAttribute.array.length);
   
   // Use adaptive relaxation factor that decreases with iterations
-  const initialRelaxFactor = 0.3; // Start with a gentler factor
+  //const initialRelaxFactor = 0.3; // Start with a gentler factor
   
   // Perform relaxation iterations
   for (let iter = 0; iter < iterations; iter++) {
     // Calculate adaptive relaxation factor that decreases with iterations
-    const relaxFactor = initialRelaxFactor * (1 - iter / iterations);
+    const relaxFactor = strength * (1 - iter / iterations);
     
     // First, copy all current positions to temp array
     for (let i = 0; i < positionAttribute.count; i++) {
@@ -486,3 +455,380 @@ function identifyGeometricBorderVertices(geometry) {
 
   // Export the function
   export { simplifyMesh, retopologizeMesh };
+
+  function simpleRemesh(mesh, options = {
+    targetEdgeLength: 0.1,
+    iterations: 3,
+    relaxationStrength: 0.5,
+    preserveUVs: true
+  }) {
+    let processedMesh = mesh.clone();
+    
+    for (let i = 0; i < options.iterations; i++) {
+      processedMesh = splitLongEdges(processedMesh, options.targetEdgeLength);
+      processedMesh = collapseShortEdges(processedMesh, options.targetEdgeLength * 0.5);
+      processedMesh = relaxMesh(processedMesh, 2, options.relaxationStrength, options.preserveUVs);
+    }
+    
+    return processedMesh;
+  }
+  
+  // function splitLongEdges(mesh, maxLength) {
+  //   const geometry = mesh.geometry.clone();
+  //   const index = Array.from(geometry.index.array);
+  //   let positions = Array.from(geometry.attributes.position.array);
+  //   let uvs = geometry.attributes.uv ? Array.from(geometry.attributes.uv.array) : null;
+  
+  //   const newIndices = [];
+  //   const edgeMap = new Map();
+  //   const getEdgeKey = (a, b) => a < b ? `${a}_${b}` : `${b}_${a}`;
+  
+  //   for (let i = 0; i < index.length; i += 3) {
+  //     const v0 = index[i], v1 = index[i+1], v2 = index[i+2];
+  //     const edges = [[v0, v1], [v1, v2], [v2, v0]];
+  //     const splits = [];
+  
+  //     // Find all edges that need splitting
+  //     for (const [a, b] of edges) {
+  //       const key = getEdgeKey(a, b);
+  //       if (!edgeMap.has(key)) {
+  //         const ax = positions[a*3], ay = positions[a*3+1], az = positions[a*3+2];
+  //         const bx = positions[b*3], by = positions[b*3+1], bz = positions[b*3+2];
+  //         const length = Math.hypot(bx - ax, by - ay, bz - az);
+          
+  //         if (length > maxLength) {
+  //           const midIndex = positions.length / 3;
+  //           positions.push((ax+bx)/2, (ay+by)/2, (az+bz)/2);
+  //           if (uvs) {
+  //             uvs.push(
+  //               (uvs[a*2] + uvs[b*2])/2,
+  //               (uvs[a*2+1] + uvs[b*2+1])/2
+  //             );
+  //           }
+  //           edgeMap.set(key, midIndex);
+  //           splits.push(midIndex);
+  //         }
+  //       }
+  //     }
+  
+  //     // Proper triangulation based on split count
+  //     switch(splits.length) {
+  //       case 0: {
+  //         newIndices.push(v0, v1, v2);
+  //         break;
+  //       }
+          
+  //       case 1: {
+  //         const m = splits[0];
+  //         newIndices.push(v0, m, v2, m, v1, v2);
+  //         break;
+  //       }
+          
+  //       case 2: {
+  //         const [m1, m2] = splits;
+  //         newIndices.push(v0, m1, m2, m1, v1, m2, m2, v1, v2);
+  //         break;
+  //       }
+          
+  //       case 3: {
+  //         const [m0, m1, m2] = splits;
+  //         newIndices.push(
+  //           v0, m0, m2,
+  //           m0, v1, m1,
+  //           m2, m1, v2,
+  //           m0, m1, m2
+  //         );
+  //         break;
+  //       }
+  //     }
+  //   }
+  
+  //   // Update geometry
+  //   geometry.setIndex(newIndices);
+  //   geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+  //   if (uvs) {
+  //     geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2));
+  //   }
+  //   geometry.computeVertexNormals();
+  //   geometry.computeBoundingBox();
+  //   geometry.computeBoundingSphere();
+  
+  //   return new THREE.Mesh(geometry, mesh.material);
+  // }
+  
+  
+  
+  // function collapseShortEdges(mesh, minLength) {
+  //   const geometry = mesh.geometry.clone();
+  //   const index = geometry.index.array;
+  //   const positions = geometry.attributes.position.array;
+  //   const uvs = geometry.attributes.uv?.array;
+  
+  //   const replacements = new Map();
+  //   const edgesToProcess = [];
+  
+  //   // First pass: identify short edges
+  //   for (let i = 0; i < index.length; i += 3) {
+  //     const tri = [index[i], index[i + 1], index[i + 2]];
+  //     const edges = [
+  //       [tri[0], tri[1]],
+  //       [tri[1], tri[2]],
+  //       [tri[2], tri[0]]
+  //     ];
+  
+  //     for (const [a, b] of edges) {
+  //       const ax = positions[a * 3];
+  //       const ay = positions[a * 3 + 1];
+  //       const az = positions[a * 3 + 2];
+  //       const bx = positions[b * 3];
+  //       const by = positions[b * 3 + 1];
+  //       const bz = positions[b * 3 + 2];
+        
+  //       const length = Math.hypot(bx - ax, by - ay, bz - az);
+  //       if (length < minLength) {
+  //         edgesToProcess.push([a, b]);
+  //       }
+  //     }
+  //   }
+  
+  //   // Process edges
+  //   for (const [a, b] of edgesToProcess) {
+  //     const keep = Math.min(a, b);
+  //     const remove = Math.max(a, b);
+  //     replacements.set(remove, keep);
+  //   }
+  
+  //   // Update indices
+  //   const newIndex = [];
+  //   for (let i = 0; i < index.length; i++) {
+  //     let idx = index[i];
+  //     while (replacements.has(idx)) idx = replacements.get(idx);
+  //     newIndex.push(idx);
+  //   }
+  
+  //   // Remove degenerate triangles
+  //   const cleanedIndex = [];
+  //   for (let i = 0; i < newIndex.length; i += 3) {
+  //     const a = newIndex[i];
+  //     const b = newIndex[i + 1];
+  //     const c = newIndex[i + 2];
+  //     if (a !== b && b !== c && c !== a) {
+  //       cleanedIndex.push(a, b, c);
+  //     }
+  //   }
+  
+  //   geometry.setIndex(cleanedIndex);
+  //   geometry.computeVertexNormals();
+  //   return new THREE.Mesh(geometry, mesh.material);
+  // }
+
+  function splitLongEdges(mesh, maxLength) {
+    const geometry = mesh.geometry.clone();
+    const index = Array.from(geometry.index.array);
+    let positions = Array.from(geometry.attributes.position.array);
+    let uvs = geometry.attributes.uv ? Array.from(geometry.attributes.uv.array) : null;
+  
+    const newIndices = [];
+    const edgeMap = new Map();
+    const getEdgeKey = (a, b) => a < b ? `${a}_${b}` : `${b}_${a}`;
+  
+    for (let i = 0; i < index.length; i += 3) {
+      const v0 = index[i], v1 = index[i+1], v2 = index[i+2];
+      const edges = [[v0, v1], [v1, v2], [v2, v0]];
+      const splits = [];
+  
+      // Find all edges that need splitting
+      for (const [a, b] of edges) {
+        const key = getEdgeKey(a, b);
+        if (!edgeMap.has(key)) {
+          const ax = positions[a*3], ay = positions[a*3+1], az = positions[a*3+2];
+          const bx = positions[b*3], by = positions[b*3+1], bz = positions[b*3+2];
+          const length = Math.hypot(bx - ax, by - ay, bz - az);
+  
+          if (length > maxLength) {
+            const midIndex = positions.length / 3;
+            positions.push((ax+bx)/2, (ay+by)/2, (az+bz)/2);
+            if (uvs) {
+              uvs.push(
+                (uvs[a*2] + uvs[b*2])/2,
+                (uvs[a*2+1] + uvs[b*2+1])/2
+              );
+            }
+            edgeMap.set(key, midIndex);
+            splits.push(midIndex);
+          }
+        } else {
+          splits.push(edgeMap.get(key));
+        }
+      }
+  
+      // Proper triangulation based on split count
+      switch(splits.length) {
+        case 0: {
+          newIndices.push(v0, v1, v2);
+          break;
+        }
+        case 1: {
+          const m = splits[0];
+          // Find which edge was split
+          if (edgeMap.get(getEdgeKey(v0, v1)) === m) {
+            newIndices.push(v0, m, v2, m, v1, v2);
+          } else if (edgeMap.get(getEdgeKey(v1, v2)) === m) {
+            newIndices.push(v1, m, v0, m, v2, v0);
+          } else {
+            newIndices.push(v2, m, v1, m, v0, v1);
+          }
+          break;
+        }
+        case 2: {
+          // Two edges split, find which ones
+          let m1, m2, a, b, c;
+          if (edgeMap.has(getEdgeKey(v0, v1)) && edgeMap.has(getEdgeKey(v1, v2))) {
+            m1 = edgeMap.get(getEdgeKey(v0, v1));
+            m2 = edgeMap.get(getEdgeKey(v1, v2));
+            a = v0; b = v1; c = v2;
+          } else if (edgeMap.has(getEdgeKey(v1, v2)) && edgeMap.has(getEdgeKey(v2, v0))) {
+            m1 = edgeMap.get(getEdgeKey(v1, v2));
+            m2 = edgeMap.get(getEdgeKey(v2, v0));
+            a = v1; b = v2; c = v0;
+          } else {
+            m1 = edgeMap.get(getEdgeKey(v2, v0));
+            m2 = edgeMap.get(getEdgeKey(v0, v1));
+            a = v2; b = v0; c = v1;
+          }
+          newIndices.push(a, m1, m2, m1, b, m2, m2, b, c);
+          break;
+        }
+        case 3: {
+          const m0 = edgeMap.get(getEdgeKey(v0, v1));
+          const m1 = edgeMap.get(getEdgeKey(v1, v2));
+          const m2 = edgeMap.get(getEdgeKey(v2, v0));
+          newIndices.push(
+            v0, m0, m2,
+            m0, v1, m1,
+            m2, m1, v2,
+            m0, m1, m2
+          );
+          break;
+        }
+      }
+    }
+  
+    // Update geometry
+    geometry.setIndex(newIndices);
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+    if (uvs) {
+      geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvs), 2));
+    }
+    geometry.computeVertexNormals();
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+  
+    return new THREE.Mesh(geometry, mesh.material);
+  }
+  
+  function collapseShortEdges(mesh, minLength) {
+    const geometry = mesh.geometry.clone();
+    const index = Array.from(geometry.index.array);
+    const positions = Array.from(geometry.attributes.position.array);
+    const uvs = geometry.attributes.uv ? Array.from(geometry.attributes.uv.array) : null;
+  
+    const replacements = new Map();
+    const edgesToProcess = [];
+  
+    // First pass: identify short edges
+    for (let i = 0; i < index.length; i += 3) {
+      const tri = [index[i], index[i + 1], index[i + 2]];
+      const edges = [
+        [tri[0], tri[1]],
+        [tri[1], tri[2]],
+        [tri[2], tri[0]]
+      ];
+  
+      for (const [a, b] of edges) {
+        const ax = positions[a * 3];
+        const ay = positions[a * 3 + 1];
+        const az = positions[a * 3 + 2];
+        const bx = positions[b * 3];
+        const by = positions[b * 3 + 1];
+        const bz = positions[b * 3 + 2];
+  
+        const length = Math.hypot(bx - ax, by - ay, bz - az);
+        if (length < minLength) {
+          edgesToProcess.push([a, b]);
+        }
+      }
+    }
+  
+    // Process edges
+    for (const [a, b] of edgesToProcess) {
+      const keep = Math.min(a, b);
+      const remove = Math.max(a, b);
+      replacements.set(remove, keep);
+    }
+  
+    // Update indices
+    const newIndex = [];
+    for (let i = 0; i < index.length; i++) {
+      let idx = index[i];
+      while (replacements.has(idx)) idx = replacements.get(idx);
+      newIndex.push(idx);
+    }
+  
+    // Remove degenerate triangles
+    const cleanedIndex = [];
+    for (let i = 0; i < newIndex.length; i += 3) {
+      const a = newIndex[i];
+      const b = newIndex[i + 1];
+      const c = newIndex[i + 2];
+      if (a !== b && b !== c && c !== a) {
+        cleanedIndex.push(a, b, c);
+      }
+    }
+  
+    // --- COMPACT VERTEX BUFFERS ---
+    // Find used vertices
+    const usedVertices = new Set(cleanedIndex);
+    const oldToNew = new Map();
+    let newVertexCount = 0;
+  
+    const newPositions = [];
+    const newUvs = [];
+  
+    // Map old to new indices and build new attribute arrays
+    for (let i = 0; i < positions.length / 3; i++) {
+      if (usedVertices.has(i)) {
+        oldToNew.set(i, newVertexCount++);
+        newPositions.push(
+          positions[i * 3],
+          positions[i * 3 + 1],
+          positions[i * 3 + 2]
+        );
+        if (uvs) {
+          newUvs.push(
+            uvs[i * 2],
+            uvs[i * 2 + 1]
+          );
+        }
+      }
+    }
+  
+    // Remap indices
+    const finalIndices = cleanedIndex.map(idx => oldToNew.get(idx));
+  
+    // Update geometry
+    geometry.setIndex(finalIndices);
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(newPositions), 3));
+    if (uvs) {
+      geometry.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(newUvs), 2));
+    }
+    geometry.computeVertexNormals();
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+  
+    return new THREE.Mesh(geometry, mesh.material);
+  }
+  
+
+  
+  export { simpleRemesh }

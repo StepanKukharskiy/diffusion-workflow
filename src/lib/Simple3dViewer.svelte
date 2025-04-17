@@ -28,7 +28,7 @@
 		generateRandomPointsInBoundingBox,
 		createVoronoiSegmentation
 	} from './segmentation';
-	import { simplifyMesh, retopologizeMesh } from './simplifyMeshes';
+	import { simplifyMesh, retopologizeMesh, simpleRemesh } from './simplifyMeshes';
 
 	let { uuid = '', modelUrl = '', options = false } = $props(); // Added textureUrl prop
 	let appCanvas: any = $state();
@@ -49,7 +49,9 @@
 	let simplifiedMesh: any = $state();
 	let simplifiedMeshWireframe: any = $state(false);
 	let targetMeshReduction: any = $state(0.75);
-	let relaxationStrength: any = $state(0.5)
+	let relaxationIterations: any = $state(5);
+	let relaxationStrength: any = $state(0.5);
+	let edgeLines: any = $state();
 	let segmentedMeshes: any = $state([]);
 	let polygonsPerMesh = $state(300);
 	let isProcessingMesh = $state(false);
@@ -436,15 +438,28 @@
 				// 	preserveUVs: true,
 				// 	preserveNormals: true
 				// });
+
 				simplifiedMesh = retopologizeMesh(originalMesh, {
 					targetReduction: targetMeshReduction,
 					subdivisions: 0,
 					preserveUVs: true,
 					preserveBorders: true,
-					relaxationIterations: 5,
+					relaxationIterations: relaxationIterations,
 					relaxationStrength: relaxationStrength
 				});
+
+				// simplifiedMesh = simpleRemesh(originalMesh, {
+				// 	targetEdgeLength: 0.1, // Adjust based on mesh scale
+				// 	iterations: 4,
+				// 	relaxationStrength: 0.4,
+				// 	preserveUVs: true
+				// });
+
 				scene.add(simplifiedMesh);
+				if (edgeLines) {
+					scene.remove(edgeLines);
+				}
+				createEdges(simplifiedMesh);
 				totalTrianglesAmount = getTrianglesNumber(simplifiedMesh);
 
 				scene.add(simplifiedMesh);
@@ -459,6 +474,21 @@
 			originalMesh.geometry.computeVertexNormals();
 			originalMesh.material.needsUpdate = true;
 		}
+	}
+
+	function createEdges(mesh: any) {
+		// Create edge geometry
+		const edges = new THREE.EdgesGeometry(mesh.geometry);
+		const edgeMaterial = new THREE.LineBasicMaterial({
+			color: 0x000000,
+			linewidth: 2 // May require WebGLRenderer.antialias = true
+		});
+
+		edgeLines = new THREE.LineSegments(edges, edgeMaterial);
+		if (!simplifiedMeshWireframe) {
+			edgeLines.visible = false;
+		}
+		scene.add(edgeLines);
 	}
 
 	async function getCanvasScreenshotUrl(canvas: any) {
@@ -1070,9 +1100,13 @@
 									subdivisions: 0,
 									preserveUVs: true,
 									preserveBorders: true,
-									relaxationIterations: 5,
+									relaxationIterations: relaxationIterations,
 									relaxationStrength: relaxationStrength
 								});
+								if (edgeLines) {
+									scene.remove(edgeLines);
+								}
+								createEdges(simplifiedMesh);
 								scene.add(simplifiedMesh);
 								totalTrianglesAmount = getTrianglesNumber(simplifiedMesh);
 							}
@@ -1092,15 +1126,51 @@
 							relaxationStrength = parseInt(e.target.value) / 10;
 							if (simplifiedMesh) {
 								scene.remove(simplifiedMesh);
-								simplifiedMesh = null
+								simplifiedMesh = null;
 								simplifiedMesh = retopologizeMesh(originalMesh, {
 									targetReduction: targetMeshReduction,
 									subdivisions: 0,
 									preserveUVs: true,
 									preserveBorders: true,
-									relaxationIterations: 5,
+									relaxationIterations: relaxationIterations,
 									relaxationStrength: relaxationStrength
 								});
+								if (edgeLines) {
+									scene.remove(edgeLines);
+								}
+								createEdges(simplifiedMesh);
+								scene.add(simplifiedMesh);
+								totalTrianglesAmount = getTrianglesNumber(simplifiedMesh);
+							}
+						}}
+					/>
+				</div>
+				<div style="margin-top: 10px;">
+					<label for="{uuid}-relaxationIterations">Relaxation iterations: </label>
+					<input
+						type="number"
+						id="{uuid}-relaxationIterations"
+						min="1"
+						max="20"
+						step="1"
+						value={relaxationIterations}
+						oninput={(e: any) => {
+							relaxationIterations = parseInt(e.target.value);
+							if (simplifiedMesh) {
+								scene.remove(simplifiedMesh);
+								simplifiedMesh = null;
+								simplifiedMesh = retopologizeMesh(originalMesh, {
+									targetReduction: targetMeshReduction,
+									subdivisions: 0,
+									preserveUVs: true,
+									preserveBorders: true,
+									relaxationIterations: relaxationIterations,
+									relaxationStrength: relaxationStrength
+								});
+								if (edgeLines) {
+									scene.remove(edgeLines);
+								}
+								createEdges(simplifiedMesh);
 								scene.add(simplifiedMesh);
 								totalTrianglesAmount = getTrianglesNumber(simplifiedMesh);
 							}
@@ -1113,11 +1183,12 @@
 					onclick={() => {
 						simplifiedMeshWireframe = !simplifiedMeshWireframe;
 						if (simplifiedMeshWireframe) {
-							simplifiedMesh.material.wireframe = true;
+							edgeLines.visible = true;
 						} else {
-							simplifiedMesh.material.wireframe = false;
+							edgeLines.visible = false;
 						}
-					}}>Toggle Wireframe</button
+						console.log(edgeLines);
+					}}>Toggle Edges Visibility</button
 				>
 				<!-- <button onclick={()=>{
 					clearSegmentedMeshes();
