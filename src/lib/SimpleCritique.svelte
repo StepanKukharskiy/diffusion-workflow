@@ -66,7 +66,7 @@
 				imageModel: '',
 				imageCompositionReferenceModel: 'flux-depth-pro',
 				systemPrompt: '',
-				query: prompt,
+				query: `An image of a ${prompt}`,
 				previousAnswers: '',
 				projectId: $page.params.projectId,
 				referenceImage: referenceImageUrl,
