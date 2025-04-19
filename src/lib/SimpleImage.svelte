@@ -1,8 +1,22 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { elements, referenceImageUrl, textColor, chatPanelMode, user, maskImageUrl } from './store';
-	import { generateUUID, generateVideo, deleteBlock, generateModel, updateCredits, addElement } from './utils';
+	import {
+		elements,
+		referenceImageUrl,
+		textColor,
+		chatPanelMode,
+		user,
+		maskImageUrl
+	} from './store';
+	import {
+		generateUUID,
+		generateVideo,
+		deleteBlock,
+		generateModel,
+		updateCredits,
+		addElement
+	} from './utils';
 	import SimpleTextCard from './SimpleTextCard.svelte';
 	let { imageUrl = '', query = '', uuid = '', options = false } = $props();
 
@@ -46,7 +60,7 @@
 	// 	}
 	// }
 
-	function addSketchElement(elements:any) {
+	function addSketchElement(elements: any) {
 		elements.push({
 			uuid: generateUUID(),
 			type: 'sketch',
@@ -54,8 +68,8 @@
 		});
 	}
 
-	function addImageElement(elements:any, newImageUrl:any) {
-		console.log(newImageUrl)
+	function addImageElement(elements: any, newImageUrl: any) {
+		console.log(newImageUrl);
 		elements.push({
 			uuid: generateUUID(),
 			type: 'image',
@@ -64,14 +78,14 @@
 		});
 	}
 
-	function addCritiqueElement(elements:any, referenceImageUrl:any, critiqueData: any) {
+	function addCritiqueElement(elements: any, referenceImageUrl: any, critiqueData: any) {
 		elements.push({
 			uuid: generateUUID(),
 			type: 'critique',
 			referenceImageUrl: referenceImageUrl,
 			answer: critiqueData
 		});
-		console.log(elements)
+		console.log(elements);
 	}
 
 	let isGenerating = $state(false),
@@ -113,7 +127,7 @@
 	// 	return generatedImageUrl;
 	// }
 
-	async function upscaleImage(){
+	async function upscaleImage() {
 		isGenerating = true;
 		const message = await fetch(`${$page.url.origin}/api/ai/response`, {
 			method: 'POST',
@@ -135,7 +149,7 @@
 		return generatedImageUrl;
 	}
 
-	async function critiqueImage(){
+	async function critiqueImage() {
 		isGenerating = true;
 		const message = await fetch(`${$page.url.origin}/api/ai/critique`, {
 			method: 'POST',
@@ -146,7 +160,7 @@
 				referenceImage: imageUrl,
 				query: query,
 				projectId: $page.params.projectId,
-				previousAnswers: getContext($elements),
+				previousAnswers: getContext($elements)
 			})
 		});
 		const messageObject = await message.json();
@@ -154,7 +168,13 @@
 		console.log(`api response: ${messageObject.generatedText}`);
 		// console.log(`api response image: ${generatedImageUrl}`);
 		isGenerating = false;
-		return { thoughtProcess: messageObject.thoughtProcess, text: messageObject.generatedText, conceptualRefs: messageObject.conceptualRefs, prompt: messageObject.prompt } ;
+		return {
+			thoughtProcess: messageObject.thoughtProcess,
+			text: messageObject.generatedText,
+			conceptualRefs: messageObject.conceptualRefs,
+			prompt: messageObject.prompt,
+			imageOptionUrl: messageObject.imageOptionUrl
+		};
 	}
 
 	function getContext(elements: any) {
@@ -189,15 +209,26 @@
 				<button
 					class="tertiaryButton"
 					onclick={async () => {
-						const critiqueData = await critiqueImage()
-						console.log(critiqueData)
-						addCritiqueElement($elements, imageUrl, critiqueData)
-						$elements = $elements
+						const critiqueData = await critiqueImage();
+						console.log(critiqueData);
+						addCritiqueElement($elements, imageUrl, critiqueData);
+						$elements = $elements;
 						$user.requests = await updateCredits(
 							'critique',
 							`${$page.url.origin}/api/user/update-credits`
 						);
-					}}>Critique</button
+					}}
+					><svg width="30" height="30" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<circle cx="32" cy="32" r="8" fill="black" />
+						<line x1="32" y1="2" x2="32" y2="14" stroke="black" stroke-width="2" />
+						<line x1="32" y1="50" x2="32" y2="62" stroke="black" stroke-width="2" />
+						<line x1="2" y1="32" x2="14" y2="32" stroke="black" stroke-width="2" />
+						<line x1="50" y1="32" x2="62" y2="32" stroke="black" stroke-width="2" />
+						<line x1="12" y1="12" x2="20" y2="20" stroke="black" stroke-width="2" />
+						<line x1="44" y1="44" x2="52" y2="52" stroke="black" stroke-width="2" />
+						<line x1="12" y1="52" x2="20" y2="44" stroke="black" stroke-width="2" />
+						<line x1="44" y1="20" x2="52" y2="12" stroke="black" stroke-width="2" />
+					  </svg>&nbsp; Design Insights</button
 				>
 				<button
 					class="tertiaryButton"
@@ -216,10 +247,10 @@
 				<button
 					class="tertiaryButton"
 					onclick={async () => {
-						const imageUrl = await upscaleImage()
-						console.log(imageUrl)
-						addImageElement($elements, imageUrl)
-						$elements = $elements
+						const imageUrl = await upscaleImage();
+						console.log(imageUrl);
+						addImageElement($elements, imageUrl);
+						$elements = $elements;
 						$user.requests = await updateCredits(
 							'image',
 							`${$page.url.origin}/api/user/update-credits`
@@ -231,7 +262,7 @@
 					class="tertiaryButton"
 					onclick={async () => {
 						addSketchElement($elements);
-						$elements = $elements
+						$elements = $elements;
 					}}>Sketch</button
 				>
 				<button

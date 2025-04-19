@@ -3,14 +3,15 @@
 	import { elements, textColor, user } from './store';
 	import StyledModelAnswer from './StyledModelAnswer.svelte';
 	import { deleteBlock, generateUUID, updateCredits } from './utils';
+	import SimpleTextCard from './SimpleTextCard.svelte';
 
 	let {
 		referenceImageUrl = '',
-		answer = { thoughtProcess: '', text: '', conceptualRefs: '', prompt: '' },
+		answer = { thoughtProcess: '', text: '', conceptualRefs: '', prompt: '', imageOptionUrl: '' },
 		uuid = '',
 		options = false
 	} = $props();
-
+	console.log(answer);
 	function addElement(elements: any, type = 'critique', query = '', generatedImageUrl = '') {
 		elements.push({
 			uuid: generateUUID(),
@@ -35,8 +36,8 @@
 		linksToSearch.push({ text: link, url: googleUrl });
 	}
 
-	const prompt = answer.prompt.trim().replace(/^"(.*)"$/, '$1')
-	console.log(prompt)
+	const prompt = answer.prompt.trim().replace(/^"(.*)"$/, '$1');
+	console.log(prompt);
 
 	async function generateImage() {
 		isGeneratingImage = true;
@@ -66,7 +67,7 @@
 				imageModel: '',
 				imageCompositionReferenceModel: 'flux-depth-pro',
 				systemPrompt: '',
-				query: `An image of a ${prompt}`,
+				query: `${prompt}`,
 				previousAnswers: '',
 				projectId: $page.params.projectId,
 				referenceImage: referenceImageUrl,
@@ -81,7 +82,7 @@
 </script>
 
 <div class="textContainer">
-	<h4 class="query">Critique</h4>
+	<h4 class="query">Design Insights</h4>
 	<div class="image-wrapper">
 		<img src={referenceImageUrl} alt="critique data" />
 	</div>
@@ -91,15 +92,22 @@
 	</details>
 	<StyledModelAnswer htmlContent={answer.text} />
 	<div class="links-wrapper">
-		<h4 class="query" style='text-align: start;'>Read more:</h4>
+		<h4 class="query" style="text-align: start;">Read more:</h4>
 		{#each linksToSearch as link}
-			<a href={link.url} target="_blank"><span class='black-dot'></span>{link.text}</a>
+			<a href={link.url} target="_blank"><span class="black-dot"></span>{link.text}</a>
 		{/each}
+	</div>
+	<h4>Design Option</h4>
+	<div class="option-image-wrapper">
+		<img src={answer.imageOptionUrl} alt="design option" />
+		<div style="display: flex; flex-direction: column; width: 100%;">
+			<SimpleTextCard label={'Description'} text={answer.prompt} />
+		</div>
 	</div>
 	{#if options}
 		{#if !isGeneratingImage}
 			<div style="display: flex; flex-wrap: wrap;">
-				<button
+				<!-- <button
 					class="tertiaryButton"
 					onclick={async () => {
 						console.log(answer.prompt)
@@ -112,8 +120,8 @@
 							'image',
 							`${$page.url.origin}/api/user/update-credits`
 						);
-					}}>Create a design option</button
-				>
+					}}>Create another design option</button
+				> -->
 				<button
 					class="tertiaryButton"
 					onclick={async () => {
@@ -154,11 +162,11 @@
 		margin-bottom: 20px;
 		justify-content: flex-end;
 	}
-	img {
+	.image-wrapper img{
 		width: 50%;
 		max-width: 400px;
 	}
-	.links-wrapper{
+	.links-wrapper {
 		width: 100%;
 		display: flex;
 		flex-direction: column;
@@ -170,5 +178,17 @@
 		background-color: hsl(0, 0%, 93%);
 		border-radius: 10px;
 		margin: 5px 0;
+	}
+	.option-image-wrapper{
+		width: 100%;
+		max-width: 800px;
+		display: flex;
+		flex-direction: column;
+		margin: 20px 0;
+		/* justify-content: flex-end; */
+	}
+	.option-image-wrapper img{
+		width: 100%;
+		max-width: 800px;
 	}
 </style>

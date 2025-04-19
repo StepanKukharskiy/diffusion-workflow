@@ -1,5 +1,6 @@
 import Together from "together-ai";
 import { chatResponse } from "$lib/chat";
+import { imageResponse } from "$lib/image";
 import { TOGETHER_API_TOKEN } from '$env/static/private'
 
 const together = new Together({ apiKey: TOGETHER_API_TOKEN });
@@ -55,6 +56,8 @@ When presented with an image:
 
 5. CONTEXTUAL UNDERSTANDING: Consider how the design might interact with its intended environment or audience based on visual cues.
 
+6. VIEW POINT: Specify the view point 
+
 Present your analysis in clear, structured language without making assumptions about aspects not visible in the image. Your observations will serve as the foundation for deeper critique and feedback.
 
 Format your response as a structured JSON object with these categories to enable seamless integration with the R1 critique module.
@@ -103,7 +106,7 @@ Format your response as a structured JSON object with these categories to enable
         const output = await together.chat.completions.create({
             messages: [{
                 role: "system",
-                content: `You are a design critique specialist powered by DeepSeek R1, working within Kodiia - an AI-first sketchbook for architects, artists, and designers. You receive visual analysis data from the Llama 4 vision module and transform it into thoughtful questions and constructive feedback.
+                content: `You are a design insights specialist powered by DeepSeek R1, working within Kodiia - an AI-first sketchbook for architects, artists, and designers. You receive visual analysis data from the Llama 4 vision module and transform it into thoughtful questions and constructive feedback to explore unobvious further design directions.
 
 Your role is not to make definitive judgments but to stimulate reflection through insightful questions and observations that help designers refine their work.
 
@@ -125,6 +128,8 @@ When processing visual analysis data:
 5. IMPLEMENTATION CONSIDERATIONS: If applicable, note technical aspects that might affect the realization of the design.
 
 Your feedback should be domain-adaptive, adjusting naturally whether the design is architectural, product-based, or game-related. Maintain a tone that is analytical, constructive, and encouraging rather than judgmental.
+
+Before presenting the response review your feedback, make it deeper and more profound.
 
 Present your response in a conversational format that invites further dialogue and iteration.
 
@@ -177,18 +182,47 @@ Here is the whole user chat context: ${query.previousAnswers}`
             - Answer with just an array. Here is the text: ${thinkContent}`
 
         const promptDesignPromt = `
-        - Combine key elements from critique
-        - Use format: "Modern [domain] design with [key features], incorporating [materials], inspired by [connections], [suggested exploration path]
-        - Answer with just a prompt
+        You are a prompt engineer specialist powered by DeepSeek V3, working within Kodiia - an AI-first sketchbook for architects, artists, and designers. You receive critique analysis data from the DEEPSEEK R1 module and transform it into a detailed image description for Flux model to best present the design concept.
+        - Combine key elements from critique. Pay close attention to Conceptual References and Potential Exploration Vectors.
+        - Come up with a super detailed prompt.
+        - Use best propmt design practices corresponding to the project field.
+        - Start your prompt with 'An image of'.
+        - If applicable specify detailed geometry and design language description.
+        - Specify view point.
+        - Specify best lighting conditions to present the design idea. Use soft lighting with soft shadows unless it is necessary to do the opposite.
+        - Make the prompt short and coherent. Remove unnecesary details.
+        - Answer with just a prompt.
         Here is the critique: ${thinkContent}`
+
+        const finalPrompt = await chatResponse('deepseek-V3', thinkContent, promptDesignPromt)
+
+        const imageResponseData = await imageResponse('flux-canny-pro', finalPrompt, query.referenceImage)
+        const imageResponseDataUrl = await imageResponseData?.json()
+
+            const imageForDb = await fetch(imageResponseDataUrl.imageUrl);
+            const imageBuffer = await imageForDb.arrayBuffer();
+            console.log(imageBuffer)
+            const imageBlob = new Blob([imageBuffer], { type: 'image/webp' });
+
+            const formData = new FormData();
+            formData.append("generatedImages", imageBlob, `${query.query}.webp`);
+            console.log(formData)
+            const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
+
+            const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
+            const generatedImageFileName = record.generatedImages[record.generatedImages.length - 1];
+            const generatedImageFileUrl = await locals.pb.files.getUrl(record, generatedImageFileName, {
+                //'thumb': '100x250'
+            });
 
         const response = {
             thoughtProcess: thinkContent,
             generatedText: updatedAnswer,
             conceptualRefs: await chatResponse('deepseek-V3', thinkContent, conceptualRefsPrompt),
-            prompt: await chatResponse('deepseek-V3', thinkContent, promptDesignPromt)
+            prompt: await chatResponse('deepseek-V3', thinkContent, promptDesignPromt),
+            imageOptionUrl: generatedImageFileUrl
         }
-        // console.log(response)
+        console.log(response)
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: {
