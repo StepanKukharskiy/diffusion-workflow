@@ -285,7 +285,8 @@ When processing ${thinkContent} and ${conceptualRefsList}:
    - Spatial narrative (journey through the design experience)
 
 3. ENGINEER VISUAL PROMPT:
-"An image of [Project Type] that [embodies Central Metaphor] through [Key Contrast]. Features [3 Specific Elements from Exploration Paths] rendered in [Material Relationship from Critique]. Composition emphasizes [Spatial Hierarchy Strength] using [Viewpoint: worm's-eye/zenith/diagonal] perspective. Lighting reveals [Implementation Consideration] through [Soft/Dramatic Shadows] while maintaining [Contextual Reference] color palette. Stylized with [Design Language: parametric organic/brutalist surrealism/deconstructed neoclassical] elements suggesting [Theoretical Framework Connection]."
+"An image of [Project Type] that [embodies Central Metaphor] through [Key Contrast]. Geometry and form description with Features [3 Specific Elements from Exploration Paths] rendered in [Material Relationship from Critique]. Composition emphasizes [Spatial Hierarchy Strength] using [Viewpoint: worm's-eye/zenith/diagonal] perspective. Lighting reveals [Implementation Consideration] through [Soft/Dramatic Shadows] while maintaining [Contextual Reference] color palette. Location. Stylized with [Design Language: parametric organic/brutalist surrealism/deconstructed neoclassical] elements suggesting [Theoretical Framework Connection]."
+
 
 4. INJECT UNEXPECTED ELEMENTS:
    - Incorporate 1 paradoxical element from conceptual references
@@ -295,8 +296,25 @@ When processing ${thinkContent} and ${conceptualRefsList}:
 Output ONLY the final visual prompt without commentary. Prioritize suggestive ambiguity over literal representation.
 Start your answer with 'An image of'.
 `
+const promptDesignPromptV3 = `You are a conceptual visualization architect powered by DeepSeek V3, working within Kodiia's AI sketchbook. Transform design critiques into concise, impactful image prompts using this formula:
 
-        const finalPrompt = await chatResponse('deepseek-V3', thinkContent, promptDesignPromptV2)
+"An image of [Project Type] using [Key Material/Technique from Critique], [Central Metaphor as Physical Feature], [Unconventional Element from Exploration Paths], [Spatial Hierarchy Strength], [Contextual Reference Location], [Lighting Condition] lighting, [Viewpoint] perspective, [Design Language] style, [Paradoxical Element from Conceptual Refs], [Subtle Nod to Critique Question]"
+
+Construction rules:
+1. Start with primary subject using format: "[material] + [form] + [function]"
+2. Follow with: "[spatial quality] + [contextual setting] + [lighting/shadow pattern]"
+3. End with: "[style reference] + [theoretical concept] + [unexpected twist]"
+4. Keep elements under 12 components
+5. Use concrete nouns first, abstract concepts last
+6. Replace adjectives with visual equivalents ("playful" → "asymmetric polka dot texture")
+
+Example transformation:
+Critique: "Explore organic growth patterns in constrained urban site"
+Becomes: "An image of a vertical garden tower, 3D-printed bioplastic lattice, algae-filled glass capsules, fibonacci spiral structural pattern, compressed Tokyo alley context, dappled sunset lighting, ant's-eye view, bio-mechanical fusion style, mycelium network root system, shadow gaps revealing micro-terraces"
+
+Process ${thinkContent} and ${conceptualRefsList} to output ONLY the formatted prompt. Answer with just a prompt.`
+
+        const finalPrompt = await chatResponse('deepseek-V3', thinkContent, promptDesignPromptV3)
 
         
         async function getImage(model='flux-canny-pro'){

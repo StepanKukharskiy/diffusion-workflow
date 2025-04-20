@@ -211,16 +211,27 @@
 				<button
 					class="tertiaryButton"
 					onclick={async () => {
-						const critiqueData = await critiqueImage();
-						console.log(critiqueData);
-						addCritiqueElement($elements, imageUrl, critiqueData);
-						$elements = $elements;
-						$user.requests = await updateCredits(
-							'critique',
-							`${$page.url.origin}/api/user/update-credits`
-						);
+						try {
+							const critiqueData = await critiqueImage();
+							console.log(critiqueData);
+							addCritiqueElement($elements, imageUrl, critiqueData);
+							$elements = $elements;
+							$user.requests = await updateCredits(
+								'critique',
+								`${$page.url.origin}/api/user/update-credits`
+							);
+						} catch (err) {
+							console.log(`Something went wrong: ${err}`);
+						}
 					}}
-					><svg width="30" height="30" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+					><svg
+						width="25"
+						height="25"
+						style='margin-right: 10px;'
+						viewBox="0 0 64 64"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
 						<circle cx="32" cy="32" r="8" fill="black" />
 						<line x1="32" y1="2" x2="32" y2="14" stroke="black" stroke-width="2" />
 						<line x1="32" y1="50" x2="32" y2="62" stroke="black" stroke-width="2" />
@@ -230,7 +241,7 @@
 						<line x1="44" y1="44" x2="52" y2="52" stroke="black" stroke-width="2" />
 						<line x1="12" y1="52" x2="20" y2="44" stroke="black" stroke-width="2" />
 						<line x1="44" y1="20" x2="52" y2="12" stroke="black" stroke-width="2" />
-					  </svg>&nbsp; Design Insights</button
+					</svg>Design Insights</button
 				>
 				<button
 					class="tertiaryButton"
