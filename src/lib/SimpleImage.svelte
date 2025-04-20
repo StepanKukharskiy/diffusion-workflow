@@ -173,7 +173,9 @@
 			text: messageObject.generatedText,
 			conceptualRefs: messageObject.conceptualRefs,
 			prompt: messageObject.prompt,
-			imageOptionUrl: messageObject.imageOptionUrl
+			imageOptionUrl: messageObject.imageOptionUrl,
+			imageOptionUrl2: messageObject.imageOptionUrl2,
+			imageOptionUrl3: messageObject.imageOptionUrl3
 		};
 	}
 

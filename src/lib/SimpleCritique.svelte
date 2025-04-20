@@ -97,13 +97,16 @@
 			<a href={link.url} target="_blank"><span class="black-dot"></span>{link.text}</a>
 		{/each}
 	</div>
-	<h4>Design Option</h4>
+	<h4>Design Options</h4>
 	<div class="option-image-wrapper">
-		<img src={answer.imageOptionUrl} alt="design option" />
 		<div style="display: flex; flex-direction: column; width: 100%;">
 			<SimpleTextCard label={'Description'} text={answer.prompt} />
 		</div>
+		<img src={answer.imageOptionUrl} alt="design option" />
+		<img src={answer.imageOptionUrl2} alt="second design option" />
+		<img src={answer.imageOptionUrl3} alt="third design option" />
 	</div>
+
 	{#if options}
 		{#if !isGeneratingImage}
 			<div style="display: flex; flex-wrap: wrap;">
@@ -190,5 +193,6 @@
 	.option-image-wrapper img{
 		width: 100%;
 		max-width: 800px;
+		margin: 20px 0 0 0;
 	}
 </style>
