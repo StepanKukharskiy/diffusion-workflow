@@ -2,6 +2,7 @@ import Together from "together-ai";
 import { chatResponse } from "$lib/chat";
 import { imageResponse } from "$lib/image";
 import { TOGETHER_API_TOKEN } from '$env/static/private'
+import { PPLX_API_TOKEN } from "$env/static/private";
 
 const together = new Together({ apiKey: TOGETHER_API_TOKEN });
 
@@ -36,8 +37,8 @@ export async function POST({ request, locals }) {
         //     default:
         //         selectedModel = 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo'
         //         break;
-    
-    
+
+
         const visionOutput = await together.chat.completions.create({
             messages: [
                 {
@@ -96,85 +97,14 @@ Format your response as a structured JSON object with these categories to enable
             stop: ["<|eot_id|>", "<|eom_id|>"],
             stream: false
         });
-        console.log(visionOutput.choices[0].message.content)
+        //console.log(visionOutput.choices[0].message.content)
 
         visionResponse = {
             generatedText: visionOutput.choices[0].message.content
         }    // }
 
-        const designCritiqueAgentPromptV2 = `
-        ## Design Insights Specialist Protocol v2.1
-        Powered by DeepSeek R1 for Kodiia AI Sketchbook
-        
-        Core Objective: Catalyze transformative design thinking through rigorously structured provocation and cross-disciplinary bridging.
-        
-        Processing Workflow:
-        
-            Tension Mapping
-        
-                Identify 2-3 inherent contradictions in the design (e.g., "Fluid forms vs. modular assembly")
-        
-                Formulate 3-5 questions framing tensions as innovation fuel:
-        
-            text
-            "How might [X] constraint paradoxically enable [Y] breakthrough?"  
-            "What systems from [unrelated domain] could resolve [specific tension]?"  
-        
-        Exploration Matrix
-        Propose 2-3 paths with:
-        
-            Scale Transgression: "Test your facade pattern at microbial scale using [3D modeling technique]"
-        
-            Temporal Layers: "Simulate 10-year weathering effects on [material choice]"
-        
-            Disciplinary Transplants: "Apply swarm intelligence algorithms to spatial circulation"
-        
-        Precision References
-        
-        For each strength/tension:
-        
-        text
-        **PRECEDENT CONNECTION**  
-        - [Project Name] by [Designer] ([credible URL])  
-        - *Core Concept*: [15-word summary]  
-        - *Divergence Opportunity*: "Unlike this approach, your work could..."  
-        
-        Failure Prototyping
-        
-            text
-            **HIGH-STAKES EXPERIMENT**  
-            "What if you exaggerated [risk-prone element] by 300%? Potential insights:  
-            - [Predicted collapse scenario] → [Alternative structural solution]  
-            - [User behavior shift] → [New functional adaptation]"  
-        
-        Output Requirements:
-        
-        text
-        **OBSERVATION** → [Pattern/Anomaly detection]  
-        **QUESTION** → [Tension-focused provocation]  
-        **PRECEDENT** → [Specific example with hyperlink]  
-        **BRIDGE** → "This makes me wonder..." [Cross-domain speculation]  
-        
-        Quality Control:
-        
-            Contradiction Check: "Does any suggestion default to standard practice? If yes, replace with 2x more radical alternative"
-        
-            Bias Scan: "Are references disproportionately Western/male? Diversify with Global South precedents"
-        
-            Knowledge Cutoff: "Flag insights requiring post-2021 knowledge as '[Emerging Concept]'"
-        
-        Tone Protocol:
-        
-            70% analytical rigor / 30% poetic speculation
-        
-            Forbidden Phrases: "You should", "Better to" → Replace with "What if", "Consider testing"`
-        
-
-
-        const output = await together.chat.completions.create({
-            messages: [{
-                role: "system",
-                content: `You are a design insights specialist powered by DeepSeek R1, working within Kodiia - an AI-first sketchbook for architects, artists, and designers. You receive visual analysis data from the Llama 4 vision module and transform it into thoughtful questions and constructive feedback to explore unobvious further design directions.
+        const designCritiqueAgentPromptV1 = `
+        You are a design insights specialist powered by DeepSeek R1, working within Kodiia - an AI-first sketchbook for architects, artists, and designers. You receive visual analysis data from the Llama 4 vision module and transform it into thoughtful questions and constructive feedback to explore unobvious further design directions.
 
 Your role is not to make definitive judgments but to stimulate reflection through insightful questions and observations that help designers refine their work.
 
@@ -208,6 +138,88 @@ Present your response in a conversational format that invites further dialogue a
 Here is the visual analysis data: ${visionResponse.generatedText}
 
 Here is the whole user chat context: ${query.previousAnswers}`
+
+        const designCritiqueAgentPromptV2 = `
+        You are a design insights specialist powered by DeepSeek R1, working within Kodiia - an AI-first sketchbook for architects, artists, and designers. You receive visual analysis data from the Llama 4 vision module and transform it into thoughtful questions and constructive feedback to explore unobvious further design directions.
+
+Your role is not to make definitive judgments but to stimulate reflection through insightful questions and observations that help designers refine their work.
+
+When processing visual analysis data, organize your response using EXACTLY these section headings:
+
+1. REFLECTIVE QUESTIONS: Create 3-5 thought-provoking questions that encourage the designer to reflect on their choices, intentions, and potential alternatives. Focus on areas like:
+   - Conceptual clarity and communication
+   - Material and color relationships
+   - Spatial organization and hierarchy
+   - Contextual appropriateness
+   - Technical implementation considerations
+   Use clear, professional language without metaphorical or poetic phrasing.
+   Ensure questions probe beyond surface aesthetics to underlying design decisions and conceptual foundations. Each question should challenge fundamental assumptions or reveal tensions within the design.
+
+2. EXPLORATION PATHS: Offer 2-3 potential directions the designer might explore to develop their concept further, presented as open-ended suggestions rather than prescriptive advice. 
+   Each suggested path should include:
+   - The conceptual underpinning of the suggestion
+   - How it builds on existing strengths while addressing limitations
+   - A concrete example of implementation
+   - The potential transformative impact on the design
+   - Explain each suggestion with concrete examples
+   - If referencing concepts from other fields, define them clearly and explain their direct application
+   - Avoid vague or abstract recommendations without implementation details
+
+3. DESIGN STRENGTHS: Identify 2-3 aspects of the design that appear particularly successful or compelling, explaining their potential impact.
+   - Be specific about why these elements work well
+   - If making comparisons to art movements or styles, provide brief explanations of the reference
+   - Explain how these strengths could be leveraged further
+
+4. RELEVANT REFERENCES: Suggest relevant precedents, references, or theoretical frameworks that might enrich the designer's thinking about their work. For each reference:
+   - Name the specific project/theory
+   - Explain the core concept in 1-2 sentences
+   - Clearly articulate why it's relevant to this specific design
+   - The philosophical or theoretical foundation of the reference
+   - Specific techniques or approaches that could be adapted
+   - How the reference both aligns with and challenges the current design
+   - Highlight implementation contrasts ("Unlike [Famous Project], your approach could...")
+   Limited to 1-2 specific examples with detailed explanations
+
+5. TECHNICAL CONSIDERATIONS: If applicable, note technical aspects that might affect the realization of the design.
+   - Focus on practical implementation details
+   - Use clear terminology with explanations where needed
+   - Provide specific examples of how technical choices impact the design outcome
+
+Use professional, clear language throughout. Avoid:
+- Poetic or metaphorical section titles
+- Jargon without explanation
+- Vague suggestions without implementation details
+- Abstract concepts without concrete applications
+
+Before presenting your response, complete a thorough DEPTH REVIEW process:
+
+1. REVIEW FOR CLARITY: Ensure every concept is clearly explained and all technical terms are defined.
+
+2. DEEPEN ANALYSIS: For each section, ask yourself "How can I make this insight more profound?" Add at least one layer of deeper analysis to each major point.
+
+3. CONNECT TO FUNDAMENTALS: Link suggestions to fundamental design principles rather than just surface observations.
+
+4. ELIMINATE SUPERFICIAL FEEDBACK: Replace any generic observations with specific, actionable insights that demonstrate deep understanding of design challenges.
+
+5. ADD DIMENSION: Consider how your feedback addresses multiple levels of the design (conceptual, functional, aesthetic, technical, experiential).
+
+6. QUESTION YOUR ASSUMPTIONS: Challenge your initial interpretations and consider alternative perspectives.
+
+Remember, profound feedback goes beyond obvious observations to reveal underlying patterns, tensions, and opportunities that might not be immediately apparent.
+
+Present your response in a conversational format that invites further dialogue and iteration.
+
+Here is the visual analysis data: ${visionResponse.generatedText}
+
+Here is the whole user chat context: ${query.previousAnswers}
+`
+
+
+
+        const output = await together.chat.completions.create({
+            messages: [{
+                role: "system",
+                content: designCritiqueAgentPromptV2
             }, {
                 role: "user",
                 content: query.query
@@ -221,23 +233,23 @@ Here is the whole user chat context: ${query.previousAnswers}`
             stop: ["<|eot_id|>"],
             stream: false
         });
-        console.log(output.choices[0].message.content)
+        //console.log(output.choices[0].message.content)
 
         const answer = output.choices[0].message.content
 
         function splitMarkdown(markdown = '') {
             // Define the regex pattern to match content between <think> and </think> tags
             const thinkPattern = /<think>([\s\S]*?)<\/think>/;
-    
+
             // Find the match
             const match = markdown.match(thinkPattern);
-    
+
             // Extract the think content if there's a match
             const thinkContent = match ? match[1].trim() : '';
-    
+
             // Remove the think content from the original markdown to get the rest
             const restContent = markdown.replace(thinkPattern, '').trim();
-    
+
             return {
                 thinkContent,
                 restContent
@@ -248,14 +260,47 @@ Here is the whole user chat context: ${query.previousAnswers}`
         const thinkContent = splitMarkdown(answer).thinkContent;
 
         const conceptualRefsPrompt = `
-            Given this text, extract a list of Conceptual Connections provided. 
+            Given this text, extract a list of 3-5 most important Conceptual Connections provided. 
             - Extract reference connections mentioned in critique
             - Use format like this: ["Zaha Hadid's parametric designs", "Bauhaus color theory", "Open world game environmental storytelling"]
             - Answer with just an array. Here is the text: ${thinkContent}`
 
         const conceptualRefsList = await chatResponse('deepseek-V3', thinkContent, conceptualRefsPrompt)
 
-        const promptDesignPromtV1= `
+        const conceptualRefsListArray = JSON.parse(conceptualRefsList)
+        console.log('refs array:')
+        console.log(conceptualRefsListArray)
+
+        async function getFullConceptualRefsArray(array) {
+            let conceptualRefsListDataArray = []
+            try {
+                for (let i = 0; i < array.length; i++) {
+                    let item = conceptualRefsListArray[i]
+                    const options = {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${PPLX_API_TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: `{"temperature":0.2,"top_p":0.9,"return_images":true,"return_related_questions":false,"top_k":0,"stream":false,"presence_penalty":0,"frequency_penalty":1,"web_search_options":{"search_context_size":"low"},"model":"sonar","messages":[{"content": "${item}", "role":"user"}]}`
+                    };
+
+                    const pplxMessage = await fetch('https://api.perplexity.ai/chat/completions', options)
+                    const pplxMessageObject = await pplxMessage.json()
+                    conceptualRefsListDataArray.push({
+                        request: item,
+                        response: pplxMessageObject
+                })
+                }
+                return conceptualRefsListDataArray
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+
+
+        const promptDesignPromtV1 = `
         You are a prompt engineer specialist powered by DeepSeek V3, working within Kodiia - an AI-first sketchbook for architects, artists, and designers. You receive critique analysis data from the DEEPSEEK R1 module and transform it into a detailed image description for Flux model to best present the design concept.
         - Specify the project type
         - Come up with a detailed prompt based on the Conceptual References and Potential Exploration Vectors provided.
@@ -296,7 +341,7 @@ When processing ${thinkContent} and ${conceptualRefsList}:
 Output ONLY the final visual prompt without commentary. Prioritize suggestive ambiguity over literal representation.
 Start your answer with 'An image of'.
 `
-const promptDesignPromptV3 = `You are a conceptual visualization architect powered by DeepSeek V3, working within Kodiia's AI sketchbook. Transform design critiques into concise, impactful image prompts using this formula:
+        const promptDesignPromptV3 = `You are a conceptual visualization architect powered by DeepSeek V3, working within Kodiia's AI sketchbook. Transform design critiques EXPLORATION PATHS into concise, impactful image prompts using this formula:
 
 "An image of [Project Type] using [Key Material/Technique from Critique], [Central Metaphor as Physical Feature], [Unconventional Element from Exploration Paths], [Spatial Hierarchy Strength], [Contextual Reference Location], [Lighting Condition] lighting, [Viewpoint] perspective, [Design Language] style, [Paradoxical Element from Conceptual Refs], [Subtle Nod to Critique Question]"
 
@@ -316,10 +361,10 @@ Process ${thinkContent} and ${conceptualRefsList} to output ONLY the formatted p
 
         const finalPrompt = await chatResponse('deepseek-V3', thinkContent, promptDesignPromptV3)
 
-        
-        async function getImage(model='flux-canny-pro'){
+
+        async function getImage(model = 'flux-canny-pro') {
             let imageResponseData
-            if(model != 'flux-schnell'){
+            if (model != 'flux-schnell') {
                 imageResponseData = await imageResponse(model, finalPrompt, query.referenceImage)
             } else {
                 imageResponseData = await imageResponse(model, finalPrompt)
@@ -328,12 +373,12 @@ Process ${thinkContent} and ${conceptualRefsList} to output ONLY the formatted p
 
             const imageForDb = await fetch(imageResponseDataUrl.imageUrl);
             const imageBuffer = await imageForDb.arrayBuffer();
-            console.log(imageBuffer)
+            //console.log(imageBuffer)
             const imageBlob = new Blob([imageBuffer], { type: 'image/webp' });
 
             const formData = new FormData();
             formData.append("generatedImages", imageBlob, `${query.query}.webp`);
-            console.log(formData)
+            //console.log(formData)
             const responseDb = await locals.pb.collection('nodeEditorProjects').update(query.projectId, formData)
 
             const record = await locals.pb.collection('nodeEditorProjects').getOne(query.projectId);
@@ -341,19 +386,19 @@ Process ${thinkContent} and ${conceptualRefsList} to output ONLY the formatted p
             const generatedImageFileUrl = await locals.pb.files.getUrl(record, generatedImageFileName, {
                 //'thumb': '100x250'
             });
-        return generatedImageFileUrl
+            return generatedImageFileUrl
         }
 
         const response = {
             thoughtProcess: thinkContent,
             generatedText: updatedAnswer,
-            conceptualRefs: conceptualRefsList,
+            conceptualRefs: await getFullConceptualRefsArray(conceptualRefsListArray),
             prompt: finalPrompt,
             imageOptionUrl: await getImage('flux-canny-pro'),
             imageOptionUrl2: await getImage('flux-depth-pro'),
             imageOptionUrl3: await getImage('flux-schnell')
         }
-        console.log(response)
+        //console.log(response)
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: {

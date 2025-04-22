@@ -11,7 +11,7 @@
 		uuid = '',
 		options = false
 	} = $props();
-	console.log(answer);
+	console.log(answer.conceptualRefs);
 	function addElement(elements: any, type = 'critique', query = '', generatedImageUrl = '') {
 		elements.push({
 			uuid: generateUUID(),
@@ -28,13 +28,13 @@
 		maskImageUrl = $state(''),
 		generatedImageUrl = $state('');
 
-	const conceptualRefsArray = JSON.parse(answer.conceptualRefs);
+	// const conceptualRefsArray = JSON.parse(answer.conceptualRefs);
 	let linksToSearch = [];
-	for (let link of conceptualRefsArray) {
-		const encodedString = encodeURIComponent(link);
-		const googleUrl = `https://www.google.com/search?q=${encodedString}`;
-		linksToSearch.push({ text: link, url: googleUrl });
-	}
+	// for (let link of conceptualRefsArray) {
+	// 	const encodedString = encodeURIComponent(link);
+	// 	const googleUrl = `https://www.google.com/search?q=${encodedString}`;
+	// 	linksToSearch.push({ text: link, url: googleUrl });
+	// }
 
 	const prompt = answer.prompt.trim().replace(/^"(.*)"$/, '$1');
 	console.log(prompt);
@@ -93,8 +93,22 @@
 	<StyledModelAnswer htmlContent={answer.text} />
 	<div class="links-wrapper">
 		<h4 class="query" style="text-align: start;">Read more:</h4>
-		{#each linksToSearch as link}
-			<a href={link.url} target="_blank"><span class="black-dot"></span>{link.text}</a>
+
+		{#each answer.conceptualRefs as ref}
+			<details>
+				<summary>{ref.request}</summary>
+				<StyledModelAnswer htmlContent={ref.response.choices[0].message.content} />
+				{#each ref.response.images as image, index}
+					<div class="option-image-wrapper">
+						<img src={image.image_url} alt="relevant visual" />
+					</div>
+				{/each}
+				{#each ref.response.citations as link, index}
+					<div style="display: flex; align-items: center;">
+						<b>{index}</b>&nbsp;<a href={link} target="_blank">{link}</a>
+					</div>
+				{/each}
+			</details>
 		{/each}
 	</div>
 	<h4>Design Options</h4>
@@ -165,7 +179,7 @@
 		margin-bottom: 20px;
 		justify-content: flex-end;
 	}
-	.image-wrapper img{
+	.image-wrapper img {
 		width: 50%;
 		max-width: 400px;
 	}
@@ -176,13 +190,14 @@
 		margin-bottom: 20px;
 	}
 	.links-wrapper a {
+		display: block;
 		width: fit-content;
 		padding: 10px;
 		background-color: hsl(0, 0%, 93%);
 		border-radius: 10px;
 		margin: 5px 0;
 	}
-	.option-image-wrapper{
+	.option-image-wrapper {
 		width: 100%;
 		max-width: 800px;
 		display: flex;
@@ -190,7 +205,7 @@
 		margin: 20px 0;
 		/* justify-content: flex-end; */
 	}
-	.option-image-wrapper img{
+	.option-image-wrapper img {
 		width: 100%;
 		max-width: 800px;
 		margin: 20px 0 0 0;
