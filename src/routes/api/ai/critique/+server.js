@@ -263,13 +263,15 @@ Here is the whole user chat context: ${query.previousAnswers}
             Given this text, extract a list of 3-5 most important Conceptual Connections provided. 
             - Extract reference connections mentioned in critique
             - Use format like this: ["Zaha Hadid's parametric designs", "Bauhaus color theory", "Open world game environmental storytelling"]
-            - Answer with just an array. Here is the text: ${thinkContent}`
+            - Answer with just an array. Here is the text: ${updatedAnswer}`
 
         const conceptualRefsList = await chatResponse('deepseek-V3', thinkContent, conceptualRefsPrompt)
+        const projectType = await chatResponse('deepseek-V3', updatedAnswer, 'Describe the project area field in one word (pavilion, house, game, etc.). Be short and concise. Use nouns. Do not use any symbols. Answer with just a word.')
+        console.log(`project: ${projectType}`)
 
         const conceptualRefsListArray = JSON.parse(conceptualRefsList)
-        console.log('refs array:')
-        console.log(conceptualRefsListArray)
+        // console.log('refs array:')
+        // console.log(conceptualRefsListArray)
 
         async function getFullConceptualRefsArray(array) {
             let conceptualRefsListDataArray = []
@@ -282,7 +284,27 @@ Here is the whole user chat context: ${query.previousAnswers}
                             Authorization: `Bearer ${PPLX_API_TOKEN}`,
                             'Content-Type': 'application/json'
                         },
-                        body: `{"temperature":0.2,"top_p":0.9,"return_images":true,"return_related_questions":false,"top_k":0,"stream":false,"presence_penalty":0,"frequency_penalty":1,"web_search_options":{"search_context_size":"low"},"model":"sonar","messages":[{"content": "${item}", "role":"user"}]}`
+                        body: `{
+                        "temperature":0.2,
+                        "top_p":0.9,
+                        "return_images":true,
+                        "return_related_questions":false,
+                        "top_k":0,
+                        "stream":false,
+                        "presence_penalty":0,
+                        "frequency_penalty":1,
+                        "web_search_options":{"search_context_size":"low"},
+                        "model":"sonar",
+                        "messages":[
+                        {
+                        "content":"You are a reference researcher for Kodiia design platform. When given design feedback with references, your task is to provide concise information about each mentioned reference. For each reference: identify its creator, year/period, 1-2 key principles, and relevance to design in under 100 words. Format with bullet points, ensure accuracy, and focus on visual characteristics when relevant. Present information clearly with proper headings.",
+                        "role":"system"
+                        },
+                        {
+                        "content":"I need to find relevant info for this: ${item}. I'm working on this project: ${projectType}",
+                        "role":"user"
+                        }
+                        ]}`
                     };
 
                     const pplxMessage = await fetch('https://api.perplexity.ai/chat/completions', options)
