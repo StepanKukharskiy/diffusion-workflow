@@ -35,9 +35,11 @@
 	// 	const googleUrl = `https://www.google.com/search?q=${encodedString}`;
 	// 	linksToSearch.push({ text: link, url: googleUrl });
 	// }
-
-	const prompt = answer.prompt.trim().replace(/^"(.*)"$/, '$1');
-	console.log(prompt);
+	let prompt;
+	if (answer.prompt) {
+		prompt = answer.prompt.trim().replace(/^"(.*)"$/, '$1');
+		console.log(prompt);
+	}
 
 	async function generateImage() {
 		isGeneratingImage = true;
@@ -127,7 +129,7 @@
 				<SimpleTextCard label={'Description'} text={answer.prompt} />
 			</div>
 		{/if}
-		{#if answer.imageOptionUrl1}
+		{#if answer.imageOptionUrl}
 			<img src={answer.imageOptionUrl} alt="design option" />
 		{/if}
 		{#if answer.imageOptionUrl2}
