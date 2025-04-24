@@ -11,7 +11,7 @@
 		uuid = '',
 		options = false
 	} = $props();
-	console.log(answer.conceptualRefs);
+
 	function addElement(elements: any, type = 'critique', query = '', generatedImageUrl = '') {
 		elements.push({
 			uuid: generateUUID(),
@@ -88,37 +88,54 @@
 	</div>
 	<details>
 		<summary>Thought process</summary>
-		<StyledModelAnswer htmlContent={answer.thoughtProcess} />
+		{#if answer.thoughtProcess}
+			<StyledModelAnswer htmlContent={answer.thoughtProcess} />
+		{/if}
 	</details>
-	<StyledModelAnswer htmlContent={answer.text} />
+	{#if answer.text}
+		<StyledModelAnswer htmlContent={answer.text} />
+	{/if}
 	<div class="links-wrapper">
 		<h4 class="query" style="text-align: start;">Read more:</h4>
-
-		{#each answer.conceptualRefs as ref}
-			<details>
-				<summary>{ref.request}</summary>
-				<StyledModelAnswer htmlContent={ref.response.choices[0].message.content} />
-				{#each ref.response.images as image, index}
-					<div class="option-image-wrapper">
-						<img src={image.image_url} alt="relevant visual" />
-					</div>
-				{/each}
-				{#each ref.response.citations as link, index}
-					<div style="display: flex; align-items: center;">
-						<b>{index}</b>&nbsp;<a href={link} target="_blank">{link}</a>
-					</div>
-				{/each}
-			</details>
-		{/each}
+		{#if answer.conceptualRefs}
+			{#each answer.conceptualRefs as ref}
+				<details>
+					{#if ref.request}
+						<summary>{ref.request}</summary>
+					{/if}
+					{#if ref.response}
+						<StyledModelAnswer htmlContent={ref.response.choices[0].message.content} />
+						{#each ref.response.images as image, index}
+							<div class="option-image-wrapper">
+								<img src={image.image_url} alt="relevant visual" />
+							</div>
+						{/each}
+						{#each ref.response.citations as link, index}
+							<div style="display: flex; align-items: center;">
+								<b>{index}</b>&nbsp;<a href={link} target="_blank">{link}</a>
+							</div>
+						{/each}
+					{/if}
+				</details>
+			{/each}
+		{/if}
 	</div>
 	<h4>Design Options</h4>
 	<div class="option-image-wrapper">
-		<div style="display: flex; flex-direction: column; width: 100%;">
-			<SimpleTextCard label={'Description'} text={answer.prompt} />
-		</div>
-		<img src={answer.imageOptionUrl} alt="design option" />
-		<img src={answer.imageOptionUrl2} alt="second design option" />
-		<img src={answer.imageOptionUrl3} alt="third design option" />
+		{#if answer.prompt}
+			<div style="display: flex; flex-direction: column; width: 100%;">
+				<SimpleTextCard label={'Description'} text={answer.prompt} />
+			</div>
+		{/if}
+		{#if answer.imageOptionUrl1}
+			<img src={answer.imageOptionUrl} alt="design option" />
+		{/if}
+		{#if answer.imageOptionUrl2}
+			<img src={answer.imageOptionUrl2} alt="second design option" />
+		{/if}
+		{#if answer.imageOptionUrl3}
+			<img src={answer.imageOptionUrl3} alt="third design option" />
+		{/if}
 	</div>
 
 	{#if options}
