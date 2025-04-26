@@ -43,6 +43,9 @@
 		let gridSizeY = Math.round(($height * 0.8) / cellSize);
 		let iteration = 0; // Counter variable
 		let maxIterations = 300; // Maximum number of iterations
+		const symbols = ['.', '-', 'c', 'o', '(', 'r', '3', 'a', '+', '0']
+		const phrase = ' Co-create with AI'
+
 		p.setup = function () {
 			cellSize = 20;
 			gridSizeX = Math.round($width / cellSize);
@@ -75,8 +78,8 @@
 			// grid[gridSizeX/2][gridSizeY/2] = 1;
 		};
 		p.draw = function () {
-			// p.background('hsl(0,0%,98%)');
-			p.background(250);
+			p.background('hsl(0,0%,98%)');
+			// p.background(250);
 			// Draw grid
 			let minVal = Infinity;
 			let maxVal = -Infinity;
@@ -93,7 +96,7 @@
 			}
 			for (let i = 0; i < gridSizeX; i++) {
 				for (let j = 0; j < gridSizeY; j++) {
-					grid[i][j] -= 0.0075;
+					grid[i][j] -= 0.0025;
 					if (grid[i][j] < 0) {
 						grid[i][j] = 0;
 					}
@@ -105,16 +108,21 @@
 					// const value = grid[i][j];
 					let saturation = value > 0.1 ? 90 : 0;
 					let lightness = value > 0.1 ? 75 : 98;
-					// p.fill(`hsl(${Math.round(value * 100 + 150)}, ${saturation}%, ${lightness}%)`);
+					p.fill(`hsl(${Math.round(value * 100 + 150)}, ${saturation}%, ${lightness}%)`);
 					p.noStroke();
-					p.fill(10, value*100)
+					// p.fill(0, value*100)
 					// p.stroke(0, 80)
 					//p.rect(i * cellSize, j * cellSize, cellSize, cellSize);
 					let s = p.map(value, 0.1, 1, 1, cellSize)
+					let item = Math.round(p.map(value, 0.1, 1, 0, phrase.length))
+					p.textFont('Courier');
+					p.textSize(cellSize * 0.5)
+					p.text(phrase.charAt(item), i * cellSize , j * cellSize)
 					if(s > 8){
 					// p.circle(i * cellSize + cellSize/2, j * cellSize + cellSize/2, s)
-					p.rectMode(p.CENTER)
-					p.rect(i * cellSize , j * cellSize, s, s, s/5)
+					// p.rectMode(p.CENTER)
+					// p.rect(i * cellSize , j * cellSize, s, s, s/5)
+					
 				}
 				}
 			}
