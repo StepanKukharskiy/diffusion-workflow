@@ -95,8 +95,8 @@
 					// const value = grid[i][j];
 					let saturation = value > 0.1 ? 90 : 0;
 					let lightness = value > 0.1 ? 75 : 98;
-					p.fill(`hsl(${Math.round(value * 100 + 150)}, ${saturation}%, ${lightness}%)`);
-					p.noStroke();
+					// p.fill(`hsl(${Math.round(value * 100 + 150)}, ${saturation}%, ${lightness}%)`);
+					// p.noStroke();
 					let s = p.map(value, 0.1, 1, 1, cellSize)
 					if(s > 8){
 					p.rectMode(p.CENTER)
