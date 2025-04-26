@@ -76,7 +76,7 @@
 		};
 		p.draw = function () {
 			// p.background('hsl(0,0%,98%)');
-			p.background(250, 10);
+			p.background(250);
 			// Draw grid
 			let minVal = Infinity;
 			let maxVal = -Infinity;
@@ -106,8 +106,9 @@
 					let saturation = value > 0.1 ? 90 : 0;
 					let lightness = value > 0.1 ? 75 : 98;
 					// p.fill(`hsl(${Math.round(value * 100 + 150)}, ${saturation}%, ${lightness}%)`);
-					// p.noStroke();
-					p.stroke(0, 80)
+					p.noStroke();
+					p.fill(10, value*100)
+					// p.stroke(0, 80)
 					//p.rect(i * cellSize, j * cellSize, cellSize, cellSize);
 					let s = p.map(value, 0.1, 1, 1, cellSize)
 					if(s > 8){
