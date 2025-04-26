@@ -48,7 +48,7 @@
 			gridSizeX = Math.round($width / cellSize);
 			gridSizeY = Math.round(($height * 0.8) / cellSize);
 			iteration = 0; // Counter variable
-			maxIterations = 20; // Maximum number of iterations
+			maxIterations = 0; // Maximum number of iterations
 			p.createCanvas(gridSizeX * cellSize, gridSizeY * cellSize);
 			p.frameRate(20);
 			grid = new Array(gridSizeX).fill(0).map(() => new Array(gridSizeY).fill(0));
@@ -75,7 +75,7 @@
 			// grid[gridSizeX/2][gridSizeY/2] = 1;
 		};
 		p.draw = function () {
-			p.background(0);
+			p.background(255);
 			// Draw grid
 			let minVal = Infinity;
 			let maxVal = -Infinity;
@@ -107,6 +107,9 @@
 					p.fill(`hsl(${Math.round(value * 100 + 150)}, ${saturation}%, ${lightness}%)`);
 					p.noStroke();
 					p.rect(i * cellSize, j * cellSize, cellSize, cellSize);
+					// let s = p.map(value, 0, 2, 1, cellSize)
+					// if(s > 5){
+					// p.circle(i * cellSize + cellSize/2, j * cellSize + cellSize/2, s)}
 				}
 			}
 			// Calculate next generation

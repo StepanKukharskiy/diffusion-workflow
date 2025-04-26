@@ -18,7 +18,7 @@
 <span style="width: 100%; border-top: 1px solid hsl(0, 0%, 90%); margin-bottom: 10px;"></span>
 <div class="footer">
 	<div style="display: flex; flex-direction: column;">
-		<p>Copyright © 2024 Kodiia</p>
+		<p>Copyright © 2025 Kodiia</p>
 		<p>Made with 💜 across the globe</p>
 		<p>info@kodiia.com</p>
 	</div>
