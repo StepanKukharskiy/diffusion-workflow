@@ -162,6 +162,7 @@
 							query={element.query}
 							answer={element.answer}
 							uuid={element.uuid}
+							model={element.model}
 							options={showOptions}
 						/>
 					{:else if element.type === 'file'}

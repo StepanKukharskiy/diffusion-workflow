@@ -156,7 +156,8 @@
 				uuid: generateUUID(),
 				type: type,
 				query: query,
-				answer: answer
+				answer: answer,
+				model: $chatModel
 			});
 			elements = elements;
 		}

@@ -85,7 +85,7 @@ export let tutorials = writable(false)
 export let templates = writable(false)
 export let apps = writable(false)
 
-export let chatModel = writable('llama3.3-70b')
+export let chatModel = writable('gpt-4o')
 export let visionModel = writable('llama3.2-90b')
 export let imageModel = writable('flux-schnell')
 export let imageCompositionReferenceModel = writable('flux-canny-pro')

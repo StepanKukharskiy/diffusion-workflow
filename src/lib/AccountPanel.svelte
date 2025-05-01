@@ -124,6 +124,15 @@
 					$chatModel = e.target.innerText;
 				}}
 			>
+				<span class={$chatModel === 'gpt-4o' ? 'black-dot' : 'transparent-dot'}></span>
+				gpt-4o</button
+			>
+			<button
+				class="tertiaryButton"
+				onclick={(e: any) => {
+					$chatModel = e.target.innerText;
+				}}
+			>
 				<span class={$chatModel === 'llama3.3-70b' ? 'black-dot' : 'transparent-dot'}></span>
 				llama3.3-70b</button
 			>

@@ -43,11 +43,12 @@ export async function POST({ request, locals }) {
             console.log('getting chat agent response')
             const chatResponseData = await chatResponse(query.model, query.query, query.systemPrompt, query.previousAnswers, query.referenceImage)
             console.log(query.referenceImage)
-            console.log(chatResponseData)
+            console.log(`response from chat: ${chatResponseData}`)
 
             response = {
                 type: 'text',
-                generatedText: chatResponseData
+                generatedText: chatResponseData,
+                model: query.model
             }
         }
 

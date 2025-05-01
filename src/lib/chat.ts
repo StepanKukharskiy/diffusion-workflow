@@ -1,5 +1,7 @@
 import Together from "together-ai";
 import { TOGETHER_API_TOKEN } from '$env/static/private';
+import OpenAI from "openai";
+import { OPENAI_API_TOKEN } from '$env/static/private';
 
 export async function chatResponse(model = '', query = '', systemPrompt = '', context = '', image = '') {
     console.log(`chat: ${model}, ${query}, ${systemPrompt}, ${image}`)
@@ -7,6 +9,10 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
 
         const together = new Together({
             apiKey: TOGETHER_API_TOKEN,
+        });
+
+        const openai = new OpenAI({
+            apiKey: OPENAI_API_TOKEN,
         });
 
         let selectedModel = ''
@@ -31,6 +37,9 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
                 break;
             case 'Qwen2-72B-Instruct':
                 selectedModel = 'Qwen/Qwen2-72B-Instruct'
+                break;
+            case 'gpt-4o':
+                selectedModel = 'gpt-4o'
                 break;
             default:
                 selectedModel = 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo'
@@ -75,22 +84,84 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
 
             return response.choices[0].message.content
         } else {
-            const response = await together.chat.completions.create({
-                messages: [
-                    {
-                        role: "system",
-                        content: `${systemPrompt} Here is the context: ${context}`
-                    }, {
-                        role: "user",
-                        content: `${query}`
-                    }
-                ],
-                model: selectedModel,
-                max_tokens: 4096,
-                temperature: 0.7
-            });
+            if (selectedModel != 'gpt-4o') {
+                const response = await together.chat.completions.create({
+                    messages: [
+                        {
+                            role: "system",
+                            content: `${systemPrompt} Here is the context: ${context}`
+                        }, {
+                            role: "user",
+                            content: `${query}`
+                        }
+                    ],
+                    model: selectedModel,
+                    max_tokens: 4096,
+                    temperature: 0.7
+                });
 
-            return response.choices[0].message.content
+                return response.choices[0].message.content
+            } else {
+                // let response: any = ''
+                // const completion = openai.chat.completions.create({
+                //     model: "gpt-4o-mini",
+                //     store: true,
+                //     messages: [
+                //         {
+                //             "role": "system",
+                //             "content": `${systemPrompt} Here is the context: ${context}`
+                //         },
+                //         { "role": "user", "content": `${query}` },
+                //     ],
+                // });
+                // completion.then((result) => {
+                //     response = result.choices[0].message
+                //     // console.log(completion)
+
+
+                // })
+                // console.log(`chat: ${response.content}`)
+                // return response.content
+
+
+
+                const response = await openai.responses.create({
+                    model: "gpt-4o",
+                    input: [
+                        {
+                            "role": "system",
+                            "content": [
+                                {
+                                    "type": "input_text",
+                                    "text": `${systemPrompt}  Here is the context: ${context}`
+                                }
+                            ]
+                        },
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "input_text",
+                                    "text": `${query}`
+                                }
+                            ]
+                        },
+                    ],
+                    text: {
+                        "format": {
+                            "type": "text"
+                        }
+                    },
+                    reasoning: {},
+                    tools: [],
+                    temperature: 1,
+                    max_output_tokens: 2048,
+                    top_p: 1,
+                    store: true
+                });
+                console.log(response.output[0].content[0].text)
+                return response.output[0].content[0].text
+            }
         }
 
     } catch (err) {

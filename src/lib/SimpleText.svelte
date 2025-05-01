@@ -4,7 +4,7 @@
 	import StyledModelAnswer from './StyledModelAnswer.svelte';
 	import { deleteBlock, generateUUID, updateCredits } from './utils';
 
-	let { query = '', answer = '', uuid = '', options = false } = $props();
+	let { query = '', answer = '', model = '', uuid = '', options = false } = $props();
 
 	function addElement(elements: any, type = 'text', query = '', generatedImageUrl = '') {
 		elements.push({
@@ -48,11 +48,16 @@
 
 <div class="textContainer">
 	<h4 class="query">{query}</h4>
+	
 	<StyledModelAnswer htmlContent={answer} />
+	
 	{#if options}
 		{#if !isGeneratingImage}
 			<div style="display: flex; flex-wrap: wrap;">
-				<button
+				{#if model}
+				<span>{model}</span>
+				{/if}
+				<!-- <button
 					class="tertiaryButton"
 					onclick={async () => {
 						const url = await generateImage();
@@ -63,7 +68,7 @@
 							`${$page.url.origin}/api/user/update-credits`
 						);
 					}}>Create an image with this text</button
-				>
+				> -->
 				<button
 					class="tertiaryButton"
 					onclick={async () => {
@@ -96,5 +101,11 @@
 	}
 	details {
 		border-bottom: 1px solid #1a1a1a20;
+	}
+	span{
+		font-size: 1rem;
+		padding: 10px;
+		border-radius: 10px;
+		background-color: hsl(0, 0%, 93%);
 	}
 </style>
