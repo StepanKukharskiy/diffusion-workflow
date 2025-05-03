@@ -155,7 +155,7 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
                     reasoning: {},
                     tools: [],
                     temperature: 1,
-                    max_output_tokens: 2048,
+                    max_output_tokens: 16384,
                     top_p: 1,
                     store: true
                 });
