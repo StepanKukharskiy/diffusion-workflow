@@ -14,7 +14,7 @@
 	import { page } from '$app/stores';
 	import { generateUUID } from './utils';
 
-	let { textarea } = $props();
+	// let { textarea } = $props();
 
 	let tutorialsList: any,
 		tutorialsListData: any = $state(''),
@@ -88,7 +88,7 @@ ${step.text}
 	}
 </script>
 
-<div class="container" transition:slide style="height: calc({$height}px - {textarea} - 125px);">
+<div class="container" transition:slide style='left: {$width > 1200 ? ($width-1200)/2-10+'px' : '0px'}'>
 	<div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
 		<h2>Tutorials</h2>
 		<button
@@ -146,8 +146,11 @@ ${step.text}
 
 <style>
 	.container {
-		width: 100%;
-		max-width: 800px;
+		position: absolute;
+		width: calc(100% - 20px);
+		max-width: 1200px;
+		height: 100%;
+		max-height: calc(100svh - 20px);
 		padding: 10px;
 		box-sizing: border-box;
 		display: flex;
@@ -157,7 +160,9 @@ ${step.text}
 		-webkit-backdrop-filter: blur(25px);
 		border-radius: 10px;
 		box-shadow: 0 0 10px hsl(0, 0%, 70%);
+		margin: 10px;
 		margin-bottom: 0px;
+		z-index: 500;
 	}
 	.wrapper {
 		overflow-y: auto;

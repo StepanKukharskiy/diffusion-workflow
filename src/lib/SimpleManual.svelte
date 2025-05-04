@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
 	import SimpleTextCard from './SimpleTextCard.svelte';
-	import { height, manual, apps, templates, tutorials } from './store';
+	import { width, height, manual, apps, templates, tutorials } from './store';
 
-	let { textarea } = $props();
+	// let { textarea } = $props();
 </script>
 
-<div class="hint" transition:slide style="height: calc({$height}px - {textarea} - 130px);">
+<div class="hint" transition:slide style='left: {$width > 1200 ? ($width-1200)/2-10+'px' : '0px'}'>
 	<div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
 		<h2>Tips</h2>
 		<button
@@ -235,8 +235,11 @@
 
 <style>
 	.hint {
-		width: 100%;
-		max-width: 800px;
+		position: absolute;
+		width: calc(100% - 20px);
+		max-width: 1200px;
+		height: 100%;
+		max-height: calc(100svh - 20px);
 		padding: 10px;
 		box-sizing: border-box;
 		display: flex;
@@ -246,8 +249,9 @@
 		-webkit-backdrop-filter: blur(25px);
 		border-radius: 10px;
 		box-shadow: 0 0 10px hsl(0, 0%, 70%);
+		margin: 10px;
 		margin-bottom: 0px;
-		z-index: 5;
+		z-index: 500;
 	}
 	.hintsWrapper {
 		overflow-y: auto;

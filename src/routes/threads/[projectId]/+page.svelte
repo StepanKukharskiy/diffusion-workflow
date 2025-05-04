@@ -10,7 +10,10 @@
 		user,
 		isSavingThread,
 		templates,
-		loginPanelState
+		loginPanelState,
+		manual,
+		apps,
+		tutorials
 	} from '$lib/store';
 	import { arrayToJSModule, generateUUID, initialCodeFiles } from '$lib/utils';
 	import { page } from '$app/stores';
@@ -37,6 +40,10 @@
 	import SimpleMap from '$lib/SimpleMap.svelte';
 	import SimpleCritique from '$lib/SimpleCritique.svelte';
 	import SimpleP5SketchWithDrag from '$lib/SimpleP5SketchWithDrag.svelte';
+	import SimpleManual from '$lib/SimpleManual.svelte';
+	import SimpleTemplates from '$lib/SimpleTemplates.svelte';
+	import SimpleApps from '$lib/SimpleApps.svelte';
+	import SimpleTutorials from '$lib/SimpleTutorials.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -188,7 +195,11 @@
 						/>
 					{:else if element.type === 'sketch'}
 						<!-- <SimpleP5Sketch uuid={element.uuid} imageUrl={element.imageUrl} options={showOptions} /> -->
-						<SimpleP5SketchWithDrag uuid={element.uuid} imageUrl={element.imageUrl} options={showOptions} />
+						<SimpleP5SketchWithDrag
+							uuid={element.uuid}
+							imageUrl={element.imageUrl}
+							options={showOptions}
+						/>
 					{:else if element.type === 'code'}
 						<SimpleCodeProject
 							files={element.files}
@@ -202,12 +213,17 @@
 					{:else if element.type === 'map'}
 						<SimpleMap uuid={element.uuid} options={showOptions} />
 					{:else if element.type === 'critique'}
-					<SimpleCritique uuid={element.uuid} referenceImageUrl={element.referenceImageUrl} answer={element.answer} options={showOptions} />
+						<SimpleCritique
+							uuid={element.uuid}
+							referenceImageUrl={element.referenceImageUrl}
+							answer={element.answer}
+							options={showOptions}
+						/>
 					{/if}
 				{/each}
 
 				{#if showOptions && $elements.length < 55}
-					<div style="width: 100%; max-width: 800px; display: flex; flex-wrap: wrap;">
+					<!-- <div style="width: 100%; max-width: 800px; display: flex; flex-wrap: wrap;">
 						<div
 							class="descriptionButton"
 							style="width: fit-content; max-width: 800px; display: flex; align-items: center; flex-wrap: wrap; margin-right: 10px;"
@@ -306,20 +322,20 @@
 								}}>Add a map</button
 							>
 						</div>
-					</div>
+					</div> -->
 					<div
 						class="descriptionButton"
 						style="width: 100%; max-width: 800px; display: flex; flex-direction: column; flex-wrap: wrap;"
 					>
 						<p style="margin: 0;">
-							Or continue with a prompt, upload an image or .glb file, click 'Tips' for more.
+							Continue with a prompt, upload an image, a 3D model, or click 'Tips' for more.
 						</p>
-						<ul>
+						<!-- <ul>
 							<li>For images, start with 'An image of'.</li>
 							<li>Use reference images to control the composition.</li>
 							<li>For videos, start with 'A video of'.</li>
 							<li>For 3D models, provide a reference image and type 'Make this a 3D model'.</li>
-						</ul>
+						</ul> -->
 					</div>
 				{/if}
 
@@ -353,6 +369,22 @@
 				<AppsPanel />
 			</div>
 		{/if}
+
+		{#if $manual}
+			<SimpleManual />
+		{/if}
+		
+{#if $tutorials}
+	<SimpleTutorials />
+{/if}
+
+{#if $templates}
+	<SimpleTemplates />
+{/if}
+
+{#if $apps}
+	<SimpleApps />
+{/if}
 	</div>
 {:else}
 	<div

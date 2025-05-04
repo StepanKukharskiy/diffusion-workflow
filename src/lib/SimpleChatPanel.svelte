@@ -25,7 +25,7 @@
 	import SimpleTemplates from './SimpleTemplates.svelte';
 	import SimpleApps from './SimpleApps.svelte';
 
-	let textarea: HTMLTextAreaElement,
+	let textarea: HTMLTextAreaElement = $state(),
 		isGenerating = $state(false),
 		systemPrompt = $state('You are a helpful assistant'),
 		query = $state(''),
@@ -187,8 +187,24 @@
 				modelUrl: url
 			});
 		}
+		if(type == 'sketch') {
+			elements.push({
+			uuid: generateUUID(),
+			type: 'sketch',
+			imageUrl: ''
+		});
+		}
+		if(type === 'map'){
+			elements.push({
+				uuid: generateUUID(),
+				type: type,
+				systemPrompt: '',
+				query: ''
+			});
+		}
 		console.log(elements);
 	}
+
 
 	function triggerCommands() {
 		if (query === '?') {
@@ -259,7 +275,7 @@
   }
 </script>
 
-{#if $manual}
+<!-- {#if $manual}
 	<SimpleManual textarea={textarea.style.height} />
 {/if}
 
@@ -273,7 +289,7 @@
 
 {#if $apps}
 	<SimpleApps textarea={textarea.style.height} />
-{/if}
+{/if} -->
 
 <div class="chatPanelContainer">
 	<div class='inputArea'>
@@ -286,18 +302,18 @@
 			}
 			$manual = true;
 		}}
-		>Tips &nbsp;<svg
-			xmlns="http://www.w3.org/2000/svg"
-			width="20"
-			height="20"
-			viewBox="0 0 17 16"
-			fill="none"
-			stroke="currentColor"
-		>
-			<path
-				d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6zm3 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1-.5-.5z"
-			/>
-		</svg></button
+		><svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="20"
+		height="20"
+		viewBox="0 0 17 16"
+		fill="none"
+		stroke="currentColor"
+	>
+		<path
+			d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6zm3 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1-.5-.5z"
+		/>
+	</svg>&nbsp; Tips</button
 	>
 	{#if $referenceImageUrl}
 		<button
@@ -334,18 +350,9 @@
 			handleInput(e)
 		}}
 		placeholder={$referenceImageUrl
-			? 'Type questions or prompts for images, videos, and 3d models using the reference image.'
-			: `Type "?" for manual. Type questions or prompts for images, SVGs, videos, and 3d models.`}
+			? 'Type questions or prompts...'
+			: `Type questions or prompts...`}
 	></textarea>
-	<!-- <textarea
-    id="textarea"
-    bind:this={textarea}
-    oninput={handleInput}
-    onkeydown={handleKeydown}
-    placeholder={$referenceImageUrl
-      ? 'Type questions or prompts for images…'
-      : `Type "?" for manual…`}
-  ></textarea> -->
 	{#if isGenerating || uploadingFile}
 		<div
 			style="width: 40px; height: 40px; disply: flex; justify-content: center; align-items: center;"
@@ -396,25 +403,35 @@
 	{/if}
 </div>
 
-<!-- <div class="suggestions">
-	<p style='margin: 0;'>Start with:</p>
-	<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'How do I'}}>How do I...</button>
-	<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'An image of'}}>An image of...</button>
-	<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'A video of'}}>A video of...</button>
-	{#if $referenceImageUrl === ''}
-		<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'An icon for'}}>An icon for...</button>
-	{:else}
-		<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'Make it a 3D model'}}>Make it a 3D model</button>
-	{/if}
-</div> -->
+<div class='actions'>
+	<button class='secondaryButton' onclick={() => {
+		addElement($elements, 'sketch', '', '', '');
+		$elements = $elements;
+	}}>
+		Sketch
+	</button>
+	<button class='secondaryButton' onclick={() => {
+		$templates = true;
+	}}>
+		Code
+	</button>
+	<button class='secondaryButton' onclick={() => {
+		addElement($elements, 'map');
+		$elements = $elements;
+	}}>
+		Map
+	</button>
+
 {#if $width > 700}
-<div class='hint'><p>Use <span>Enter</span> to submit, <span>Shift + Enter</span> for a new line</p></div>
+<div class='hint'>
+	<p>Use <span>Enter</span> to submit, <span>Shift + Enter</span> for a new line</p></div>
 	{/if}
+</div>
 </div>
 
 
 {#if showHintPanel}
-	<div class="hintPanel" style="bottom: calc({textarea.style.height} + 40px);" transition:slide>
+	<div class="hintPanel" style="bottom: calc({textarea.style.height} + 80px);" transition:slide>
 		<div class="hintsWrapper">
 			{#each suggestions as suggestion}
 				<button
@@ -446,7 +463,7 @@
 		background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25));
 		backdrop-filter: blur(40px);
 		-webkit-backdrop-filter: blur(25px);
-		border-radius: 10px;
+		border-radius: 20px;
 		box-shadow: 0 0 10px hsl(0, 0%, 70%);
 	}
 	.inputArea {
@@ -456,8 +473,21 @@
 		justify-content: center;
 		align-items: flex-end;
 	}
-	.hint{
+	.actions{
 		width: 100%;
+		display: flex;
+		align-items: flex-end;
+		flex-wrap: wrap;
+		padding: 10px 0 0 0;
+		box-sizing: border-box;
+	}
+	.actions button{
+		padding: 5px;
+		margin-right: 10px;
+		border-color: hsl(0, 0%, 70%);
+	}
+	.hint{
+		flex-grow: 1;
 		box-sizing: border-box;
 		display: flex;
 		justify-content: end;
@@ -478,7 +508,7 @@
 	}
 	textarea {
 		border: none;
-		border-radius: 0;
+		border-radius: 10px;
 		border-bottom: 1px solid hsl(0, 0%, 90%);
 		background: none;
 		background-color: hsla(0, 0%, 0%, 0.05);
@@ -504,11 +534,12 @@
 		position: absolute;
 		border-radius: 10px 10px 0 0;
 		border-bottom: none;
-		right: 10px;
-		top: -34px;
+		right: 20px; 
+		top: -34px; 
 		box-sizing: border-box;
 		z-index: -1;
 	}
+
 	.hintPanel {
 		position: absolute;
 		width: 100%;
@@ -520,11 +551,12 @@
 		background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25));
 		backdrop-filter: blur(40px);
 		-webkit-backdrop-filter: blur(25px);
-		border-radius: 10px;
+		border-radius: 20px;
 		box-shadow: 0 0 10px hsl(0, 0%, 70%);
 		z-index: 10;
 	}
 	.hintsWrapper {
 		background-color: hsl(0, 0%, 95%);
+		border-radius: 10px;
 	}
 </style>
