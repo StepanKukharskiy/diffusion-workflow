@@ -164,8 +164,8 @@
 					$visionModel = e.target.innerText;
 				}}
 			>
-				<span class={$visionModel === 'llama3.2-90b' ? 'black-dot' : 'transparent-dot'}></span>
-				llama3.2-90b</button
+				<span class={$visionModel === 'gpt-4o' ? 'black-dot' : 'transparent-dot'}></span>
+				gpt-4o</button
 			>
 		</div>
 		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">

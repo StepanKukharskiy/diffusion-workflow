@@ -47,42 +47,51 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
         }
 
         if (image != '') {
-            selectedModel = "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo"
+            selectedModel = "gpt-4o"
 
-            const response = await together.chat.completions.create({
-                messages: [
+
+
+            const response = await openai.responses.create({
+                model: "gpt-4o",
+                input: [
                     {
                         "role": "system",
-                        "content": `${systemPrompt} Here is the context: ${context}`
+                        "content": [
+                            {
+                                "type": "input_text",
+                                "text": `${systemPrompt}  Here is the context: ${context}`
+                            }
+                        ]
                     },
                     {
                         "role": "user",
                         "content": [
                             {
-                                "type": "text",
-                                "text": query
+                                "type": "input_text",
+                                "text": `${query}`
                             },
                             {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": image
-                                }
+                                "type": "input_image",
+                                "image_url": `${image}`
                             }
                         ]
                     },
                 ],
-                model: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
-                max_tokens: 2048,
-                temperature: 0.7,
-                top_p: 0.7,
-                top_k: 50,
-                repetition_penalty: 1,
-                stop: ["<|eot_id|>", "<|eom_id|>"],
-                stream: false
+                text: {
+                    "format": {
+                        "type": "text"
+                    }
+                },
+                reasoning: {},
+                tools: [],
+                temperature: 1,
+                max_output_tokens: 16384,
+                top_p: 1,
+                store: true
             });
-            console.log(image)
+            console.log(response.output[0].content[0].text)
+            return response.output[0].content[0].text
 
-            return response.choices[0].message.content
         } else {
             if (selectedModel != 'gpt-4o') {
                 const response = await together.chat.completions.create({
@@ -90,7 +99,8 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
                         {
                             role: "system",
                             content: `${systemPrompt} Here is the context: ${context}`
-                        }, {
+                        },
+                        {
                             role: "user",
                             content: `${query}`
                         }
@@ -102,29 +112,6 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
 
                 return response.choices[0].message.content
             } else {
-                // let response: any = ''
-                // const completion = openai.chat.completions.create({
-                //     model: "gpt-4o-mini",
-                //     store: true,
-                //     messages: [
-                //         {
-                //             "role": "system",
-                //             "content": `${systemPrompt} Here is the context: ${context}`
-                //         },
-                //         { "role": "user", "content": `${query}` },
-                //     ],
-                // });
-                // completion.then((result) => {
-                //     response = result.choices[0].message
-                //     // console.log(completion)
-
-
-                // })
-                // console.log(`chat: ${response.content}`)
-                // return response.content
-
-
-
                 const response = await openai.responses.create({
                     model: "gpt-4o",
                     input: [
