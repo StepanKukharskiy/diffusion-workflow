@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import {  createEventDispatcher, onMount } from 'svelte';
 	let p5;
 	export let sketch;
 	let appCanvas: any;

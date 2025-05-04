@@ -36,6 +36,7 @@
 	import SimpleP5Sketch from '$lib/SimpleP5Sketch.svelte';
 	import SimpleMap from '$lib/SimpleMap.svelte';
 	import SimpleCritique from '$lib/SimpleCritique.svelte';
+	import SimpleP5SketchWithDrag from '$lib/SimpleP5SketchWithDrag.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -155,6 +156,8 @@
 		<div class="container" style="width: {discussionWidth}">
 			<h1 style="margin-top: 80px;">{name}</h1>
 
+			<!-- <SimpleP5SketchWithDrag uuid={2} options={true}/> -->
+
 			<div class={layout}>
 				{#each $elements as element}
 					{#if element.type === 'text'}
@@ -184,7 +187,8 @@
 							options={showOptions}
 						/>
 					{:else if element.type === 'sketch'}
-						<SimpleP5Sketch uuid={element.uuid} imageUrl={element.imageUrl} options={showOptions} />
+						<!-- <SimpleP5Sketch uuid={element.uuid} imageUrl={element.imageUrl} options={showOptions} /> -->
+						<SimpleP5SketchWithDrag uuid={element.uuid} imageUrl={element.imageUrl} options={showOptions} />
 					{:else if element.type === 'code'}
 						<SimpleCodeProject
 							files={element.files}
