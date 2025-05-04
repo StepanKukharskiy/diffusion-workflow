@@ -3,6 +3,7 @@
 	import SimpleManual from './SimpleManual.svelte';
 	import SimpleTextCard from './SimpleTextCard.svelte';
 	import {
+		width,
 		elements,
 		user,
 		referenceImageUrl,
@@ -24,7 +25,7 @@
 	import SimpleTemplates from './SimpleTemplates.svelte';
 	import SimpleApps from './SimpleApps.svelte';
 
-	let textarea: any = $state(),
+	let textarea: HTMLTextAreaElement,
 		isGenerating = $state(false),
 		systemPrompt = $state('You are a helpful assistant'),
 		query = $state(''),
@@ -212,6 +213,50 @@
 		textarea.style.height = '40px';
 		//updateTextareaHeight();
 	});
+
+	async function handleSubmit() {
+    if (!query.trim()) return;
+    const response = await getResponse({
+      model: $chatModel,
+      systemPrompt: systemPrompt,
+      query
+    });
+    addElement($elements, response.type, query, response.generatedText, response.url);
+    // force Svelte reactivity on elements:
+    $elements = $elements;
+    updateTextareaHeight();
+    user.requests = await updateCredits(
+      response.type,
+      `${$page.url.origin}/api/user/update-credits`
+    );
+  }
+
+  // Intercept Enter in the textarea:
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();  // don’t insert newline
+      handleSubmit();
+    }
+    // if Shift+Enter, we do nothing special → newline is inserted
+  }
+
+  // Keep your on:input logic the same but extracted:
+  function handleInput(e: InputEvent) {
+    query = (e.target as HTMLTextAreaElement).value;
+
+    triggerCommands();
+
+    if (query.length > 0) {
+      suggestions = commands.filter(cmd =>
+        cmd.startsWith(query.toLowerCase())
+      );
+      showHintPanel = suggestions.length > 0;
+    } else {
+      showHintPanel = false;
+    }
+
+    updateTextareaHeight();
+  }
 </script>
 
 {#if $manual}
@@ -284,25 +329,23 @@
 	{/if}
 	<textarea
 		id="textarea"
+		onkeydown={handleKeydown}
 		oninput={(e: any) => {
-			query = e.target.value;
-			if (textarea === undefined) {
-				textarea = document.getElementById('textarea');
-			}
-			triggerCommands();
-			// Filter commands based on the current query
-			if (query.length > 0) {
-				suggestions = commands.filter((command) => command.startsWith(query.toLowerCase()));
-				showHintPanel = suggestions.length > 0;
-			} else {
-				showHintPanel = false;
-			}
-			updateTextareaHeight();
+			handleInput(e)
 		}}
 		placeholder={$referenceImageUrl
 			? 'Type questions or prompts for images, videos, and 3d models using the reference image.'
 			: `Type "?" for manual. Type questions or prompts for images, SVGs, videos, and 3d models.`}
 	></textarea>
+	<!-- <textarea
+    id="textarea"
+    bind:this={textarea}
+    oninput={handleInput}
+    onkeydown={handleKeydown}
+    placeholder={$referenceImageUrl
+      ? 'Type questions or prompts for images…'
+      : `Type "?" for manual…`}
+  ></textarea> -->
 	{#if isGenerating || uploadingFile}
 		<div
 			style="width: 40px; height: 40px; disply: flex; justify-content: center; align-items: center;"
@@ -346,21 +389,7 @@
 			id="magicButton"
 			class="primaryButton"
 			disabled={query === '' ? true : false}
-			onclick={async () => {
-				console.log($chatModel);
-				const response = await getResponse({
-					model: $chatModel,
-					systemPrompt: systemPrompt,
-					query: query
-				});
-				addElement($elements, response.type, query, response.generatedText, response.url);
-				$elements = $elements;
-				updateTextareaHeight();
-				$user.requests = await updateCredits(
-					response.type,
-					`${$page.url.origin}/api/user/update-credits`
-				);
-			}}
+			onclick={handleSubmit}
 		>
 			Go
 		</button>
@@ -378,7 +407,9 @@
 		<button class="tertiaryButton" style='padding-bottom: 0;' onclick={()=>{textarea.value = query = 'Make it a 3D model'}}>Make it a 3D model</button>
 	{/if}
 </div> -->
-	
+{#if $width > 700}
+<div class='hint'><p>Use <span>Enter</span> to submit, <span>Shift + Enter</span> for a new line</p></div>
+	{/if}
 </div>
 
 
@@ -425,13 +456,25 @@
 		justify-content: center;
 		align-items: flex-end;
 	}
-	.suggestions{
+	.hint{
 		width: 100%;
 		box-sizing: border-box;
 		display: flex;
-		/* justify-content: center; */
+		justify-content: end;
 		align-items: flex-end;
 		flex-wrap: wrap;
+		padding: 10px 0 0 0;
+		box-sizing: border-box;
+	}
+	.hint p{
+		align-self: end;
+		font-size: 0.9rem;
+		margin: 0;
+		box-sizing: border-box;
+	}
+	.hint span{
+		font-weight: bold;
+		box-sizing: border-box;
 	}
 	textarea {
 		border: none;
