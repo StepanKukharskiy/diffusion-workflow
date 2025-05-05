@@ -49,6 +49,21 @@ export async function imageResponse(model = '', query = '', referenceComposition
                     response = {
                         imageUrl: imageUrl
                     }
+                } else if (model === 'brick-style') {
+                    console.log('using brick-style model')
+                    const input = {
+                        steps: 50,
+                        prompt: `BRCK ${query}`,
+                        guidance: 45,
+                        output_format: "jpg",
+                        safety_tolerance: 2,
+                        prompt_upsampling: false
+                    }
+                    const [output] = await replicate.run("stepankukharskiy/crtd-brck-1:11eca3a95e509b451f17df3a57ab815374df7a734653466d5e3213cc7b2dac0e", { input });
+                    const imageUrl = output.url().href;
+                    response = {
+                        imageUrl: imageUrl
+                    }
                 } else if (model === 'flux-crmcs') {
                     console.log('using crmcs model')
                     const input = {
