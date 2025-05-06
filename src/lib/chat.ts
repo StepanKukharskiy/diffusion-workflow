@@ -83,14 +83,23 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
                     }
                 },
                 reasoning: {},
-                tools: [],
+                tools: [
+                    {
+                        "type": "web_search_preview",
+                        "user_location": {
+                            "type": "approximate",
+                            "country": "US"
+                        },
+                        "search_context_size": "medium"
+                    }
+                ],
                 temperature: 1,
                 max_output_tokens: 16384,
                 top_p: 1,
                 store: true
             });
-            console.log(response.output[0].content[0].text)
-            return response.output[0].content[0].text
+            //console.log(response.output[0].content[0].text)
+            return response.output_text
 
         } else {
             if (selectedModel != 'gpt-4o') {
@@ -140,14 +149,24 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
                         }
                     },
                     reasoning: {},
-                    tools: [],
+                    tools: [
+                        {
+                            "type": "web_search_preview",
+                            "user_location": {
+                                "type": "approximate",
+                                "country": "US"
+                            },
+                            "search_context_size": "medium"
+                        }
+                    ],
                     temperature: 1,
                     max_output_tokens: 16384,
                     top_p: 1,
                     store: true
                 });
-                console.log(response.output[0].content[0].text)
-                return response.output[0].content[0].text
+                console.log(response.output_text)
+                //console.log(response.output[0].content[0].text)
+                return response.output_text
             }
         }
 

@@ -241,7 +241,7 @@
     // force Svelte reactivity on elements:
     $elements = $elements;
     updateTextareaHeight();
-    user.requests = await updateCredits(
+    $user.requests = await updateCredits(
       response.type,
       `${$page.url.origin}/api/user/update-credits`
     );
