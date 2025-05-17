@@ -51,6 +51,10 @@
 			if (element.type === 'text') {
 				context.push(element.answer);
 			}
+			if (element.type === 'research') {
+				console.log(element.answer.choices[0].message.content)
+				context.push(element.answer.choices[0].message.content);
+			}
 			if (element.type === 'code') {
 				for (let file of element.files) {
 					context.push(
@@ -202,6 +206,16 @@
 				query: ''
 			});
 		}
+		if(type === 'research'){
+			elements.push({
+				uuid: generateUUID(),
+				type: type,
+				systemPrompt: '',
+				query: query,
+				answer: answer,
+				model: 'sonar'
+			});
+		}
 		console.log(elements);
 	}
 
@@ -235,7 +249,7 @@
     const response = await getResponse({
       model: $chatModel,
       systemPrompt: systemPrompt,
-      query
+      query: query
     });
     addElement($elements, response.type, query, response.generatedText, response.url);
     // force Svelte reactivity on elements:

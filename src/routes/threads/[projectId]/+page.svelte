@@ -44,6 +44,7 @@
 	import SimpleTemplates from '$lib/SimpleTemplates.svelte';
 	import SimpleApps from '$lib/SimpleApps.svelte';
 	import SimpleTutorials from '$lib/SimpleTutorials.svelte';
+	import SimpleResearch from '$lib/SimpleResearch.svelte';
 
 	let isCreateOptionsVisible = $state(false);
 	let createButton: any;
@@ -216,6 +217,14 @@
 						<SimpleCritique
 							uuid={element.uuid}
 							referenceImageUrl={element.referenceImageUrl}
+							answer={element.answer}
+							options={showOptions}
+						/>
+					{:else if element.type === 'research'}
+						<SimpleResearch
+							uuid={element.uuid}
+							query={element.query}
+							model={element.model}
 							answer={element.answer}
 							options={showOptions}
 						/>

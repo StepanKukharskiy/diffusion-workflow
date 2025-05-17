@@ -9,6 +9,7 @@ import { modelResponse } from "$lib/model";
 import { interpolationResponse } from "$lib/interpolate";
 import { extractFrames } from "$lib/framesExtractor";
 import { agentResponse } from "$lib/agent";
+import { getResearchData } from "$lib/research";
 
 const together = new Together({ apiKey: TOGETHER_API_TOKEN });
 
@@ -29,6 +30,7 @@ export async function POST({ request, locals }) {
         if(locals.user.requests > 0){
         let response
         let requestType = await analyseRequest(query.query)
+        console.log(requestType)
         if(requestType === undefined){
             requestType = 'chat'
         }
@@ -174,6 +176,22 @@ export async function POST({ request, locals }) {
             response = {
                 type: 'model',
                 url: generatedModelFileUrl
+            }
+            console.log(response)
+        }
+
+        if (requestType?.trim() === 'research') {
+            console.log('getting research agent response')
+            const model = 'sonar'
+            const researchResponseData = await getResearchData(query.query)
+            console.log(query.referenceImage)
+            console.log(`response from research: ${researchResponseData}`)
+
+            response = {
+                type: 'research',
+                query: query.query,
+                generatedText: researchResponseData,
+                model: model
             }
             console.log(response)
         }

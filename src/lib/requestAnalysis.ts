@@ -18,7 +18,7 @@ export async function analyseRequest(query = '') {
                     content: `Analyze the following request. 
                     It may contain URLs. Ignore them.
 
-                    If it is a question or requires a text output respond 'chat'.
+                    If it is a question or requires a text output, and DOES NOT MENTION A RESEARCH, respond 'chat'.
 
                     If it starts with 'an image', 'I need an image', 'Upscale', or similar words respond 'image'.
                     
@@ -27,6 +27,8 @@ export async function analyseRequest(query = '') {
                     If it starts with 'an icon', 'I need an icon', 'a vector illustration', 'I need a vector illustration', or similar words respond 'vector'.
 
                     If it starts with 'a model', 'I need a 3d model', or similar words respond 'model'.
+
+                    If it starts with 'a research', 'I need a research', or similar words respond 'research'.
 
                     If it starts with 'interpolate', 'I need to interpolate', or similar words respond 'interpolation'.
                     
@@ -48,7 +50,7 @@ export async function analyseRequest(query = '') {
         });
 
         const responseOutcome = response.choices[0].message.content.toLowerCase()
-        if(responseOutcome.trim() === 'chat' || responseOutcome.trim() === 'image' || responseOutcome.trim() === 'video' || responseOutcome.trim() === 'vector' || responseOutcome.trim() === 'model' || responseOutcome.trim() === 'interpolation'){
+        if(responseOutcome.trim() === 'chat' || responseOutcome.trim() === 'image' || responseOutcome.trim() === 'video' || responseOutcome.trim() === 'vector' || responseOutcome.trim() === 'model' || responseOutcome.trim() === 'research' || responseOutcome.trim() === 'interpolation'){
           return responseOutcome   
         } else {
             console.log('trying again')
@@ -60,7 +62,7 @@ export async function analyseRequest(query = '') {
                         content: `You are givivng the wrong reponse. ANSWER WITH A SINGLE WORD! Analyze the following request one more time. 
                         It may contain URLs. Ignore them.
     
-                        If it is a question or requires a text output respond 'chat'.
+                        If it is a question or requires a text output, and DOES NOT MENTION A RESEARCH, respond 'chat'.
     
                         If it starts with 'an image', 'I need an image', or similar words respond 'image'.
                         
@@ -69,6 +71,8 @@ export async function analyseRequest(query = '') {
                         If it starts with 'an icon', 'I need an icon', 'a vector illustration', 'I need a vector illustration', or similar words respond 'vector'.
     
                         If it starts with 'a model', 'I need a 3d model', or similar words respond 'model'.
+
+                        If it starts with 'a research', 'I need a research', or similar words respond 'research'.
     
                         If it starts with 'interpolate', 'I need to interpolate', or similar words respond 'interpolation'.
                         
