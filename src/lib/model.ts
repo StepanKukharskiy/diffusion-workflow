@@ -30,7 +30,7 @@ export async function modelResponse(model = '', query = '', imagesUrls = []) {
 
 
 
-                const output = await replicate.run("firtoz/trellis:4876f2a8da1c544772dffa32e8889da4a1bab3a1f5c1937bfcfccb99ae347251", { input });
+                const output = await replicate.run("firtoz/trellis:e8f6c45206993f297372f5436b90350817bd9b4a0d52d2a76df50c1c8afa2b3c", { input });
                 console.log(output.model_file.url().href)
                 response = {
                     modelUrl: output.model_file.url().href
