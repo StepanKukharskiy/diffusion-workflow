@@ -51,12 +51,13 @@
 				</a>
 
 				<div class="desktopMenu">
-					<button
+					<!-- <button
 						class="tertiaryButton"
 						onclick={() => {
 							window.open('/threads', '_self');
 						}}>Threads</button
-					>
+					> -->
+						<a href='/threads' class='tertiaryButton'>Threads</a>
 					{#if $user}
 						{#if !isLoggingOut}
 							<button

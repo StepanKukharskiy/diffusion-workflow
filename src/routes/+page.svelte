@@ -243,13 +243,14 @@
 				<!-- Figure Out Perfect Solutions with Ease
 Finding the ideal concept can be a lengthy process that requires multiple iterations. Complex creative software often slows you down when you need to move quickly.
 With our workspace, grasp your ideas instantly, explore multiple directions, and iterate on any device—no barriers, just creativity. -->
-				<button
+				<!-- <button
 					class="primaryButton"
 					style='margin-top: 10px;'
 					onclick={() => {
 						window.open('/threads', '_self');
 					}}>Get started - it's free</button
-				>
+				> -->
+				<a href='/threads' class="primaryButton" style='margin-top: 10px;'>Get started - it's free</a>
 			</div>
 			<div class="sketchWrapper" style="filter: blur(20px) hue-rotate({hueRotation}deg);">
 				<!-- Use the P5wrapper component and pass the sketch function -->
@@ -447,12 +448,13 @@ With our workspace, grasp your ideas instantly, explore multiple directions, and
 		<div class="section" style="min-height: 50vh; justify-content: center;">
 			<h2 class="secondaryHeading">The perfect UI to create with AI</h2>
 			<p>Stay in your creative flow with no complex setups or controls.</p>
-			<button
+			<!-- <button
 				class="primaryButton"
 				onclick={() => {
 					window.open('/threads', '_self');
 				}}>Get started - it's free</button
-			>
+			> -->
+			<a href='/threads' class="primaryButton">Get started - it's free</a>
 		</div>
 
 		<!-- <div class="section">

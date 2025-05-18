@@ -16,7 +16,7 @@
 {#if $navigating}
 	<div class="loaderContainer">
 		<div style="display: flex; align-items: center;">
-			<p class="loaderText" style="margin-right: 10px;">Loading...</p>
+			<!-- <p class="loaderText" style="margin-right: 10px;">Loading...</p> -->
 			<div class="loader"></div>
 		</div>
 	</div>

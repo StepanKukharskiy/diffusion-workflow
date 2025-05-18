@@ -1,6 +1,6 @@
-export async function load ({ locals }) {
+// export async function load ({ locals }) {
 
-    return {
-        user: locals.user
-      }
-}
+//     return {
+//         user: locals.user
+//       }
+// }

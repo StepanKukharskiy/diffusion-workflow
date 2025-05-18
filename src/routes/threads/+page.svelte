@@ -9,28 +9,40 @@
 	import SimpleThreadCard from '$lib/SimpleThreadCard.svelte';
 
 	let { data } = $props();
-	let isLoadingThreads: any = $state(),
+	let isLoadingThreads: any = $state(false),
 		createNewThread: any = $state(false),
 		isCreatingNewThread: any = $state(false),
 		isDeletingThread: any = $state(),
 		name: string = $state('');
 
-	onMount(async () => {
-		if (data.user != undefined) {
-			isLoadingThreads = true;
+	// onMount(async () => {
+	// 	if (data.user != undefined) {
+	// 		isLoadingThreads = true;
+	// 		$user = data.user;
+	// 		$threadsList = await getThreadsList();
+	// 	} else {
+	// 		$loginPanelState = true;
+	// 	}
+	// 	console.log(threadsList);
+	// });
+
+	async function loadData(){
+	if (data.user != undefined) {
+			//isLoadingThreads = true;
 			$user = data.user;
-			$threadsList = await getThreadsList();
+			$threadsList = data.threads;
 		} else {
 			$loginPanelState = true;
 		}
-		console.log(threadsList);
-	});
-
-	if (data.user != undefined) {
-		$user = data.user;
-	} else {
-		$loginPanelState = true;
+		//console.log(threadsList);
 	}
+	loadData()
+
+	// if (data.user != undefined) {
+	// 	$user = data.user;
+	// } else {
+	// 	$loginPanelState = true;
+	// }
 	console.log(data);
 
 	async function getThreadsList() {
@@ -60,12 +72,12 @@
 		isDeletingThread = false;
 	}
 
-	$effect(async function () {
-		if ($user) {
-			isLoadingThreads = true;
-			$threadsList = await getThreadsList();
-		}
-	});
+	// $effect(async function () {
+	// 	if ($user) {
+	// 		isLoadingThreads = true;
+	// 		$threadsList = await getThreadsList();
+	// 	}
+	// });
 </script>
 
 {#if $loginPanelState}
@@ -113,22 +125,7 @@
 				</div>
 			{:else if $threadsList != undefined && $threadsList.length > 0}
 				<p style="margin: 20px 0;">Things you've discussed before:</p>
-				<!-- <ul>
-					{#each threadsList as thread}
-						<li>
-							<div class="threadContainer">
-								<button
-									class="tertiaryButton"
-									style="padding-left: 0;"
-									onclick={() => {
-										goto(`/threads/${thread.id}`);
-									}}>{thread.name}</button
-								>
-								
-							</div>
-						</li>
-					{/each}
-				</ul> -->
+
 				{#each $threadsList as thread}
 					<SimpleThreadCard thread={{ name: thread.name, id: thread.id, updated: thread.updated }} />
 				{/each}

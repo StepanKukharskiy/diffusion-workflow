@@ -67,12 +67,13 @@
 						style="margin-left:: 10px; border-color: hsl({$textColor}) transparent;"
 					></div>
 				{:else}
-					<button
+					<!-- <button
 						class="tertiaryButton"
 						onclick={() => {
 							window.open(`/threads/${thread.id}`, '_self');
 						}}>Continue</button
-					>
+					> -->
+						<a href='/threads/{thread.id}' class='tertiaryButton'>Continue</a>
 					<button
 						class="tertiaryButton"
 						onclick={() => {
