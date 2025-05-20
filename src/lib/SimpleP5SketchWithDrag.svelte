@@ -135,19 +135,21 @@
 				});
 			}
 
-			// --- NEW: create a file‐input in the p5 canvas
-			fileInput = p.createFileInput(handleFile);
-			fileInput.attribute('accept', 'image/png');
-			fileInput.hide(); // hide the default input[1]
+			if (options) {
+				// --- NEW: create a file‐input in the p5 canvas
+				fileInput = p.createFileInput(handleFile);
+				fileInput.attribute('accept', 'image/png');
+				fileInput.hide(); // hide the default input[1]
 
-			// 2. Create a visible button
-			uploadButton = p.createButton('Add Image');
-			uploadButton.attribute('class', 'secondaryButton');
-			uploadButton.position(10, p.height + 10);
-			uploadButton.mousePressed(() => {
-				// trigger the hidden file-input
-				fileInput.elt.click();
-			});
+				// 2. Create a visible button
+				uploadButton = p.createButton('Add Image');
+				uploadButton.attribute('class', 'secondaryButton');
+				uploadButton.position(10, p.height + 10);
+				uploadButton.mousePressed(() => {
+					// trigger the hidden file-input
+					fileInput.elt.click();
+				});
+			}
 		};
 
 		// p.draw = () => {
