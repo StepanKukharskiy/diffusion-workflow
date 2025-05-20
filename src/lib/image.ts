@@ -1,5 +1,6 @@
 import Replicate from "replicate";
-import { REPLICATE_API_TOKEN } from '$env/static/private'
+import { fal } from "@fal-ai/client";
+import { REPLICATE_API_TOKEN, FAL_API_TOKEN } from '$env/static/private'
 import { analysePrompt } from "$lib/promptAnalysis";
 
 const replicate = new Replicate({
@@ -79,6 +80,35 @@ export async function imageResponse(model = '', query = '', referenceComposition
                     response = {
                         imageUrl: imageUrl
                     }
+                }
+            } else if (referenceCompositionImageUrl != '' && maskImageUrl === '' && model === 'brick-style') {
+                console.log('using brick-canny model')
+                const result = await fal.subscribe("fal-ai/flux-lora-canny", {
+                    input: {
+                      prompt: query,
+                      num_inference_steps: 28,
+                      guidance_scale: 30,
+                      num_images: 1,
+                      enable_safety_checker: true,
+                      output_format: "jpeg",
+                      image_url: referenceCompositionImageUrl,
+                      loras: [{
+                        path: "https://v3.fal.media/files/tiger/Pry2wwQHggjBSEKj64D-C_pytorch_lora_weights.safetensors",
+                        scale: 1.5
+                      }]
+                    },
+                    logs: true,
+                    onQueueUpdate: (update) => {
+                      if (update.status === "IN_PROGRESS") {
+                        update.logs.map((log) => log.message).forEach(console.log);
+                      }
+                    },
+                  });
+                  console.log(result.data);
+                  const imageUrl = result.data.images[0].url
+                // const imageUrl = output.url().href;
+                response = {
+                    imageUrl: imageUrl
                 }
             } else if (referenceCompositionImageUrl != '' && maskImageUrl === '' && model === 'flux-canny-pro') {
                 console.log('using canny model')

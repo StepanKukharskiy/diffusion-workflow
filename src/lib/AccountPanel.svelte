@@ -171,58 +171,81 @@
 		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
 			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">Image models</h3>
 			<button
-				class='tertiaryButton'
+				class="tertiaryButton"
 				onclick={(e: any) => {
 					$imageModel = e.target.innerText;
-				}}>
+				}}
+			>
 				<span class={$imageModel === 'flux-schnell' ? 'black-dot' : 'transparent-dot'}></span>
 				flux-schnell</button
 			>
 			<!-- flux-graphic-city -->
 			<button
-			class='tertiaryButton'
-			onclick={(e: any) => {
-				$imageModel = e.target.innerText;
-			}}>
-			<span class={$imageModel === 'flux-graphic-city' ? 'black-dot' : 'transparent-dot'}></span>
-			flux-graphic-city</button
-		>
-		<button
-			class='tertiaryButton'
-			onclick={(e: any) => {
-				$imageModel = e.target.innerText;
-			}}>
-			<span class={$imageModel === 'brick-style' ? 'black-dot' : 'transparent-dot'}></span>
-			brick-style</button
-		>
+				class="tertiaryButton"
+				onclick={(e: any) => {
+					$imageModel = e.target.innerText;
+				}}
+			>
+				<span class={$imageModel === 'flux-graphic-city' ? 'black-dot' : 'transparent-dot'}></span>
+				flux-graphic-city</button
+			>
+			<button
+				class="tertiaryButton"
+				onclick={(e: any) => {
+					$imageModel = e.target.innerText;
+				}}
+			>
+				<span class={$imageModel === 'brick-style' ? 'black-dot' : 'transparent-dot'}></span>
+				brick-style</button
+			>
 		</div>
 		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
 			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">
 				Image composition reference models
 			</h3>
 			<button
-				class='tertiaryButton'
+				class="tertiaryButton"
+				onclick={(e: any) => {
+					$imageModel = e.target.innerText;
+				}}
+			>
+				<span class={$imageCompositionReferenceModel === 'brick-style' ? 'black-dot' : 'transparent-dot'}></span>
+				brick-style</button
+			>
+			<button
+				class="tertiaryButton"
 				onclick={(e: any) => {
 					$imageCompositionReferenceModel = e.target.innerText;
-				}}>
-				<span class={$imageCompositionReferenceModel === 'flux-canny-pro' ? 'black-dot' : 'transparent-dot'}></span>
+				}}
+			>
+				<span
+					class={$imageCompositionReferenceModel === 'flux-canny-pro'
+						? 'black-dot'
+						: 'transparent-dot'}
+				></span>
 				flux-canny-pro</button
 			>
 			<button
-				class='tertiaryButton'
+				class="tertiaryButton"
 				onclick={(e: any) => {
 					$imageCompositionReferenceModel = e.target.innerText;
-				}}><span class={$imageCompositionReferenceModel === 'flux-depth-pro' ? 'black-dot' : 'transparent-dot'}></span>
+				}}
+				><span
+					class={$imageCompositionReferenceModel === 'flux-depth-pro'
+						? 'black-dot'
+						: 'transparent-dot'}
+				></span>
 				flux-depth-pro</button
 			>
 		</div>
 		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
 			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">Video models</h3>
 			<button
-				class='tertiaryButton'
+				class="tertiaryButton"
 				onclick={(e: any) => {
 					$videoModel = e.target.innerText;
-				}}>
+				}}
+			>
 				<span class={$videoModel === 'video-01' ? 'black-dot' : 'transparent-dot'}></span>
 				video-01</button
 			>
@@ -230,10 +253,11 @@
 		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
 			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">3D models</h3>
 			<button
-				class='tertiaryButton'
+				class="tertiaryButton"
 				onclick={(e: any) => {
 					$modelModel = e.target.innerText;
-				}}>
+				}}
+			>
 				<span class={$modelModel === 'trellis' ? 'black-dot' : 'transparent-dot'}></span>
 				trellis</button
 			>
@@ -241,15 +265,24 @@
 		<div class="item-wrapper" style="display: flex; flex-direction: column; align-items: start;">
 			<h3 class="tertiaryHeading" style="margin-bottom: 10px;">Frame interpolation models</h3>
 			<button
-				class='tertiaryButton'
+				class="tertiaryButton"
 				onclick={(e: any) => {
 					$frameInterpolationModel = e.target.innerText;
-				}}>
-				<span class={$frameInterpolationModel === 'amt-interpolation' ? 'black-dot' : 'transparent-dot'}></span>
+				}}
+			>
+				<span
+					class={$frameInterpolationModel === 'amt-interpolation' ? 'black-dot' : 'transparent-dot'}
+				></span>
 				amt-interpolation</button
 			>
 		</div>
-		<button class="tertiaryButton" onclick={()=>{logout(); $account = false;}}>Log Out</button>
+		<button
+			class="tertiaryButton"
+			onclick={() => {
+				logout();
+				$account = false;
+			}}>Log Out</button
+		>
 	</div>
 </div>
 
