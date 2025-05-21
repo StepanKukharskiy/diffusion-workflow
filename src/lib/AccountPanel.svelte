@@ -206,7 +206,7 @@
 			<button
 				class="tertiaryButton"
 				onclick={(e: any) => {
-					$imageModel = e.target.innerText;
+					$imageCompositionReferenceModel = e.target.innerText;
 				}}
 			>
 				<span class={$imageCompositionReferenceModel === 'brick-style' ? 'black-dot' : 'transparent-dot'}></span>
