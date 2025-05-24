@@ -48,7 +48,7 @@ function sketch(p) {
   // ——— main draw loop ———
   p.draw = () => {
     // semi-transparent background for trails
-    p.background(252, 15)
+    p.background(247, 15)
 
     for (let pt of particles) {
       pt.update()
@@ -157,5 +157,6 @@ new p5(sketch)
 		width: 100%;
 		max-width: 900px;
 		height: 100%;
+        mix-blend-mode: darken;
 	}
 </style>
