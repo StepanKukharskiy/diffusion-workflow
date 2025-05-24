@@ -16,7 +16,7 @@
                 <img src={kodiia_small} style="border-radius: 0" height="30" alt="logo" />
             </a>
             <div class="desktop-menu">
-                <button class="tertiaryButton" onclick={() => { window.open('/'); }}>About</button>
+                <a class="tertiaryButton" href='/about'>About</a>
                 <button class="tertiaryButton" onclick={() => { window.open('/'); }}>Docs</button>
                 <button class="tertiaryButton" onclick={() => { window.open('/'); }}>Pricing</button>
                 <button class="tertiaryButton" onclick={() => { window.open('/blog', "_self"); }}>Blog</button>
@@ -30,7 +30,7 @@
     </nav>
     {#if isMenuOpen}
             <div class="mobile-menu" transition:slide>
-                <button class="tertiaryButton" onclick={() => { window.open('/'); }}>About</button>
+                <a class="tertiaryButton" href='/about'>About</a>
                 <button class="tertiaryButton" onclick={() => { window.open('/'); }}>Docs</button>
                 <button class="tertiaryButton" onclick={() => { window.open('/'); }}>Pricing</button>
                 <button class="tertiaryButton" onclick={() => { window.open('/blog', "_self"); toggleMenu()}}>Blog</button>

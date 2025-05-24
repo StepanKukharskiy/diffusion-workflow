@@ -119,6 +119,8 @@ export async function chatResponse(model = '', query = '', systemPrompt = '', co
                     temperature: 0.7
                 });
 
+                console.log(`going with ${selectedModel}`)
+
                 return response.choices[0].message.content
             } else {
                 const response = await openai.responses.create({
