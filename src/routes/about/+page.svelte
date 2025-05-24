@@ -1,321 +1,161 @@
 <script lang="ts">
-	import P5wrapper from '$lib/P5wrapper.svelte';
-	import Footer from '$lib/Footer.svelte';
-	import { width, height } from '$lib/store';
 	import MainPageNavPanel from '$lib/MainPageNavPanel.svelte';
+	import Footer from '$lib/Footer.svelte';
+	import { width } from '$lib/store';
+	const text =
+		'We see future as a friendly co-creative space, where computational power blends with artistic vision to catalyze a cultural rebirth. AI is changing the way we create, together we create new digital aesthetics that is beyond optimising workflow or generating stunning images, it’s about shaping the future. We declare independence from software that limits complex creative workflows – the future belongs to those who build their own tools. We envision ourselves as the central media community for talents who design the future and collaborate for successful projects.';
+	const sketch = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.5/lib/p5.js"></\script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/addons/p5.sound.min.js"></\script>
+    <meta charset="utf-8" />
+    <style>
+    body{
+    margin: 0;
+    overflow: hidden;
+    }
+    </style>
+  </head>
+  <body>
+    <main>
+    </main>
+    <script>
+function sketch(p) {
+  let particles = []
+  let font
+  const fontSize = 18
+  const textData = '${text}'      // your multi‐line text here
+  let textArray = []
 
-	let hueRotation = $state(0);
+  // ——— preload the font ———
+  p.preload = () => {
+    font = p.loadFont(
+      'https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf'
+    )
+  }
 
-	
+  // ——— setup the canvas & initial layout ———
+  p.setup = () => {
+    p.createCanvas(p.windowWidth, p.windowHeight)
+    p.textFont(font)
+    p.textSize(fontSize)
 
-	// Define your sketch function
-	function sketch(p: any, appCanvas: any) {
-		class Particle {
-			constructor(p, x, y, char) {
-				this.p = p;
-				this.originalPos = p.createVector(x, y);
-				this.pos = p.createVector(x, y);
-				this.vel = p.createVector(0, 0);
-				this.acc = p.createVector(0, 0);
-				this.maxSpeed = 3.0;
-				this.maxForce = 0.1;
-				this.char = char;
-			}
+    textArray = textData.split('')
+    layoutParticles()
+  }
 
-			update() {
-				// Calculate distance to cursor
-				let mouse = this.p.createVector(this.p.mouseX, this.p.mouseY);
-				let dir = this.pos.copy().sub(mouse);
-				let d = dir.mag();
+  // ——— main draw loop ———
+  p.draw = () => {
+    // semi-transparent background for trails
+    p.background(252, 15)
 
-				// If cursor is close, repel particle
-				if (d < 200) {
-					dir.normalize();
-					let force = this.p.map(d, 0, 200, 3, 0);
-					dir.mult(force);
-					this.acc.add(dir);
-				}
+    for (let pt of particles) {
+      pt.update()
+      pt.display()
+    }
+  }
 
-				// Attract particle to original position
-				let target = this.originalPos.copy();
-				let targetDir = target.copy().sub(this.pos)
-				targetDir.mult(0.025); // Return speed
-				this.acc.add(targetDir);
+  // ——— handle resize ———
+  p.windowResized = () => {
+    p.resizeCanvas(p.windowWidth, p.windowHeight)
+    layoutParticles()
+  }
 
-				// Update position
-				this.vel.add(this.acc);
-				this.vel.limit(this.maxSpeed);
-				this.pos.add(this.vel);
-				this.acc.mult(0);
+  // ——— helper to (re)build the particles array and layout ———
+  function layoutParticles() {
+    particles.length = 0
+    let x = 100
+    let y = 80
+    const lineHeight = fontSize * 1.2
+    const maxW = p.width - x
 
-				// Add some friction
-				this.vel.mult(0.35);
-			}
+    for (let char of textArray) {
+      if (char === '') {
+        x = 100
+        y += lineHeight
+        continue
+      }
+      if (x > maxW) {
+        x = 100
+        y += lineHeight
+      }
+      particles.push(new Particle(x, y, char))
+      x += p.textWidth(char)
+    }
+  }
 
-			display() {
-				this.p.fill(0);
-				this.p.noStroke();
-				this.p.text(this.char, this.pos.x, this.pos.y);
-			}
-		}
+  // ——— Particle “class” closes over p ———
+  class Particle {
+    constructor(x, y, char) {
+      this.p = p
+      this.originalPos = p.createVector(x, y)
+      this.pos = this.originalPos.copy()
+      this.vel = p.createVector(0, 0)
+      this.acc = p.createVector(0, 0)
+      this.maxSpeed = 3
+      this.char = char
+    }
 
-		let particles:any = [];
-		let font:any;
-		let textData = `0/ We see future as a friendly co-creative space, where computational power blends with artistic vision to catalyze a cultural rebirth. 
-		
-1/ AI is changing the way we create, together we create new digital aesthetics that is beyond optimising workflow or generating stunning images, it's about shaping the future. 
+    update() {
+      const p = this.p
+      // repulsion from mouse
+      const mouse = p.createVector(p.mouseX, p.mouseY)
+      let dir = this.pos.copy().sub(mouse)
+      const d = dir.mag()
+      if (d < 200) {
+        dir.normalize()
+        const f = p.map(d, 0, 200, 3, 0)
+        dir.mult(f)
+        this.acc.add(dir)
+      }
+      // attraction back to origin
+      let targetDir = this.originalPos.copy().sub(this.pos)
+      targetDir.mult(0.025)
+      this.acc.add(targetDir)
 
-2/ We declare independence from software that limits complex creative workflows – the future belongs to those who build their own tools. 
+      // integrate
+      this.vel.add(this.acc)
+      this.vel.limit(this.maxSpeed)
+      this.pos.add(this.vel)
+      this.acc.mult(0)
+      // friction
+      this.vel.mult(0.35)
+    }
 
-3/ We envision ourselves as the central media community for talents who design the future and collaborate for successful projects. `;
-		let fontSize = 18;
-		let textArray:any = [];
-		p.preload = () => {
-			font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
-		};
-		p.setup = () => {
-			// p.createCanvas(800, 400);
-			p.createCanvas(p.windowWidth > 800 ? 800 : p.windowWidth - 20, p.windowWidth > 800 ? 400 : 570);
-			p.textFont(font);
-			p.textSize(fontSize);
-
-			// Convert the text into an array of characters
-			textArray = textData.split('');
-
-			// Create a layout for the text
-			let x = 20;
-			let y = 40;
-			let lineHeight = fontSize * 1.2;
-			let maxWidth = p.width - 40;
-
-			// Create particles for each character
-			for (let i = 0; i < textArray.length; i++) {
-				let char = textArray[i];
-
-				// Handle line breaks
-				if (char === '\n') {
-					x = 20;
-					y += lineHeight;
-					continue;
-				}
-
-				// Check if we need to wrap to next line
-				if (x > maxWidth) {
-					x = 20;
-					y += lineHeight;
-				}
-
-				// Create a particle for this character
-				let particle = new Particle(p, x, y, char);
-				particles.push(particle);
-
-				// Move position for next character
-				x += p.textWidth(char);
-			}
-		};
-		p.draw = () => {
-			p.background(249);
-
-			// Update and display all particles
-			for (let i = 0; i < particles.length; i++) {
-				particles[i].update();
-				particles[i].display();
-			}
-		};
-		
-		p.windowResized = () => {
-			p.resizeCanvas(p.windowWidth > 800 ? 800 : p.windowWidth - 20, 400);
-
-			// Recalculate positions when window size changes
-			particles = [];
-
-			// Recreate layout
-			let x = 20;
-			let y = 30;
-			let lineHeight = fontSize * 1.2;
-			let maxWidth = p.width - 40;
-
-			for (let i = 0; i < textArray.length; i++) {
-				let char = textArray[i];
-
-				// Handle line breaks
-				if (char === '\n') {
-					x = 20;
-					y += lineHeight;
-					continue;
-				}
-
-				// Check if we need to wrap to next line
-				if (x > maxWidth) {
-					x = 20;
-					y += lineHeight;
-				}
-
-				// Create a particle for this character
-				let particle = new Particle(p, x, y, char);
-				particles.push(particle);
-
-				// Move position for next character
-				x += p.textWidth(char);
-			}
-		};
-	}
+    display() {
+      const p = this.p
+      p.fill(0)
+      p.noStroke()
+      p.text(this.char, this.pos.x, this.pos.y)
+    }
+  }
+}
+new p5(sketch)
+</\script>
+  </body>
+</html>`;
 </script>
 
-<div class="start-page-container">
-	<MainPageNavPanel />
-
-	<div class="start-page-wrapper">
-		<div class="hero">
-			<div class="sketchWrapper" style="hue-rotate({hueRotation}deg);">
-				<!-- Use the P5wrapper component and pass the sketch function -->
-				<P5wrapper {sketch} />
-			</div>
-		</div>
-
-		<Footer />
-	</div>
+<MainPageNavPanel />
+<div class="wrapper">
+	<iframe srcdoc={sketch} title="sketch" style="height: {$width > 800 ? 400 : 850}px;"></iframe>
+	<Footer />
 </div>
 
 <style>
-	h1 {
-		font-size: 2em;
-	}
-	h2 {
-		font-size: 1.5em;
-	}
-	h3 {
-		font-size: 1.2em;
-	}
-	.start-page-container {
-		overflow-y: scroll;
-		overflow-x: hidden;
-		height: 100vh;
-		height: 100svh;
+	.wrapper {
 		width: 100%;
-		margin: auto;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-	.start-page-wrapper {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		max-width: 1200px;
-	}
-	.hero {
-	min-width: min(90%, 400px);
-		margin-top: 10vh;
-		flex: 0 0 70vh;
+		height: 100%;
+		overflow: auto;
 		text-align: center;
-		padding: 2rem;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		position: relative;
 	}
-	.hero-wrapper {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-	.hero-wrapper p {
-		max-width: 600px;
-	}
-	.section {
-		padding: 2rem;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-		position: relative;
-	}
-	.section p {
-		max-width: 600px;
-	}
-	.sketchWrapper {
-		position: absolute;
-		transition: all 2s;
-		z-index: -1;
-	}
-	.chat-panel-container {
-		width: calc(100% - 20px);
-		max-width: 800px;
-		margin: 20px;
-		padding: 10px;
-		box-sizing: border-box;
-		display: flex;
-		justify-content: center;
-		align-items: flex-end;
-		background: linear-gradient(45deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.25));
-		backdrop-filter: blur(40px);
-		-webkit-backdrop-filter: blur(25px);
-		border-radius: 10px;
-		box-shadow: 0 0 10px hsl(0, 0%, 70%);
-		/* position: absolute;
-		bottom: 30px; */
-	}
-	textarea {
+	iframe {
+		margin-top: 100px;
 		border: none;
-		border-radius: 0;
-		border-bottom: 1px solid hsl(0, 0%, 90%);
-		background: none;
-		background-color: hsla(0, 0%, 0%, 0.05);
-		color: hsl(0, 0%, 10%);
-		font-size: 1rem;
-		font-family: 'Roboto', sans-serif;
-		font-weight: 300;
-		height: 60px;
-		padding: 10px;
-		margin: 0;
-		box-sizing: border-box;
+		border-radius: 20px;
 		width: 100%;
-	}
-	#magicButton {
-		width: 40px;
-		height: 40px;
-	}
-
-	.gallery-buttons {
-		display: flex;
-		justify-content: center;
-		margin-top: 0px;
-	}
-
-	.gallery-buttons button {
-		width: 40px;
-		height: 5px;
-		border-radius: 5px;
-		background-color: hsl(0, 0%, 90%);
-		margin: 0 5px;
-		border: none;
-		cursor: pointer;
-		transition: background-color 0.3s;
-	}
-
-	.gallery-buttons button.active {
-		background-color: hsl(0, 0%, 2%);
-	}
-
-	.grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 10px;
-		padding: 10px;
-		box-sizing: border-box;
-		margin-top: 5em;
-	}
-
-	.grid .section {
-		background-color: hsl(0, 0%, 95%);
-		border-radius: 10px;
-	}
-
-	@media screen and (max-width: 700px) {
-		.grid {
-			grid-template-columns: 1fr;
-		}
+		max-width: 900px;
+		height: 100%;
 	}
 </style>
